@@ -208,16 +208,16 @@ const VERIFIED_DATE = "August 2026";
 const RECIPIENT     = "your@email.com";
 
 const CAT_META = {
-  animated:      { label:"Animated",      dBg:"rgba(139,92,246,0.14)", dTx:"#c4b5fd", dDot:"#8b5cf6", lBg:"rgba(109,40,217,0.09)", lTx:"#5b21b6", lDot:"#7c3aed" },
+  animated:      { label:"Animated",      dBg:"rgba(239,120,60,0.15)", dTx:"#fdb07a", dDot:"#ef7840", lBg:"rgba(194,65,12,0.09)", lTx:"#9a3412", lDot:"#ea580c" },
   shadcn:        { label:"shadcn",        dBg:"rgba(34,197,94,0.12)",  dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.09)",  lTx:"#14532d", lDot:"#16a34a" },
   tailwind:      { label:"Tailwind",      dBg:"rgba(14,165,233,0.12)", dTx:"#7dd3fc", dDot:"#0ea5e9", lBg:"rgba(2,132,199,0.09)",  lTx:"#075985", lDot:"#0284c7" },
   css:           { label:"CSS / SVG",     dBg:"rgba(251,146,60,0.12)", dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
   react:         { label:"React",         dBg:"rgba(96,165,250,0.12)", dTx:"#93c5fd", dDot:"#60a5fa", lBg:"rgba(37,99,235,0.09)",  lTx:"#1e3a8a", lDot:"#2563eb" },
   angular:       { label:"Angular",       dBg:"rgba(220,53,69,0.14)",  dTx:"#fca5a5", dDot:"#ef4444", lBg:"rgba(185,28,28,0.09)",  lTx:"#991b1b", lDot:"#dc2626" },
-  headless:      { label:"Headless",      dBg:"rgba(248,113,113,0.12)",dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(159,18,57,0.09)",  lTx:"#881337", lDot:"#e11d48" },
+  headless:      { label:"Headless",      dBg:"rgba(248,113,113,0.13)",dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(159,18,57,0.09)",  lTx:"#881337", lDot:"#e11d48" },
   multi:         { label:"Vue / Svelte",  dBg:"rgba(52,211,153,0.12)", dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.09)",   lTx:"#065f46", lDot:"#059669" },
-  collections:   { label:"Collection",    dBg:"rgba(250,204,21,0.12)", dTx:"#fde047", dDot:"#eab308", lBg:"rgba(146,64,14,0.09)",  lTx:"#78350f", lDot:"#b45309" },
-  "design-tools":{ label:"Design Tool",   dBg:"rgba(232,121,249,0.12)",dTx:"#f0abfc", dDot:"#d946ef", lBg:"rgba(126,34,206,0.09)", lTx:"#581c87", lDot:"#9333ea" },
+  collections:   { label:"Collection",    dBg:"rgba(245,158,11,0.14)", dTx:"#fcd34d", dDot:"#f59e0b", lBg:"rgba(180,83,9,0.09)",   lTx:"#92400e", lDot:"#d97706" },
+  "design-tools":{ label:"Design Tool",   dBg:"rgba(245,100,60,0.14)", dTx:"#fdb09a", dDot:"#f56040", lBg:"rgba(180,50,20,0.09)",  lTx:"#7c1d06", lDot:"#dc4020" },
   "dev-tools":   { label:"Dev Tool",      dBg:"rgba(20,184,166,0.12)", dTx:"#5eead4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.09)", lTx:"#134e4a", lDot:"#0d9488" },
 };
 
@@ -237,7 +237,7 @@ function EmptyState({ query, onClear, color }) {
         Try a different keyword or framework filter
       </div>
       <button onClick={onClear}
-        style={{ fontSize:12, color:"#a78bfa", background:"none", border:"1px solid rgba(167,139,250,0.3)", borderRadius:8, padding:"0.35rem 0.9rem", cursor:"pointer" }}>
+        style={{ fontSize:12, color:"#e05050", background:"none", border:"1px solid rgba(224,80,80,0.35)", borderRadius:8, padding:"0.35rem 0.9rem", cursor:"pointer" }}>
         Clear all filters
       </button>
     </div>
@@ -373,57 +373,59 @@ export default function App() {
 
   // ── Theme tokens ───────────────────────────────────────────────
   const t = {
-    bg:         D?"#0c0c13"                        :"#f4f5f8",
-    hBg:        D?"rgba(12,12,19,0.88)"            :"rgba(255,255,255,0.93)",
-    hBorder:    D?"rgba(255,255,255,0.09)"         :"rgba(0,0,0,0.09)",
-    card:       D?"#13131f"                        :"#ffffff",
-    cBorder:    D?"rgba(255,255,255,0.09)"         :"rgba(0,0,0,0.09)",
-    cHover:     D?"#1c1c30"                        :"#eef1ff",
-    cHBorder:   D?"rgba(167,139,250,0.5)"          :"rgba(99,102,241,0.45)",
-    cFocus:     D?"rgba(167,139,250,0.85)"         :"rgba(99,102,241,0.85)",
-    hlBg:       D?"rgba(167,139,250,0.1)"          :"rgba(99,102,241,0.07)",
-    hlBorder:   D?"rgba(167,139,250,0.65)"         :"rgba(99,102,241,0.65)",
-    title:      D?"#f0f4ff"                        :"#0f172a",
-    desc:       D?"#9baacf"                        :"#374151",
-    url:        D?"#4a5a74"                        :"#9ca3af",
-    eyebrow:    D?"#7c8db5"                        :"#6b7280",
-    tabBg:      D?"rgba(255,255,255,0.06)"         :"rgba(0,0,0,0.05)",
-    tabABg:     D?"rgba(167,139,250,0.18)"         :"rgba(99,102,241,0.12)",
-    tabC:       D?"#7c8db5"                        :"#4b5563",
-    tabAC:      D?"#d4bbff"                        :"#3730a3",
-    tabAB:      D?"rgba(167,139,250,0.5)"          :"rgba(99,102,241,0.5)",
+    // ── DARK: Crimson — near-black + red-orange accent (Option 3) ──
+    // ── LIGHT: Sand — warm cream + amber accent (Option 4) ──
+    bg:         D?"#180f0f"                        :"#fdf6ed",
+    hBg:        D?"rgba(24,15,15,0.93)"            :"rgba(253,246,237,0.95)",
+    hBorder:    D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
+    card:       D?"#211414"                        :"#ffffff",
+    cBorder:    D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
+    cHover:     D?"#2a1818"                        :"#fff8f0",
+    cHBorder:   D?"rgba(224,80,80,0.45)"           :"#c87820",
+    cFocus:     D?"rgba(240,96,96,0.9)"            :"rgba(200,120,32,0.9)",
+    hlBg:       D?"rgba(224,80,80,0.1)"            :"rgba(200,120,32,0.08)",
+    hlBorder:   D?"rgba(224,80,80,0.55)"           :"rgba(200,120,32,0.5)",
+    title:      D?"#f5e8e8"                        :"#2a1f0f",
+    desc:       D?"#c4999a"                        :"#5c4a30",
+    url:        D?"#7a4f50"                        :"#a08060",
+    eyebrow:    D?"#7a4f50"                        :"#a08060",
+    tabBg:      D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.04)",
+    tabABg:     D?"rgba(224,80,80,0.15)"           :"rgba(200,120,32,0.12)",
+    tabC:       D?"#a87070"                        :"#7a5a30",
+    tabAC:      D?"#f5c0c0"                        :"#7a4010",
+    tabAB:      D?"rgba(224,80,80,0.4)"            :"rgba(200,120,32,0.45)",
     sBg:        D?"rgba(255,255,255,0.06)"         :"#ffffff",
-    sBorder:    D?"rgba(255,255,255,0.12)"         :"rgba(0,0,0,0.13)",
-    sColor:     D?"#f0f4ff"                        :"#0f172a",
-    sPh:        D?"#4a5a74"                        :"#9ca3af",
-    arrow:      D?"#3d4f63"                        :"#c8cdd6",
-    foot:       D?"#4a5a74"                        :"#9ca3af",
-    h1:         D?"linear-gradient(135deg,#ffffff 0%,#c4b5fd 100%)":undefined,
-    h1C:        D?undefined                        :"#0f172a",
-    glow:       D?"radial-gradient(ellipse 70% 35% at 50% -5%,rgba(139,92,246,0.15) 0%,transparent 70%)":"none",
+    sBorder:    D?"rgba(255,255,255,0.1)"          :"#e8ddd0",
+    sColor:     D?"#f5e8e8"                        :"#2a1f0f",
+    sPh:        D?"#7a4f50"                        :"#a08060",
+    arrow:      D?"#4a2828"                        :"#c0a070",
+    foot:       D?"#6a3838"                        :"#a08060",
+    h1:         D?"linear-gradient(135deg,#f5e8e8 0%,#f06060 100%)":undefined,
+    h1C:        D?undefined                        :"#2a1f0f",
+    glow:       D?"radial-gradient(ellipse 70% 35% at 50% -5%,rgba(224,80,80,0.18) 0%,transparent 70%)":"none",
     ctrl:       D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.04)",
-    ctrlB:      D?"rgba(255,255,255,0.1)"          :"rgba(0,0,0,0.1)",
-    div:        D?"rgba(255,255,255,0.06)"         :"rgba(0,0,0,0.07)",
-    copyBg:     D?"rgba(255,255,255,0.06)"         :"rgba(0,0,0,0.04)",
-    float:      D?"#7c3aed"                        :"#4f46e5",
-    stBg:       D?"rgba(255,255,255,0.07)"         :"rgba(0,0,0,0.05)",
-    stTx:       D?"#64748b"                        :"#6b7280",
-    suggBg:     D?"#13131f"                        :"#ffffff",
-    suggB:      D?"rgba(255,255,255,0.09)"         :"rgba(0,0,0,0.09)",
-    suggHBg:    D?"rgba(139,92,246,0.08)"          :"rgba(99,102,241,0.05)",
-    suggHB:     D?"rgba(139,92,246,0.2)"           :"rgba(99,102,241,0.13)",
-    fade:       D?"linear-gradient(to right,transparent,rgba(12,12,19,0.9))":"linear-gradient(to right,transparent,rgba(244,245,248,0.9))",
-    iBg:        D?"rgba(255,255,255,0.05)"         :"#f9fafb",
-    iBorder:    D?"rgba(255,255,255,0.12)"         :"rgba(0,0,0,0.12)",
-    iColor:     D?"#f0f4ff"                        :"#0f172a",
-    label:      D?"#b0bedd"                        :"#374151",
-    acc:        D?"#a78bfa"                        :"#6366f1",
-    submit:     D?"#7c3aed"                        :"#4f46e5",
-    nBg:        D?"rgba(52,211,153,0.12)"          :"rgba(4,120,87,0.09)",
-    nTx:        D?"#6ee7b7"                        :"#065f46",
-    hlMark:     D?"rgba(167,139,250,0.25)"         :"rgba(99,102,241,0.15)",
-    recentBg:   D?"rgba(255,255,255,0.03)"         :"rgba(0,0,0,0.02)",
-    recentB:    D?"rgba(255,255,255,0.07)"         :"rgba(0,0,0,0.07)",
+    ctrlB:      D?"rgba(255,255,255,0.09)"         :"#e8ddd0",
+    div:        D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
+    copyBg:     D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.03)",
+    float:      D?"#c03030"                        :"#c87820",
+    stBg:       D?"rgba(255,255,255,0.07)"         :"rgba(0,0,0,0.04)",
+    stTx:       D?"#8a5858"                        :"#8a6840",
+    suggBg:     D?"#211414"                        :"#ffffff",
+    suggB:      D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
+    suggHBg:    D?"rgba(224,80,80,0.07)"           :"rgba(200,120,32,0.05)",
+    suggHB:     D?"rgba(224,80,80,0.18)"           :"rgba(200,120,32,0.2)",
+    fade:       D?"linear-gradient(to right,transparent,rgba(24,15,15,0.93))":"linear-gradient(to right,transparent,rgba(253,246,237,0.95))",
+    iBg:        D?"rgba(255,255,255,0.05)"         :"#fdf0e0",
+    iBorder:    D?"rgba(255,255,255,0.1)"          :"#e8ddd0",
+    iColor:     D?"#f5e8e8"                        :"#2a1f0f",
+    label:      D?"#c49090"                        :"#5c4a30",
+    acc:        D?"#e05050"                        :"#c87820",
+    submit:     D?"#c03030"                        :"#c87820",
+    nBg:        D?"rgba(224,80,80,0.12)"           :"rgba(200,120,32,0.1)",
+    nTx:        D?"#f5a0a0"                        :"#7a4010",
+    hlMark:     D?"rgba(224,80,80,0.25)"           :"rgba(200,120,32,0.2)",
+    recentBg:   D?"rgba(255,255,255,0.02)"         :"rgba(0,0,0,0.02)",
+    recentB:    D?"rgba(255,255,255,0.06)"         :"#e8ddd0",
   };
 
   const iStyle = { width:"100%", padding:"0.52rem 0.8rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:9, color:t.iColor, fontSize:13.5, outline:"none", boxSizing:"border-box", fontFamily:"inherit" };
@@ -450,7 +452,7 @@ export default function App() {
         .lib-card:not([data-pinned]):hover { transform: translateY(-2px); }
         .lib-card[data-pinned] { transform: none !important; }
         .lib-card a:focus { outline: none; }
-        .lib-card:focus-within:not([data-pinned]) { outline: 2px solid var(--focus-color, #a78bfa); outline-offset: 2px; }
+        .lib-card:focus-within:not([data-pinned]) { outline: 2px solid var(--focus-color, #e05050); outline-offset: 2px; }
         mark { background: transparent; }
         @media (max-width: 600px) {
           .header-inner { flex-direction: column !important; align-items: stretch !important; }
@@ -463,27 +465,27 @@ export default function App() {
       {D && (
         <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, overflow:"hidden" }}>
           <div style={{ position:"absolute", inset:0, background:t.glow }} />
-          <div style={{ position:"absolute", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle,rgba(139,92,246,0.13) 0%,transparent 70%)", top:"-15%", left:"20%", animation:"blob1 18s ease-in-out infinite", willChange:"transform" }} />
-          <div style={{ position:"absolute", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(99,102,241,0.1) 0%,transparent 70%)", top:"30%", right:"-10%", animation:"blob2 22s ease-in-out infinite", willChange:"transform" }} />
-          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(167,139,250,0.08) 0%,transparent 70%)", bottom:"5%", left:"10%", animation:"blob3 26s ease-in-out infinite", willChange:"transform" }} />
+          <div style={{ position:"absolute", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle,rgba(200,40,40,0.12) 0%,transparent 70%)", top:"-15%", left:"20%", animation:"blob1 18s ease-in-out infinite", willChange:"transform" }} />
+          <div style={{ position:"absolute", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(180,30,30,0.09) 0%,transparent 70%)", top:"30%", right:"-10%", animation:"blob2 22s ease-in-out infinite", willChange:"transform" }} />
+          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(220,60,40,0.07) 0%,transparent 70%)", bottom:"5%", left:"10%", animation:"blob3 26s ease-in-out infinite", willChange:"transform" }} />
         </div>
       )}
 
       {/* ── HEADER ──────────────────────────────────────────── */}
       <header style={{ background:t.hBg, borderBottom:`1px solid ${t.hBorder}`, padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
-        <div style={{ maxWidth:860, margin:"0 auto", padding:"1rem 0 0.8rem" }}>
+        <div style={{ maxWidth:860, margin:"0 auto", padding:"0.6rem 0 0.5rem" }}>
 
           {/* top row */}
           <div className="header-inner" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem" }}>
             <div style={{ minWidth:0 }}>
               <div style={{ display:"flex", alignItems:"center", gap:"0.4rem", marginBottom:"0.2rem" }}>
                 <span style={{ width:6, height:6, borderRadius:"50%", background:t.acc, boxShadow:D?`0 0 8px ${t.acc}`:"none", flexShrink:0 }} />
-                <span style={{ fontSize:10, letterSpacing:"0.16em", textTransform:"uppercase", color:t.eyebrow, fontWeight:600 }}>Free & Open Source</span>
+                <span style={{ fontSize:9, letterSpacing:"0.14em", textTransform:"uppercase", color:t.eyebrow, fontWeight:600 }}>Free & Open Source</span>
               </div>
-              <h1 style={{ fontSize:"clamp(1.15rem,4vw,1.75rem)", fontWeight:800, margin:0, letterSpacing:"-0.03em", lineHeight:1.1, ...(D?{background:t.h1,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}:{color:t.h1C}) }}>
+              <h1 style={{ fontSize:"clamp(1rem,3.5vw,1.45rem)", fontWeight:800, margin:0, letterSpacing:"-0.03em", lineHeight:1.1, ...(D?{background:t.h1,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}:{color:t.h1C}) }}>
                 UI Component Libraries
               </h1>
-              <p style={{ marginTop:"0.2rem", color:t.desc, fontSize:"0.75rem", lineHeight:1.5 }}>
+              <p style={{ marginTop:"0.15rem", color:t.desc, fontSize:"0.7rem", lineHeight:1.4 }}>
                 {LIBS.length} curated free resources — verified {VERIFIED_DATE}
               </p>
             </div>
@@ -533,7 +535,7 @@ export default function App() {
           </div>
 
           {/* ── Framework filter pills ── */}
-          <div style={{ display:"flex", gap:"0.22rem", marginTop:"0.75rem", overflowX:"auto", scrollbarWidth:"none", paddingBottom:"1px" }}>
+          <div style={{ display:"flex", gap:"0.18rem", marginTop:"0.45rem", overflowX:"auto", scrollbarWidth:"none", paddingBottom:"1px" }}>
             {FRAMEWORKS.map(f => {
               const on = fw === f.id;
               return (
@@ -553,13 +555,13 @@ export default function App() {
           </div>
 
           {/* ── Category tabs ── */}
-          <div style={{ position:"relative", marginTop:"0.5rem" }}>
+          <div style={{ position:"relative", marginTop:"0.3rem" }}>
             <div style={{ display:"flex", gap:"0.2rem", overflowX:"auto", paddingBottom:"2px", scrollbarWidth:"none" }}>
               {CATEGORIES.map(cat => {
                 const on = active === cat.id;
                 return (
                   <button key={cat.id} onClick={() => changeActive(cat.id)}
-                    style={{ padding:"0.25rem 0.62rem", borderRadius:6, border:"none", cursor:"pointer", fontSize:10.5, fontWeight:500, transition:"background 0.15s,color 0.15s,box-shadow 0.15s,outline-color 0.15s", background:on?t.tabABg:t.tabBg, color:on?t.tabAC:t.tabC, outline:on?`1px solid ${t.tabAB}`:"1px solid transparent", whiteSpace:"nowrap", flexShrink:0, boxShadow:on?`0 2px 10px rgba(139,92,246,0.22)`:"none" }}>
+                    style={{ padding:"0.25rem 0.62rem", borderRadius:6, border:"none", cursor:"pointer", fontSize:10.5, fontWeight:500, transition:"background 0.15s,color 0.15s,box-shadow 0.15s,outline-color 0.15s", background:on?t.tabABg:t.tabBg, color:on?t.tabAC:t.tabC, outline:on?`1px solid ${t.tabAB}`:"1px solid transparent", whiteSpace:"nowrap", flexShrink:0, boxShadow:on?`0 2px 10px rgba(224,80,80,0.25)`:"none" }}>
                     {cat.label}
                     <span style={{ marginLeft:3, fontSize:9, opacity:0.5 }}>{counts[cat.id]||0}</span>
                   </button>
@@ -572,7 +574,7 @@ export default function App() {
       </header>
 
       {/* ── MAIN ──────────────────────────────────────────── */}
-      <main style={{ maxWidth:860, margin:"0 auto", padding:"1rem 1.25rem 1.5rem", position:"relative", zIndex:1 }}>
+      <main style={{ maxWidth:860, margin:"0 auto", padding:"0.85rem 1.25rem 1.5rem", position:"relative", zIndex:1 }}>
 
         {/* ── Recently viewed ── */}
         {recent.length > 0 && !query && active === "all" && fw === "all" && (
@@ -625,12 +627,12 @@ export default function App() {
                   data-pinned={isRand ? "" : undefined}
                   style={{
                     display:"flex", alignItems:"center", gap:"0.65rem",
-                    padding:"0.8rem 0.9rem",
+                    padding:"0.9rem 1rem",
                     background: isRand ? t.hlBg : t.card,
                     border: `1px solid ${isRand ? t.hlBorder : t.cBorder}`,
                     borderRadius:11,
                     boxShadow: isRand
-                      ? `0 0 0 2px ${t.hlBorder}, 0 8px 32px rgba(139,92,246,0.18)`
+                      ? `0 0 0 2px ${t.hlBorder}, 0 8px 32px rgba(224,80,80,0.2)`
                       : "0 1px 3px rgba(0,0,0,0.07)",
                     "--focus-color": t.cFocus,
                   }}
@@ -647,7 +649,7 @@ export default function App() {
                   >
                     {/* name row */}
                     <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap", marginBottom:"0.15rem" }}>
-                      <span style={{ fontSize:"0.88rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
+                      <span style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
                         <Highlight text={lib.name} query={query} color={t.hlMark} />
                       </span>
                       <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.08em", textTransform:"uppercase", padding:"0.09rem 0.4rem", borderRadius:4, background:bg, color:tx }}>{m.label}</span>
@@ -660,11 +662,11 @@ export default function App() {
                       ))}
                     </div>
                     {/* description with highlight */}
-                    <div style={{ fontSize:12.5, color:t.desc, lineHeight:1.6 }}>
+                    <div style={{ fontSize:13, color:t.desc, lineHeight:1.65 }}>
                       <Highlight text={lib.desc} query={query} color={t.hlMark} />
                     </div>
                     {/* url + verified */}
-                    <div style={{ marginTop:"0.18rem", fontSize:10, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace", display:"flex", alignItems:"center", gap:"0.35rem", flexWrap:"wrap" }}>
+                    <div style={{ marginTop:"0.18rem", fontSize:11, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace", display:"flex", alignItems:"center", gap:"0.35rem", flexWrap:"wrap" }}>
                       <span>{lib.url}</span>
                       <span style={{ color:t.div }}>·</span>
                       <span style={{ color:t.foot }}>Verified {VERIFIED_DATE}</span>
@@ -736,7 +738,7 @@ export default function App() {
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem" }}>
                     <p style={{ margin:0, fontSize:10.5, color:t.desc }}>Opens your default email app with details pre-filled.</p>
                     <button onClick={handleSuggest} disabled={!siteName.trim()||!siteUrl.trim()}
-                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.42rem 0.85rem", borderRadius:7, border:"none", background:(!siteName.trim()||!siteUrl.trim())?"rgba(139,92,246,0.18)":t.submit, color:(!siteName.trim()||!siteUrl.trim())?t.acc:"#fff", fontSize:12, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer", opacity:(!siteName.trim()||!siteUrl.trim())?0.6:1 }}>
+                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.42rem 0.85rem", borderRadius:7, border:"none", background:(!siteName.trim()||!siteUrl.trim())?"rgba(200,80,30,0.15)":t.submit, color:(!siteName.trim()||!siteUrl.trim())?t.acc:"#fff", fontSize:12, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer", opacity:(!siteName.trim()||!siteUrl.trim())?0.6:1 }}>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                       Send suggestion
                     </button>
@@ -768,9 +770,9 @@ export default function App() {
       )}
       {floatVis && (
         <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-          style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"0 4px 18px rgba(139,92,246,0.4)", backdropFilter:"blur(8px)", transition:"transform 0.18s ease,box-shadow 0.18s ease" }}
-          onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px) scale(1.04)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(139,92,246,0.55)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 4px 18px rgba(139,92,246,0.4)"; }}>
+          style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"0 4px 18px rgba(200,40,40,0.4)", backdropFilter:"blur(8px)", transition:"transform 0.18s ease,box-shadow 0.18s ease" }}
+          onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px) scale(1.04)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(200,40,40,0.5)"; }}
+          onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 4px 18px rgba(200,40,40,0.4)"; }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
           Suggest
         </button>
