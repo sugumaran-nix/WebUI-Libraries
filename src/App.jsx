@@ -1,18 +1,16 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 
-// ── Theme persistence ──────────────────────────────────────────────
+// ── Theme ──────────────────────────────────────────────────────────
 function getSavedTheme() {
-  try { return localStorage.getItem("uidir-theme") !== "light"; }
-  catch { return true; }
+  try { return localStorage.getItem("uidir-theme") !== "light"; } catch { return true; }
 }
 function saveTheme(dark) {
   try { localStorage.setItem("uidir-theme", dark ? "dark" : "light"); } catch {}
 }
 
-// ── Recently viewed ────────────────────────────────────────────────
+// ── Recent ─────────────────────────────────────────────────────────
 function getRecent() {
-  try { return JSON.parse(localStorage.getItem("uidir-recent") || "[]"); }
-  catch { return []; }
+  try { return JSON.parse(localStorage.getItem("uidir-recent") || "[]"); } catch { return []; }
 }
 function addRecent(lib) {
   try {
@@ -21,7 +19,7 @@ function addRecent(lib) {
   } catch {}
 }
 
-// ── URL state ──────────────────────────────────────────────────────
+// ── URL ────────────────────────────────────────────────────────────
 function getUrlParams() {
   if (typeof window === "undefined") return { cat: "all", q: "", fw: "all" };
   const p = new URLSearchParams(window.location.search);
@@ -29,14 +27,14 @@ function getUrlParams() {
 }
 function setUrlParams(cat, q, fw) {
   const p = new URLSearchParams();
-  if (cat && cat !== "all") p.set("cat", cat);
+  if (cat !== "all") p.set("cat", cat);
   if (q) p.set("q", q);
-  if (fw && fw !== "all") p.set("fw", fw);
+  if (fw !== "all") p.set("fw", fw);
   const str = p.toString();
   window.history.replaceState(null, "", str ? `?${str}` : window.location.pathname);
 }
 
-// ── Highlight match in text ────────────────────────────────────────
+// ── Highlight ──────────────────────────────────────────────────────
 function Highlight({ text, query, color }) {
   if (!query) return <>{text}</>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -54,29 +52,29 @@ function Highlight({ text, query, color }) {
 
 // ── Data ───────────────────────────────────────────────────────────
 const FRAMEWORKS = [
-  { id: "all",          label: "All Frameworks" },
-  { id: "React",        label: "React" },
-  { id: "Vue",          label: "Vue" },
-  { id: "Svelte",       label: "Svelte" },
-  { id: "Angular",      label: "Angular" },
-  { id: "Tailwind",     label: "Tailwind" },
-  { id: "CSS",          label: "CSS / HTML" },
-  { id: "Design",       label: "Design" },
+  { id: "all", label: "All" },
+  { id: "React", label: "React" },
+  { id: "Vue", label: "Vue" },
+  { id: "Svelte", label: "Svelte" },
+  { id: "Angular", label: "Angular" },
+  { id: "Tailwind", label: "Tailwind" },
+  { id: "CSS", label: "CSS / HTML" },
+  { id: "Design", label: "Design" },
 ];
 
 const CATEGORIES = [
-  { id: "all",           label: "All" },
-  { id: "animated",      label: "Animated & Motion" },
-  { id: "shadcn",        label: "shadcn Ecosystem" },
-  { id: "tailwind",      label: "Tailwind CSS" },
-  { id: "css",           label: "CSS / HTML / SVG" },
-  { id: "react",         label: "Full React" },
-  { id: "angular",       label: "Angular" },
-  { id: "headless",      label: "Headless" },
-  { id: "multi",         label: "Vue / Svelte" },
-  { id: "collections",   label: "Collections" },
-  { id: "design-tools",  label: "Design Tools" },
-  { id: "dev-tools",     label: "Dev Tools" },
+  { id: "all", label: "All Categories" },
+  { id: "animated", label: "Animated & Motion" },
+  { id: "shadcn", label: "shadcn Ecosystem" },
+  { id: "tailwind", label: "Tailwind CSS" },
+  { id: "css", label: "CSS / HTML / SVG" },
+  { id: "react", label: "Full React" },
+  { id: "angular", label: "Angular" },
+  { id: "headless", label: "Headless" },
+  { id: "multi", label: "Vue / Svelte" },
+  { id: "collections", label: "Collections" },
+  { id: "design-tools", label: "Design Tools" },
+  { id: "dev-tools", label: "Dev Tools" },
 ];
 
 const LIB_STACKS = {
@@ -107,100 +105,110 @@ const LIB_STACKS = {
 };
 
 const LIBS = [
-  { id:1,  name:"Aceternity UI",        url:"ui.aceternity.com",                   cat:"animated",      desc:"Stunning animated components built with Tailwind CSS and Framer Motion — perfect for landing pages", added:"2024-01" },
-  { id:2,  name:"Magic UI",             url:"magicui.design",                      cat:"animated",      desc:"150+ free, open-source animated React components for marketing sites and SaaS products", added:"2024-02" },
-  { id:3,  name:"Motion Primitives",    url:"motion-primitives.com",               cat:"animated",      desc:"Copy-paste motion primitives for building beautiful, animated React interfaces", added:"2024-03" },
+  { id:1,  name:"Aceternity UI",        url:"ui.aceternity.com",                   cat:"animated",      desc:"Stunning animated components built with Tailwind CSS and Framer Motion", added:"2024-01" },
+  { id:2,  name:"Magic UI",             url:"magicui.design",                      cat:"animated",      desc:"150+ free animated React components for marketing sites and SaaS products", added:"2024-02" },
+  { id:3,  name:"Motion Primitives",    url:"motion-primitives.com",               cat:"animated",      desc:"Copy-paste motion primitives for building beautiful animated React interfaces", added:"2024-03" },
   { id:4,  name:"Eldora UI",            url:"eldoraui.site",                       cat:"animated",      desc:"Animated React components inspired by shadcn/ui, Aceternity UI, and Magic UI", added:"2024-04" },
-  { id:5,  name:"Cult UI",              url:"cult-ui.com",                         cat:"animated",      desc:"Polished animated React components built on shadcn/ui with a refined dark-mode-first aesthetic", added:"2024-05" },
+  { id:5,  name:"Cult UI",              url:"cult-ui.com",                         cat:"animated",      desc:"Animated React components built on shadcn/ui with a dark-mode-first aesthetic", added:"2024-05" },
   { id:6,  name:"Animata",              url:"animata.design",                      cat:"animated",      desc:"Hand-crafted interaction and animation components for creative interfaces", added:"2024-06" },
-  { id:7,  name:"UI Layout",            url:"ui-layout.com",                       cat:"animated",      desc:"Complex layout patterns with smooth animation support for modern React apps", added:"2024-07" },
+  { id:7,  name:"UI Layout",            url:"ui-layout.com",                       cat:"animated",      desc:"Complex layout patterns with smooth animation support for React apps", added:"2024-07" },
   { id:8,  name:"Lukacho UI",           url:"ui.lukacho.com",                      cat:"animated",      desc:"Minimal animated UI kit for modern React apps", added:"2024-08" },
-  { id:9,  name:"ReactBits",            url:"reactbits.dev",                       cat:"animated",      desc:"Animated React bit-components for creative, expressive UIs", added:"2024-09" },
-  { id:10, name:"SmoothUI",             url:"smoothui.dev",                        cat:"animated",      desc:"130+ ultra-smooth micro-interaction components built on Motion, compatible with shadcn/ui", added:"2024-10" },
-  { id:11, name:"Fancy Components",     url:"fancycomponents.dev",                 cat:"animated",      desc:"Distinctive, delightful animated component collection for creative developers", added:"2024-11" },
-  { id:12, name:"CuiCui",               url:"cuicui.day",                          cat:"animated",      desc:"Daily component drops with polished motion design and copy-paste simplicity", added:"2024-12" },
-  { id:13, name:"SyntaxUI",             url:"syntaxui.com",                        cat:"animated",      desc:"Dev-focused animated component library with live code previews and Tailwind integration", added:"2024-13" },
-  { id:15, name:"UI Labs",              url:"uilabs.dev",                          cat:"animated",      desc:"Experimental laboratory of fine UI — carefully crafted React components and interactions", added:"2024-15" },
-  { id:16, name:"shadcn/ui",            url:"ui.shadcn.com",                       cat:"shadcn",        desc:"The gold standard — accessible, re-usable components installed via CLI into your own codebase", added:"2023-01" },
-  { id:17, name:"21st.dev",             url:"21st.dev",                            cat:"shadcn",        desc:"The npm for design engineers — community-driven component registry with thousands of components", added:"2024-01" },
-  { id:18, name:"Origin UI",            url:"originui.com",                        cat:"shadcn",        desc:"Beautiful, SaaS-focused shadcn/ui components built with a design-first approach", added:"2024-02" },
-  { id:19, name:"Shadcnblocks",         url:"shadcnblocks.com",                    cat:"shadcn",        desc:"1,700+ full page sections and blocks for shadcn/ui projects — the largest block marketplace", added:"2024-03" },
+  { id:9,  name:"ReactBits",            url:"reactbits.dev",                       cat:"animated",      desc:"Animated React components for creative, expressive UIs", added:"2024-09" },
+  { id:10, name:"SmoothUI",             url:"smoothui.dev",                        cat:"animated",      desc:"130+ micro-interaction components built on Motion, compatible with shadcn/ui", added:"2024-10" },
+  { id:11, name:"Fancy Components",     url:"fancycomponents.dev",                 cat:"animated",      desc:"Distinctive animated component collection for creative developers", added:"2024-11" },
+  { id:12, name:"CuiCui",               url:"cuicui.day",                          cat:"animated",      desc:"Daily component drops with polished motion design", added:"2024-12" },
+  { id:13, name:"SyntaxUI",             url:"syntaxui.com",                        cat:"animated",      desc:"Animated component library with live code previews and Tailwind integration", added:"2024-13" },
+  { id:15, name:"UI Labs",              url:"uilabs.dev",                          cat:"animated",      desc:"Experimental fine UI — carefully crafted React components and interactions", added:"2024-15" },
+  { id:16, name:"shadcn/ui",            url:"ui.shadcn.com",                       cat:"shadcn",        desc:"The gold standard — accessible components installed via CLI into your own codebase", added:"2023-01" },
+  { id:17, name:"21st.dev",             url:"21st.dev",                            cat:"shadcn",        desc:"The npm for design engineers — component registry with thousands of community components", added:"2024-01" },
+  { id:18, name:"Origin UI",            url:"originui.com",                        cat:"shadcn",        desc:"Beautiful SaaS-focused shadcn/ui components built with a design-first approach", added:"2024-02" },
+  { id:19, name:"Shadcnblocks",         url:"shadcnblocks.com",                    cat:"shadcn",        desc:"1,700+ full page sections and blocks for shadcn/ui projects", added:"2024-03" },
   { id:20, name:"HextaUI",              url:"hextaui.com",                         cat:"shadcn",        desc:"Modern shadcn/ui extensions with refined aesthetics and smooth animations", added:"2024-04" },
-  { id:21, name:"KokonutUI",            url:"kokonutui.com",                       cat:"shadcn",        desc:"Accessible, production-ready shadcn/ui component extensions with strong defaults", added:"2024-05" },
-  { id:22, name:"Bundui",               url:"bundui.io",                           cat:"shadcn",        desc:"Curated shadcn/ui component bundles, ready to drop into your project", added:"2024-06" },
-  { id:23, name:"Skiper UI",            url:"skiper-ui.com",                       cat:"shadcn",        desc:"24 free animated components built on top of shadcn/ui with polished motion", added:"2024-07" },
+  { id:21, name:"KokonutUI",            url:"kokonutui.com",                       cat:"shadcn",        desc:"Accessible, production-ready shadcn/ui component extensions", added:"2024-05" },
+  { id:22, name:"Bundui",               url:"bundui.io",                           cat:"shadcn",        desc:"Curated shadcn/ui component bundles ready to drop into your project", added:"2024-06" },
+  { id:23, name:"Skiper UI",            url:"skiper-ui.com",                       cat:"shadcn",        desc:"24 free animated components built on top of shadcn/ui", added:"2024-07" },
   { id:24, name:"lndev/ui",             url:"ui.lndev.me",                         cat:"shadcn",        desc:"Indie-crafted shadcn/ui extensions with a unique visual personality", added:"2024-08" },
-  { id:25, name:"ReUI",                 url:"reui.io",                             cat:"shadcn",        desc:"Enterprise-grade shadcn/ui component extensions with Radix and Base UI support", added:"2024-09" },
-  { id:26, name:"MynaUI",               url:"mynaui.com",                          cat:"shadcn",        desc:"Elegant shadcn/ui components with a consistent visual language and design-system parity", added:"2024-10" },
-  { id:27, name:"BadtzUI",              url:"badtz-ui.com",                        cat:"shadcn",        desc:"Core-free shadcn/ui extensions updated every week — fresh components on a regular schedule", added:"2024-11" },
-  { id:28, name:"Nyxb UI",              url:"nyxbui.design",                       cat:"shadcn",        desc:"Dark-mode-first shadcn/ui components with rich motion and expressive visual design", added:"2024-12" },
-  { id:79, name:"Kibo UI",              url:"kibo-ui.com",                         cat:"shadcn",        desc:"Advanced shadcn/ui registry: color pickers, QR codes, drag-drop uploaders, AI chatbot UI and more", added:"2024-13" },
-  { id:29, name:"DaisyUI",              url:"daisyui.com",                         cat:"tailwind",      desc:"The most popular Tailwind CSS component library — 65 components, 35 themes, zero JS dependencies", added:"2021-01" },
-  { id:30, name:"Flowbite",             url:"flowbite.com",                        cat:"tailwind",      desc:"Open-source Tailwind component library with React, Vue, and Svelte adapters plus a Figma kit", added:"2021-02" },
-  { id:31, name:"Preline UI",           url:"preline.co",                          cat:"tailwind",      desc:"Fully responsive Tailwind HTML components and templates with Alpine.js interactivity", added:"2022-01" },
-  { id:32, name:"HyperUI",              url:"hyperui.dev",                         cat:"tailwind",      desc:"Free open-source Tailwind components for ecommerce, marketing, and application UIs", added:"2022-02" },
-  { id:33, name:"Meraki UI",            url:"merakiui.com",                        cat:"tailwind",      desc:"Beautiful, RTL-supported Tailwind CSS UI components for your next project", added:"2022-03" },
-  { id:77, name:"Sailboat UI",          url:"sailboatui.com",                      cat:"tailwind",      desc:"150+ open-source Tailwind CSS components with Alpine.js interactivity built in", added:"2023-01" },
-  { id:78, name:"TailGrids",            url:"tailgrids.com",                       cat:"tailwind",      desc:"600+ free React + Tailwind components, blocks, and templates for real-world production use", added:"2023-02" },
-  { id:34, name:"FlyonUI",              url:"flyonui.com",                         cat:"tailwind",      desc:"Semantic Tailwind components built on DaisyUI and Alpine.js with extra utility", added:"2023-03" },
+  { id:25, name:"ReUI",                 url:"reui.io",                             cat:"shadcn",        desc:"Enterprise-grade shadcn/ui extensions with Radix and Base UI support", added:"2024-09" },
+  { id:26, name:"MynaUI",               url:"mynaui.com",                          cat:"shadcn",        desc:"Elegant shadcn/ui components with consistent visual language", added:"2024-10" },
+  { id:27, name:"BadtzUI",              url:"badtz-ui.com",                        cat:"shadcn",        desc:"Core-free shadcn/ui extensions updated every week", added:"2024-11" },
+  { id:28, name:"Nyxb UI",              url:"nyxbui.design",                       cat:"shadcn",        desc:"Dark-mode-first shadcn/ui components with rich motion and expressive design", added:"2024-12" },
+  { id:79, name:"Kibo UI",              url:"kibo-ui.com",                         cat:"shadcn",        desc:"Advanced shadcn/ui registry: color pickers, QR codes, drag-drop uploaders", added:"2024-13" },
+  { id:29, name:"DaisyUI",              url:"daisyui.com",                         cat:"tailwind",      desc:"The most popular Tailwind CSS component library — 65 components, 35 themes", added:"2021-01" },
+  { id:30, name:"Flowbite",             url:"flowbite.com",                        cat:"tailwind",      desc:"Tailwind component library with React, Vue, Svelte adapters and a Figma kit", added:"2021-02" },
+  { id:31, name:"Preline UI",           url:"preline.co",                          cat:"tailwind",      desc:"Fully responsive Tailwind HTML components with Alpine.js interactivity", added:"2022-01" },
+  { id:32, name:"HyperUI",              url:"hyperui.dev",                         cat:"tailwind",      desc:"Free Tailwind components for ecommerce, marketing, and application UIs", added:"2022-02" },
+  { id:33, name:"Meraki UI",            url:"merakiui.com",                        cat:"tailwind",      desc:"RTL-supported Tailwind CSS UI components", added:"2022-03" },
+  { id:77, name:"Sailboat UI",          url:"sailboatui.com",                      cat:"tailwind",      desc:"150+ Tailwind CSS components with Alpine.js interactivity", added:"2023-01" },
+  { id:78, name:"TailGrids",            url:"tailgrids.com",                       cat:"tailwind",      desc:"600+ React + Tailwind components, blocks, and templates", added:"2023-02" },
+  { id:34, name:"FlyonUI",              url:"flyonui.com",                         cat:"tailwind",      desc:"Semantic Tailwind components on DaisyUI and Alpine.js", added:"2023-03" },
   { id:35, name:"Penguin UI",           url:"penguinui.com",                       cat:"tailwind",      desc:"Simple, clean, and accessible Tailwind CSS components", added:"2023-04" },
-  { id:36, name:"Tailkits",             url:"tailkits.com",                        cat:"tailwind",      desc:"Curated Tailwind CSS component marketplace and collection", added:"2023-05" },
-  { id:37, name:"Tailus HTML",          url:"html.tailus.io",                      cat:"tailwind",      desc:"Tailwind CSS components with refined visual design standards and P3 color support", added:"2023-06" },
-  { id:38, name:"DevUI",                url:"devui.in",                            cat:"tailwind",      desc:"Developer-centric Tailwind components with a code-first developer experience", added:"2023-07" },
-  { id:39, name:"Tailblocks",           url:"tailblocks.cc",                       cat:"tailwind",      desc:"Ready-to-use Tailwind CSS blocks for rapid prototyping and layout building", added:"2021-03" },
-  { id:40, name:"Uiverse",              url:"uiverse.io",                          cat:"css",           desc:"Community-created CSS elements and components — thousands of unique, copy-paste-ready designs", added:"2022-01" },
-  { id:41, name:"Dot Matrix",           url:"dotmatrix.zzzzshawn.cloud",           cat:"css",           desc:"55+ free dot-matrix loaders built with React, TypeScript, Tailwind, and shadcn", added:"2026-01" },
-  { id:42, name:"Shapes Gallery",       url:"shapes.gallery",                      cat:"css",           desc:"Pure CSS shape collection for creative backgrounds, decorations, and visual flourishes", added:"2023-01" },
-  { id:43, name:"RareUI",               url:"rareui.com",                          cat:"css",           desc:"Unique, rare animated React components built with Tailwind and Motion — genuinely uncommon designs", added:"2024-01" },
-  { id:44, name:"Indie Starter UI",     url:"ui.indie-starter.dev",               cat:"css",           desc:"Minimal React + shadcn components for indie hackers who want to ship fast", added:"2024-02" },
-  { id:45, name:"FlashUI",              url:"flashui.site",                        cat:"css",           desc:"Zero-install, paste-and-go CSS UI elements for quick wins", added:"2024-03" },
-  { id:46, name:"Ever UI",              url:"ever-ui.com",                         cat:"css",           desc:"Evergreen CSS components built for long-term browser support and stability", added:"2024-04" },
-  { id:47, name:"Chakra Framer",        url:"chakraframer.com",                    cat:"css",           desc:"CSS motion templates inspired by Framer's design system and interaction patterns", added:"2024-05" },
-  { id:48, name:"Ground Bossadizenith", url:"ground.bossadizenith.me",            cat:"css",           desc:"Experimental CSS components and ground-level visual effects for creative projects", added:"2024-06" },
+  { id:36, name:"Tailkits",             url:"tailkits.com",                        cat:"tailwind",      desc:"Curated Tailwind CSS component marketplace", added:"2023-05" },
+  { id:37, name:"Tailus HTML",          url:"html.tailus.io",                      cat:"tailwind",      desc:"Tailwind CSS components with refined design standards and P3 color support", added:"2023-06" },
+  { id:38, name:"DevUI",                url:"devui.in",                            cat:"tailwind",      desc:"Developer-centric Tailwind components with a code-first DX", added:"2023-07" },
+  { id:39, name:"Tailblocks",           url:"tailblocks.cc",                       cat:"tailwind",      desc:"Ready-to-use Tailwind CSS blocks for rapid prototyping", added:"2021-03" },
+  { id:40, name:"Uiverse",              url:"uiverse.io",                          cat:"css",           desc:"Thousands of community-created CSS elements and components", added:"2022-01" },
+  { id:41, name:"Dot Matrix",           url:"dotmatrix.zzzzshawn.cloud",           cat:"css",           desc:"55+ dot-matrix loaders built with React, TypeScript, Tailwind, and shadcn", added:"2026-01" },
+  { id:42, name:"Shapes Gallery",       url:"shapes.gallery",                      cat:"css",           desc:"Pure CSS shape collection for creative backgrounds and flourishes", added:"2023-01" },
+  { id:43, name:"RareUI",               url:"rareui.com",                          cat:"css",           desc:"Rare animated React components built with Tailwind and Motion", added:"2024-01" },
+  { id:44, name:"Indie Starter UI",     url:"ui.indie-starter.dev",               cat:"css",           desc:"Minimal React + shadcn components for indie developers who want to ship fast", added:"2024-02" },
+  { id:45, name:"FlashUI",              url:"flashui.site",                        cat:"css",           desc:"Zero-install paste-and-go CSS UI elements", added:"2024-03" },
+  { id:46, name:"Ever UI",              url:"ever-ui.com",                         cat:"css",           desc:"Evergreen CSS components built for long-term browser support", added:"2024-04" },
+  { id:47, name:"Chakra Framer",        url:"chakraframer.com",                    cat:"css",           desc:"CSS motion templates inspired by Framer's design system", added:"2024-05" },
+  { id:48, name:"Ground Bossadizenith", url:"ground.bossadizenith.me",            cat:"css",           desc:"Experimental CSS ground-level components and visual effects", added:"2024-06" },
   { id:49, name:"HeroUI",               url:"heroui.com",                          cat:"react",         desc:"Beautiful React components (formerly NextUI) — 100+ accessible, themeable components", added:"2022-01" },
-  { id:50, name:"Mantine",              url:"mantine.dev",                         cat:"react",         desc:"Feature-rich React component library with 100+ components and 50+ hooks", added:"2021-01" },
-  { id:51, name:"Chakra UI",            url:"chakra-ui.com",                       cat:"react",         desc:"Accessible, composable React components with dark mode and theming out of the box", added:"2020-01" },
-  { id:52, name:"PrimeReact",           url:"primereact.org",                      cat:"react",         desc:"The ultimate React UI component suite — 90+ components with rich theming support", added:"2019-01" },
-  { id:53, name:"MUI",                  url:"mui.com",                             cat:"react",         desc:"The most widely used React UI framework — Material Design and Joy UI component systems", added:"2016-01" },
-  { id:54, name:"Ant Design",           url:"ant.design",                          cat:"react",         desc:"Enterprise-grade React UI library from Alibaba — the standard for large-scale business apps", added:"2016-02" },
-  { id:75, name:"Tremor",               url:"tremor.so",                           cat:"react",         desc:"35+ open-source React components for dashboards — charts, KPI cards, data tables and trackers", added:"2023-01" },
-  { id:80, name:"Fluent UI",            url:"react.fluentui.dev",                 cat:"react",         desc:"Microsoft's open-source React library with 950+ cross-platform components powering Office and Teams", added:"2020-01" },
-  { id:81, name:"Blueprint",            url:"blueprintjs.com",                     cat:"react",         desc:"Palantir's React UI toolkit optimized for data-dense, complex desktop applications", added:"2017-01" },
-  { id:82, name:"Semantic UI React",    url:"react.semantic-ui.com",              cat:"react",         desc:"Human-friendly declarative React APIs — 100+ components with a natural language approach", added:"2016-01" },
-  { id:83, name:"CoreUI React",         url:"coreui.io/react",                    cat:"react",         desc:"Bootstrap-based enterprise React library with admin dashboard templates and components", added:"2018-01" },
-  { id:85, name:"React Bootstrap",      url:"react-bootstrap.github.io",          cat:"react",         desc:"Bootstrap rebuilt from scratch as true React components — no jQuery, full React lifecycle", added:"2019-01" },
-  { id:55, name:"Gluestack",            url:"gluestack.io",                        cat:"react",         desc:"Fully free React + React Native component library — one codebase, two platforms", added:"2023-01" },
-  { id:56, name:"React Suite",          url:"rsuitejs.com",                        cat:"react",         desc:"Comprehensive suite of React components for enterprise-grade applications", added:"2017-01" },
-  { id:57, name:"Grommet",              url:"v2.grommet.io",                       cat:"react",         desc:"Accessibility-first React library backed by HPE — battle-tested for enterprise products", added:"2015-01" },
-  { id:95, name:"Angular Material",     url:"material.angular.io",                 cat:"angular",       desc:"Google's official Angular UI library — Material Design components maintained by the Angular core team", added:"2016-01" },
-  { id:96, name:"PrimeNG",              url:"primeng.org",                         cat:"angular",       desc:"The most complete Angular UI component suite — 80+ components, multiple themes, fully MIT-licensed", added:"2016-02" },
-  { id:97, name:"NG-ZORRO",             url:"ng.ant.design",                       cat:"angular",       desc:"Enterprise-class Angular UI library based on Ant Design — 60+ components, MIT-licensed, Alibaba-backed", added:"2017-01" },
-  { id:58, name:"Radix UI",             url:"radix-ui.com",                        cat:"headless",      desc:"Unstyled, fully accessible React components — the foundation of shadcn/ui and many design systems", added:"2021-01" },
+  { id:50, name:"Mantine",              url:"mantine.dev",                         cat:"react",         desc:"Feature-rich React library with 100+ components and 50+ hooks", added:"2021-01" },
+  { id:51, name:"Chakra UI",            url:"chakra-ui.com",                       cat:"react",         desc:"Accessible, composable React components with dark mode out of the box", added:"2020-01" },
+  { id:52, name:"PrimeReact",           url:"primereact.org",                      cat:"react",         desc:"90+ React UI components with rich theming support", added:"2019-01" },
+  { id:53, name:"MUI",                  url:"mui.com",                             cat:"react",         desc:"The most widely used React UI framework — Material Design and Joy UI systems", added:"2016-01" },
+  { id:54, name:"Ant Design",           url:"ant.design",                          cat:"react",         desc:"Enterprise-grade React UI library from Alibaba", added:"2016-02" },
+  { id:75, name:"Tremor",               url:"tremor.so",                           cat:"react",         desc:"35+ React components for dashboards — charts, KPI cards, data tables", added:"2023-01" },
+  { id:80, name:"Fluent UI",            url:"react.fluentui.dev",                 cat:"react",         desc:"Microsoft's React library with 950+ cross-platform components", added:"2020-01" },
+  { id:81, name:"Blueprint",            url:"blueprintjs.com",                     cat:"react",         desc:"Palantir's React UI toolkit for data-dense desktop applications", added:"2017-01" },
+  { id:82, name:"Semantic UI React",    url:"react.semantic-ui.com",              cat:"react",         desc:"Human-friendly declarative React APIs — 100+ components", added:"2016-01" },
+  { id:83, name:"CoreUI React",         url:"coreui.io/react",                    cat:"react",         desc:"Bootstrap-based React library with admin dashboard templates", added:"2018-01" },
+  { id:85, name:"React Bootstrap",      url:"react-bootstrap.github.io",          cat:"react",         desc:"Bootstrap rebuilt as true React components — no jQuery", added:"2019-01" },
+  { id:55, name:"Gluestack",            url:"gluestack.io",                        cat:"react",         desc:"Free React + React Native component library — one codebase, two platforms", added:"2023-01" },
+  { id:56, name:"React Suite",          url:"rsuitejs.com",                        cat:"react",         desc:"Comprehensive React component suite for enterprise applications", added:"2017-01" },
+  { id:57, name:"Grommet",              url:"v2.grommet.io",                       cat:"react",         desc:"Accessibility-first React library backed by HPE", added:"2015-01" },
+  { id:95, name:"Angular Material",     url:"material.angular.io",                 cat:"angular",       desc:"Google's official Angular UI library — Material Design components", added:"2016-01" },
+  { id:96, name:"PrimeNG",              url:"primeng.org",                         cat:"angular",       desc:"The most complete Angular UI component suite — 80+ components, MIT-licensed", added:"2016-02" },
+  { id:97, name:"NG-ZORRO",             url:"ng.ant.design",                       cat:"angular",       desc:"Enterprise Angular UI library based on Ant Design — 60+ components", added:"2017-01" },
+  { id:58, name:"Radix UI",             url:"radix-ui.com",                        cat:"headless",      desc:"Unstyled, fully accessible React components — the foundation of shadcn/ui", added:"2021-01" },
   { id:59, name:"Headless UI",          url:"headlessui.com",                      cat:"headless",      desc:"Completely unstyled, fully accessible UI components by the Tailwind CSS team", added:"2020-01" },
-  { id:60, name:"Base UI",              url:"base-ui.com",                         cat:"headless",      desc:"Unstyled React components from the MUI team — the actively maintained Radix UI alternative in 2026", added:"2023-01" },
-  { id:61, name:"React Aria",           url:"react-spectrum.adobe.com/react-aria", cat:"headless",      desc:"Adobe's React Hooks library for building accessible UI primitives — rock-solid ARIA compliance", added:"2020-01" },
-  { id:84, name:"Ark UI",               url:"ark-ui.com",                          cat:"headless",      desc:"45+ headless, zero-style, framework-agnostic accessible UI primitives for any stack", added:"2023-01" },
-  { id:14, name:"Inspira UI",           url:"inspira-ui.com",                      cat:"multi",         desc:"Animated component library for Vue developers — the Vue equivalent of Magic UI", added:"2024-01" },
-  { id:62, name:"shadcn-svelte",        url:"shadcn-svelte.com",                   cat:"multi",         desc:"shadcn/ui ported to Svelte — all the power and DX, native Svelte syntax", added:"2023-01" },
-  { id:63, name:"Flowbite Svelte",      url:"flowbite-svelte.com",                 cat:"multi",         desc:"Flowbite component library ported to Svelte with full feature parity", added:"2023-02" },
-  { id:76, name:"Float UI",             url:"floatui.com",                         cat:"multi",         desc:"Free multi-framework UI components that work with React, Vue, Svelte, and plain HTML", added:"2023-03" },
-  { id:64, name:"Vuetify",              url:"vuetifyjs.com",                       cat:"multi",         desc:"Material Design component framework for Vue — 80+ components and a massive ecosystem", added:"2016-01" },
-  { id:65, name:"PrimeVue",             url:"primevue.org",                        cat:"multi",         desc:"The ultimate Vue UI component library — 90+ components, 11 themes, and a Figma kit", added:"2019-01" },
-  { id:93, name:"Nuxt UI",              url:"ui.nuxt.com",                         cat:"multi",         desc:"125+ accessible Tailwind CSS components for Vue and Nuxt — v4 made everything completely free including 12 templates and a Figma kit", added:"2026-01" },
-  { id:66, name:"Untitled UI React",    url:"untitledui.com/react",                cat:"collections",   desc:"React implementation of the Untitled UI Figma design system — built with Tailwind v4 and React Aria", added:"2026-01" },
-  { id:67, name:"Tailark",              url:"tailark.com",                         cat:"collections",   desc:"Marketing-focused block library with the most distinctive design language in the shadcn ecosystem", added:"2024-01" },
-  { id:68, name:"React Keep Design",    url:"react.keepdesign.io",                 cat:"collections",   desc:"Design-driven React component collection with strong Figma-to-code workflow support", added:"2023-01" },
-  { id:70, name:"Pattern Craft",        url:"patterncraft.dev",                    cat:"design-tools",  desc:"100+ CSS and Tailwind background patterns, ready to copy-paste into any project", added:"2024-01" },
-  { id:71, name:"Gradienty",            url:"gradienty.codes",                     cat:"design-tools",  desc:"CSS gradient generator and library — browse, customize, and copy gradients in one click", added:"2023-01" },
-  { id:87, name:"Coolors",              url:"coolors.co",                          cat:"design-tools",  desc:"The fastest color palette generator — create, explore, and share beautiful color palettes", added:"2015-01" },
-  { id:91, name:"Blobmaker",            url:"blobmaker.app",                       cat:"design-tools",  desc:"Generate unique SVG blob shapes for backgrounds, illustrations, and decorative elements", added:"2019-01" },
-  { id:94, name:"CSS Clip-Path Maker",  url:"bennettfeely.com/clippy",             cat:"design-tools",  desc:"Visual CSS clip-path shape generator — create complex clip-path values without writing code", added:"2015-01" },
-  { id:86, name:"Google Fonts",         url:"fonts.google.com",                    cat:"design-tools",  desc:"1,500+ free, open-source web fonts — the most widely used font resource on the internet", added:"2010-01" },
-  { id:90, name:"LottieFiles",          url:"lottiefiles.com",                     cat:"design-tools",  desc:"Platform for Lottie animations — create, edit, preview, and share lightweight web animations", added:"2017-01" },
-  { id:72, name:"Lordicon",             url:"lordicon.com",                        cat:"dev-tools",     desc:"Animated Lottie icons with a free tier — 1000+ animated icons ready for web and apps", added:"2020-01" },
-  { id:73, name:"Lucide Icons",         url:"lucide.dev",                          cat:"dev-tools",     desc:"1000+ open-source icons — consistent stroke width, MIT-licensed, React/Vue/Svelte packages included", added:"2021-01" },
-  { id:88, name:"Iconify",              url:"iconify.design",                      cat:"dev-tools",     desc:"250,000+ open-source SVG icons from 150+ icon sets unified under one API and package", added:"2020-01" },
-  { id:89, name:"Squoosh",              url:"squoosh.app",                         cat:"dev-tools",     desc:"Open-source image compression tool that runs entirely in the browser — no upload, fully private", added:"2018-01" },
+  { id:60, name:"Base UI",              url:"base-ui.com",                         cat:"headless",      desc:"Unstyled React components from the MUI team — the active Radix alternative", added:"2023-01" },
+  { id:61, name:"React Aria",           url:"react-spectrum.adobe.com/react-aria", cat:"headless",     desc:"Adobe's React Hooks for accessible UI primitives — rock-solid ARIA compliance", added:"2020-01" },
+  { id:84, name:"Ark UI",               url:"ark-ui.com",                          cat:"headless",      desc:"45+ headless, zero-style, framework-agnostic accessible UI primitives", added:"2023-01" },
+  { id:14, name:"Inspira UI",           url:"inspira-ui.com",                      cat:"multi",         desc:"Animated component library for Vue — the Vue equivalent of Magic UI", added:"2024-01" },
+  { id:62, name:"shadcn-svelte",        url:"shadcn-svelte.com",                   cat:"multi",         desc:"shadcn/ui ported to Svelte — all the power, native Svelte syntax", added:"2023-01" },
+  { id:63, name:"Flowbite Svelte",      url:"flowbite-svelte.com",                 cat:"multi",         desc:"Flowbite component library for Svelte with full feature parity", added:"2023-02" },
+  { id:76, name:"Float UI",             url:"floatui.com",                         cat:"multi",         desc:"Free multi-framework UI components — React, Vue, Svelte, and plain HTML", added:"2023-03" },
+  { id:64, name:"Vuetify",              url:"vuetifyjs.com",                       cat:"multi",         desc:"Material Design component framework for Vue — 80+ components", added:"2016-01" },
+  { id:65, name:"PrimeVue",             url:"primevue.org",                        cat:"multi",         desc:"The ultimate Vue UI component library — 90+ components, 11 themes, Figma kit", added:"2019-01" },
+  { id:93, name:"Nuxt UI",              url:"ui.nuxt.com",                         cat:"multi",         desc:"125+ accessible Tailwind components for Vue and Nuxt — v4 completely free", added:"2026-01" },
+  { id:66, name:"Untitled UI React",    url:"untitledui.com/react",                cat:"collections",   desc:"React implementation of the Untitled UI Figma design system", added:"2026-01" },
+  { id:67, name:"Tailark",              url:"tailark.com",                         cat:"collections",   desc:"Marketing-focused block library with distinctive design language", added:"2024-01" },
+  { id:68, name:"React Keep Design",    url:"react.keepdesign.io",                 cat:"collections",   desc:"Design-driven React component collection with Figma workflow support", added:"2023-01" },
+  { id:70, name:"Pattern Craft",        url:"patterncraft.dev",                    cat:"design-tools",  desc:"100+ CSS and Tailwind background patterns, copy-paste ready", added:"2024-01" },
+  { id:71, name:"Gradienty",            url:"gradienty.codes",                     cat:"design-tools",  desc:"CSS gradient generator — browse, customize, and copy in one click", added:"2023-01" },
+  { id:87, name:"Coolors",              url:"coolors.co",                          cat:"design-tools",  desc:"Fast color palette generator — create, explore, and share beautiful palettes", added:"2015-01" },
+  { id:91, name:"Blobmaker",            url:"blobmaker.app",                       cat:"design-tools",  desc:"Generate unique SVG blob shapes for backgrounds and decorative elements", added:"2019-01" },
+  { id:94, name:"CSS Clip-Path Maker",  url:"bennettfeely.com/clippy",             cat:"design-tools",  desc:"Visual CSS clip-path shape generator — no code needed", added:"2015-01" },
+  { id:86, name:"Google Fonts",         url:"fonts.google.com",                    cat:"design-tools",  desc:"1,500+ free open-source web fonts", added:"2010-01" },
+  { id:90, name:"LottieFiles",          url:"lottiefiles.com",                     cat:"design-tools",  desc:"Create, edit, preview, and share lightweight Lottie web animations", added:"2017-01" },
+  { id:72, name:"Lordicon",             url:"lordicon.com",                        cat:"dev-tools",     desc:"1000+ animated Lottie icons with a free tier", added:"2020-01" },
+  { id:73, name:"Lucide Icons",         url:"lucide.dev",                          cat:"dev-tools",     desc:"1000+ open-source icons — MIT-licensed, React/Vue/Svelte packages included", added:"2021-01" },
+  { id:88, name:"Iconify",              url:"iconify.design",                      cat:"dev-tools",     desc:"250,000+ SVG icons from 150+ icon sets under one unified API", added:"2020-01" },
+  { id:89,  name:"Squoosh",              url:"squoosh.app",                         cat:"dev-tools",     desc:"Open-source browser-based image compression — no upload, fully private", added:"2018-01" },
+
+  // ── NEW: Research-added ──
+  { id:98,  name:"Pines UI",             url:"devdojo.com/pines",                   cat:"tailwind",      desc:"Copy-paste Alpine.js + Tailwind UI library — animations, sliders, modals, tooltips, accordions, zero dependencies", added:"2026-02" },
+  { id:99,  name:"Tamagui",              url:"tamagui.dev",                         cat:"react",         desc:"Cross-platform React + React Native style library and UI kit with an optimizing compiler — write once, run on web and native", added:"2026-02" },
+  { id:100, name:"NativeWind",           url:"nativewind.dev",                      cat:"multi",         desc:"Tailwind CSS as a universal style system for React Native — same utility classes on iOS, Android, and web", added:"2026-02" },
+  { id:101, name:"fffuel",               url:"fffuel.co",                           cat:"design-tools",  desc:"Collection of free SVG generators for gradients, patterns, textures, blob shapes, and cool backgrounds — all copy-paste", added:"2026-02" },
+  { id:102, name:"WebGradients",         url:"webgradients.com",                    cat:"design-tools",  desc:"180 free linear gradients as CSS code, Sketch swatches, and PNG — copy-paste or download instantly", added:"2026-02" },
+  { id:103, name:"CSS Gradient",         url:"cssgradient.io",                      cat:"design-tools",  desc:"Free CSS gradient generator with live preview — create linear, radial, and conic gradients visually", added:"2026-02" },
+  { id:104, name:"Pinemix",              url:"pinemix.dev",                         cat:"tailwind",      desc:"Free open-source Alpine.js components styled with Tailwind CSS — accessible, interactive, copy-paste ready", added:"2026-02" },
+  { id:105, name:"FrontendBaba",         url:"frontendbaba.dev",                    cat:"dev-tools",     desc:"Free browser-based frontend tools — CSS gradient, clip-path, blob, glassmorphism, shadow generators and image utilities", added:"2026-02" },
 ];
 
 const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
@@ -208,36 +216,30 @@ const VERIFIED_DATE = "August 2026";
 const RECIPIENT     = "your@email.com";
 
 const CAT_META = {
-  animated:      { label:"Animated",      dBg:"rgba(239,120,60,0.15)", dTx:"#fdb07a", dDot:"#ef7840", lBg:"rgba(194,65,12,0.09)", lTx:"#9a3412", lDot:"#ea580c" },
-  shadcn:        { label:"shadcn",        dBg:"rgba(34,197,94,0.12)",  dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.09)",  lTx:"#14532d", lDot:"#16a34a" },
-  tailwind:      { label:"Tailwind",      dBg:"rgba(14,165,233,0.12)", dTx:"#7dd3fc", dDot:"#0ea5e9", lBg:"rgba(2,132,199,0.09)",  lTx:"#075985", lDot:"#0284c7" },
-  css:           { label:"CSS / SVG",     dBg:"rgba(251,146,60,0.12)", dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
-  react:         { label:"React",         dBg:"rgba(96,165,250,0.12)", dTx:"#93c5fd", dDot:"#60a5fa", lBg:"rgba(37,99,235,0.09)",  lTx:"#1e3a8a", lDot:"#2563eb" },
-  angular:       { label:"Angular",       dBg:"rgba(220,53,69,0.14)",  dTx:"#fca5a5", dDot:"#ef4444", lBg:"rgba(185,28,28,0.09)",  lTx:"#991b1b", lDot:"#dc2626" },
-  headless:      { label:"Headless",      dBg:"rgba(248,113,113,0.13)",dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(159,18,57,0.09)",  lTx:"#881337", lDot:"#e11d48" },
-  multi:         { label:"Vue / Svelte",  dBg:"rgba(52,211,153,0.12)", dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.09)",   lTx:"#065f46", lDot:"#059669" },
-  collections:   { label:"Collection",    dBg:"rgba(245,158,11,0.14)", dTx:"#fcd34d", dDot:"#f59e0b", lBg:"rgba(180,83,9,0.09)",   lTx:"#92400e", lDot:"#d97706" },
-  "design-tools":{ label:"Design Tool",   dBg:"rgba(245,100,60,0.14)", dTx:"#fdb09a", dDot:"#f56040", lBg:"rgba(180,50,20,0.09)",  lTx:"#7c1d06", lDot:"#dc4020" },
-  "dev-tools":   { label:"Dev Tool",      dBg:"rgba(20,184,166,0.12)", dTx:"#5eead4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.09)", lTx:"#134e4a", lDot:"#0d9488" },
+  animated:      { label:"Animated",     dBg:"rgba(239,120,60,0.15)",  dTx:"#fdb07a", dDot:"#ef7840", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
+  shadcn:        { label:"shadcn",       dBg:"rgba(34,197,94,0.12)",   dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.09)",  lTx:"#14532d", lDot:"#16a34a" },
+  tailwind:      { label:"Tailwind",     dBg:"rgba(14,165,233,0.13)",  dTx:"#7dd3fc", dDot:"#0ea5e9", lBg:"rgba(2,132,199,0.09)",  lTx:"#075985", lDot:"#0284c7" },
+  css:           { label:"CSS / SVG",    dBg:"rgba(251,146,60,0.13)",  dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
+  react:         { label:"React",        dBg:"rgba(96,165,250,0.13)",  dTx:"#93c5fd", dDot:"#60a5fa", lBg:"rgba(37,99,235,0.09)",  lTx:"#1e3a8a", lDot:"#2563eb" },
+  angular:       { label:"Angular",      dBg:"rgba(220,53,69,0.14)",   dTx:"#fca5a5", dDot:"#ef4444", lBg:"rgba(185,28,28,0.09)",  lTx:"#991b1b", lDot:"#dc2626" },
+  headless:      { label:"Headless",     dBg:"rgba(248,113,113,0.13)", dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(159,18,57,0.09)",  lTx:"#881337", lDot:"#e11d48" },
+  multi:         { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.12)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.09)",   lTx:"#065f46", lDot:"#059669" },
+  collections:   { label:"Collection",   dBg:"rgba(245,158,11,0.14)",  dTx:"#fcd34d", dDot:"#f59e0b", lBg:"rgba(180,83,9,0.09)",   lTx:"#92400e", lDot:"#d97706" },
+  "design-tools":{ label:"Design",       dBg:"rgba(245,100,60,0.14)",  dTx:"#fdb09a", dDot:"#f56040", lBg:"rgba(180,50,20,0.09)",  lTx:"#7c1d06", lDot:"#dc4020" },
+  "dev-tools":   { label:"Dev Tool",     dBg:"rgba(20,184,166,0.13)",  dTx:"#5eead4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.09)", lTx:"#134e4a", lDot:"#0d9488" },
 };
 
-// ── Empty state SVG ────────────────────────────────────────────────
-function EmptyState({ query, onClear, color }) {
+function EmptyState({ query, fw, onClear, t }) {
   return (
-    <div style={{ textAlign:"center", padding:"4rem 0 3rem" }}>
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style={{ margin:"0 auto 1rem", display:"block", opacity:0.35 }}>
-        <circle cx="28" cy="28" r="18" stroke={color} strokeWidth="2.5"/>
-        <path d="M41 41L54 54" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M22 28h12M28 22v12" stroke={color} strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+    <div style={{ textAlign:"center", padding:"4rem 1rem 3rem" }}>
+      <svg width="56" height="56" viewBox="0 0 64 64" fill="none" style={{ margin:"0 auto 1rem", display:"block", opacity:0.3 }}>
+        <circle cx="28" cy="28" r="18" stroke={t.desc} strokeWidth="2.5"/>
+        <path d="M41 41L54 54" stroke={t.desc} strokeWidth="2.5" strokeLinecap="round"/>
+        <path d="M22 28h12M28 22v12" stroke={t.desc} strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
       </svg>
-      <div style={{ fontSize:14, fontWeight:600, color, marginBottom:"0.35rem" }}>
-        No results for "{query}"
-      </div>
-      <div style={{ fontSize:12, color, opacity:0.6, marginBottom:"1rem" }}>
-        Try a different keyword or framework filter
-      </div>
-      <button onClick={onClear}
-        style={{ fontSize:12, color:"#e05050", background:"none", border:"1px solid rgba(224,80,80,0.35)", borderRadius:8, padding:"0.35rem 0.9rem", cursor:"pointer" }}>
+      <div style={{ fontSize:15, fontWeight:600, color:t.title, marginBottom:"0.3rem" }}>No results found</div>
+      <div style={{ fontSize:13, color:t.desc, marginBottom:"1.25rem" }}>Try adjusting your filters or search term</div>
+      <button onClick={onClear} style={{ fontSize:13, fontWeight:500, color:t.acc, background:"none", border:`1px solid ${t.acc}40`, borderRadius:8, padding:"0.4rem 1rem", cursor:"pointer" }}>
         Clear all filters
       </button>
     </div>
@@ -246,79 +248,85 @@ function EmptyState({ query, onClear, color }) {
 
 export default function App() {
   const init = getUrlParams();
-  const [active,    setActive]    = useState(init.cat);
-  const [query,     setQuery]     = useState(init.q);
-  const [fw,        setFw]        = useState(init.fw);
-  const [sort,      setSort]      = useState("default");
-  const [dark,      setDark]      = useState(getSavedTheme);
-  const [suggOpen,  setSuggOpen]  = useState(false);
-  const [copiedId,  setCopiedId]  = useState(null);
+  const [active,      setActive]      = useState(init.cat);
+  const [query,       setQuery]       = useState(init.q);
+  const [debouncedQ,  setDebouncedQ]  = useState(init.q);
+  const [fw,          setFw]          = useState(init.fw);
+  const [dark,        setDark]        = useState(getSavedTheme);
+  const [filterOpen,  setFilterOpen]  = useState(false);
+  const [filterClosing, setFilterClosing] = useState(false);
+  const [suggOpen,    setSuggOpen]    = useState(false);
+  const [copiedId,    setCopiedId]    = useState(null);
   const [copiedShare, setCopiedShare] = useState(false);
-  const [randomId,  setRandomId]  = useState(null);
-  const [showTop,   setShowTop]   = useState(false);
-  const [floatVis,  setFloatVis]  = useState(false);
-  const [recent,    setRecent]    = useState(getRecent);
-  const [focusIdx,  setFocusIdx]  = useState(-1);
-  const [name,      setName]      = useState("");
-  const [siteName,  setSiteName]  = useState("");
-  const [siteUrl,   setSiteUrl]   = useState("");
-  const [reason,    setReason]    = useState("");
-  const [sent,      setSent]      = useState(false);
-  const searchRef  = useRef(null);
-  const listRef    = useRef(null);
+  const [randomId,    setRandomId]    = useState(null);
+  const [showTop,     setShowTop]     = useState(false);
+  const [floatVis,    setFloatVis]    = useState(false);
+  const [recent,      setRecent]      = useState(getRecent);
+  const searchRef = useRef(null);
+  const listRef   = useRef(null);
   const D = dark;
 
-  // persist theme
   useEffect(() => { saveTheme(dark); }, [dark]);
-
-  // URL sync
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(query), 150);
+    return () => clearTimeout(t);
+  }, [query]);
   useEffect(() => { setUrlParams(active, query, fw); }, [active, query, fw]);
-
-  // scroll
+  useEffect(() => {
+    const parts = [];
+    if (active !== "all") parts.push(CATEGORIES.find(c => c.id === active)?.label || active);
+    if (fw !== "all") parts.push(fw);
+    if (query) parts.push(`"${query}"`);
+    document.title = parts.length > 0 ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
+  }, [active, fw, query]);
   useEffect(() => {
     const fn = () => { const y = window.scrollY; setShowTop(y > 500); setFloatVis(y > 400); };
-    window.addEventListener("scroll", fn, { passive: true });
+    window.addEventListener("scroll", fn, { passive:true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
-
-  // keyboard shortcuts
   useEffect(() => {
     const fn = (e) => {
-      const tag = document.activeElement?.tagName;
-      const inInput = ["INPUT","TEXTAREA","SELECT"].includes(tag);
-      if (e.key === "/" && !inInput) { e.preventDefault(); searchRef.current?.focus(); return; }
-      if (e.key === "Escape") { setQuery(""); setFw("all"); searchRef.current?.blur(); return; }
-      // arrow key card navigation
-      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && !inInput) {
+      const inInput = ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
+      if (e.key === "/" && !inInput) { e.preventDefault(); searchRef.current?.focus(); }
+      if (e.key === "Escape") {
+        setQuery(""); closeDrawer(); searchRef.current?.blur();
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (inInput) return;
         e.preventDefault();
-        setFocusIdx(i => {
-          const cards = listRef.current?.querySelectorAll("a[data-card]");
-          if (!cards?.length) return i;
-          const next = e.key === "ArrowDown" ? Math.min(i + 1, cards.length - 1) : Math.max(i - 1, 0);
-          cards[next]?.focus();
-          return next;
-        });
+        const cards = listRef.current?.querySelectorAll("a[data-card]");
+        if (!cards?.length) return;
+        const cur = Array.from(cards).indexOf(document.activeElement);
+        const next = e.key === "ArrowDown" ? Math.min(cur+1, cards.length-1) : Math.max(cur-1, 0);
+        cards[next]?.focus();
       }
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
   }, []);
 
-  function changeActive(id) { setActive(id); setRandomId(null); setFocusIdx(-1); }
+  // close filter drawer on outside click
+  useEffect(() => {
+    if (!filterOpen) return;
+    const fn = (e) => {
+      if (!e.target.closest("[data-filter-drawer]") && !e.target.closest("[data-filter-btn]")) {
+        closeDrawer();
+      }
+    };
+    document.addEventListener("mousedown", fn);
+    return () => document.removeEventListener("mousedown", fn);
+  }, [filterOpen]);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
-    let list = LIBS.filter(l => {
+    const q = debouncedQ.toLowerCase();
+    return LIBS.filter(l => {
       const matchCat = active === "all" || l.cat === active;
       const matchQ   = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q);
       const stacks   = LIB_STACKS[l.id] || [];
       const matchFw  = fw === "all" || stacks.includes(fw);
       return matchCat && matchQ && matchFw;
     });
-    if (sort === "alpha") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
-    if (sort === "new")   list = [...list].sort((a, b) => (NEW_IDS.has(b.id)?1:0)-(NEW_IDS.has(a.id)?1:0));
-    return list;
-  }, [active, query, fw, sort]);
+  }, [active, debouncedQ, fw]);
 
   const counts = useMemo(() => {
     const c = { all: LIBS.length };
@@ -326,19 +334,15 @@ export default function App() {
     return c;
   }, []);
 
-  function pickRandom() {
-    const pool = filtered.length > 1 ? filtered.filter(l => l.id !== randomId) : filtered;
-    if (!pool.length) return;
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    setRandomId(pick.id);
-    setTimeout(() => document.getElementById(`lib-${pick.id}`)?.scrollIntoView({ behavior:"smooth", block:"center" }), 60);
-  }
+  const activeFilters = (active !== "all" ? 1 : 0) + (fw !== "all" ? 1 : 0) + (query ? 1 : 0);
 
-  function openAll() {
-    filtered.slice(0, 10).forEach((lib, i) => {
-      setTimeout(() => window.open(`https://${lib.url}`, "_blank"), i * 120);
-    });
+  function closeDrawer() {
+    setFilterClosing(true);
+    setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 220);
   }
+  function clearAll() { setQuery(""); setFw("all"); setActive("all"); closeDrawer(); }
+
+  function applyFilters() { closeDrawer(); }
 
   function copyUrl(url, id, e) {
     e.preventDefault(); e.stopPropagation();
@@ -355,113 +359,128 @@ export default function App() {
     });
   }
 
-  function handleVisit(lib) {
-    addRecent(lib);
-    setRecent(getRecent());
-  }
+  function handleVisit(lib) { addRecent(lib); setRecent(getRecent()); }
 
   function handleSuggest() {
     if (!siteName.trim() || !siteUrl.trim()) return;
     const s = x => x.trim();
     const rawUrl = s(siteUrl).startsWith("http") ? s(siteUrl) : `https://${s(siteUrl)}`;
     const subject = encodeURIComponent(`UI Library Suggestion: ${s(siteName)}`);
-    const body = encodeURIComponent(`Hi,\n\nI'd like to suggest a resource.\n\nName: ${s(siteName)}\nURL:  ${rawUrl}\n${s(reason)?`\nWhy it's useful:\n${s(reason)}\n`:""}${s(name)?`\nSuggested by: ${s(name)}`:""}\n\nThanks!`);
+    const body = encodeURIComponent(`Name: ${s(siteName)}\nURL: ${rawUrl}\n${s(reason)?`\nWhy: ${s(reason)}`:""}${s(name)?`\nFrom: ${s(name)}`:""}`);
     window.open(`mailto:${RECIPIENT}?subject=${subject}&body=${body}`, "_blank");
     setSent(true);
     setTimeout(() => { setSent(false); setName(""); setSiteName(""); setSiteUrl(""); setReason(""); }, 3000);
   }
 
+  const [name, setName]         = useState("");
+  const [siteName, setSiteName] = useState("");
+  const [siteUrl, setSiteUrl]   = useState("");
+  const [reason, setReason]     = useState("");
+  const [sent, setSent]         = useState(false);
+
   // ── Theme tokens ───────────────────────────────────────────────
+  // DARK: Crimson palette | LIGHT: Sand palette
+  // Dark uses same warmth/saturation family as light, just inverted brightness
   const t = {
-    // ── DARK: Crimson — near-black + red-orange accent (Option 3) ──
-    // ── LIGHT: Sand — warm cream + amber accent (Option 4) ──
-    bg:         D?"#180f0f"                        :"#fdf6ed",
-    hBg:        D?"rgba(24,15,15,0.93)"            :"rgba(253,246,237,0.95)",
-    hBorder:    D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
-    card:       D?"#211414"                        :"#ffffff",
-    cBorder:    D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
-    cHover:     D?"#2a1818"                        :"#fff8f0",
-    cHBorder:   D?"rgba(224,80,80,0.45)"           :"#c87820",
-    cFocus:     D?"rgba(240,96,96,0.9)"            :"rgba(200,120,32,0.9)",
-    hlBg:       D?"rgba(224,80,80,0.1)"            :"rgba(200,120,32,0.08)",
-    hlBorder:   D?"rgba(224,80,80,0.55)"           :"rgba(200,120,32,0.5)",
-    title:      D?"#f5e8e8"                        :"#2a1f0f",
-    desc:       D?"#c4999a"                        :"#5c4a30",
-    url:        D?"#7a4f50"                        :"#a08060",
-    eyebrow:    D?"#7a4f50"                        :"#a08060",
-    tabBg:      D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.04)",
-    tabABg:     D?"rgba(224,80,80,0.15)"           :"rgba(200,120,32,0.12)",
-    tabC:       D?"#a87070"                        :"#7a5a30",
-    tabAC:      D?"#f5c0c0"                        :"#7a4010",
-    tabAB:      D?"rgba(224,80,80,0.4)"            :"rgba(200,120,32,0.45)",
-    sBg:        D?"rgba(255,255,255,0.06)"         :"#ffffff",
-    sBorder:    D?"rgba(255,255,255,0.1)"          :"#e8ddd0",
-    sColor:     D?"#f5e8e8"                        :"#2a1f0f",
-    sPh:        D?"#7a4f50"                        :"#a08060",
-    arrow:      D?"#4a2828"                        :"#c0a070",
-    foot:       D?"#6a3838"                        :"#a08060",
-    h1:         D?"linear-gradient(135deg,#f5e8e8 0%,#f06060 100%)":undefined,
-    h1C:        D?undefined                        :"#2a1f0f",
-    glow:       D?"radial-gradient(ellipse 70% 35% at 50% -5%,rgba(224,80,80,0.18) 0%,transparent 70%)":"none",
-    ctrl:       D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.04)",
-    ctrlB:      D?"rgba(255,255,255,0.09)"         :"#e8ddd0",
-    div:        D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
-    copyBg:     D?"rgba(255,255,255,0.05)"         :"rgba(0,0,0,0.03)",
-    float:      D?"#c03030"                        :"#c87820",
-    stBg:       D?"rgba(255,255,255,0.07)"         :"rgba(0,0,0,0.04)",
-    stTx:       D?"#8a5858"                        :"#8a6840",
-    suggBg:     D?"#211414"                        :"#ffffff",
-    suggB:      D?"rgba(255,255,255,0.07)"         :"#e8ddd0",
-    suggHBg:    D?"rgba(224,80,80,0.07)"           :"rgba(200,120,32,0.05)",
-    suggHB:     D?"rgba(224,80,80,0.18)"           :"rgba(200,120,32,0.2)",
-    fade:       D?"linear-gradient(to right,transparent,rgba(24,15,15,0.93))":"linear-gradient(to right,transparent,rgba(253,246,237,0.95))",
-    iBg:        D?"rgba(255,255,255,0.05)"         :"#fdf0e0",
-    iBorder:    D?"rgba(255,255,255,0.1)"          :"#e8ddd0",
-    iColor:     D?"#f5e8e8"                        :"#2a1f0f",
-    label:      D?"#c49090"                        :"#5c4a30",
-    acc:        D?"#e05050"                        :"#c87820",
-    submit:     D?"#c03030"                        :"#c87820",
-    nBg:        D?"rgba(224,80,80,0.12)"           :"rgba(200,120,32,0.1)",
-    nTx:        D?"#f5a0a0"                        :"#7a4010",
-    hlMark:     D?"rgba(224,80,80,0.25)"           :"rgba(200,120,32,0.2)",
-    recentBg:   D?"rgba(255,255,255,0.02)"         :"rgba(0,0,0,0.02)",
-    recentB:    D?"rgba(255,255,255,0.06)"         :"#e8ddd0",
+    // Base
+    bg:         D ? "#180f0f"                         : "#fdf6ed",
+    hBg:        D ? "rgba(24,15,15,0.95)"             : "rgba(253,246,237,0.97)",
+    hBorder:    D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
+    // Cards
+    card:       D ? "#211414"                         : "#ffffff",
+    cardBorder: D ? "rgba(255,200,180,0.08)"          : "#ede0d0",
+    cardHover:  D ? "#2a1818"                         : "#fff8f0",
+    cardHBorder:D ? "rgba(224,80,80,0.4)"             : "#c87820",
+    cardShadow: D ? "0 1px 4px rgba(0,0,0,0.4)"      : "0 1px 4px rgba(120,80,0,0.07)",
+    cardHShadow:D ? "0 6px 24px rgba(0,0,0,0.5)"     : "0 6px 20px rgba(120,80,0,0.12)",
+    hlBg:       D ? "rgba(224,80,80,0.1)"             : "rgba(200,120,32,0.08)",
+    hlBorder:   D ? "rgba(224,80,80,0.55)"            : "rgba(200,120,32,0.5)",
+    // Text hierarchy — WCAG AA on both
+    title:      D ? "#f5e8e8"                         : "#2a1f0f",   // AAA contrast
+    desc:       D ? "#c49090"                         : "#5c4a30",   // AA contrast
+    url:        D ? "#7a4f50"                         : "#a08060",
+    eyebrow:    D ? "#6a3838"                         : "#8a6040",
+    // Controls
+    ctrl:       D ? "rgba(255,255,255,0.05)"          : "rgba(0,0,0,0.04)",
+    ctrlBorder: D ? "rgba(255,200,180,0.12)"          : "#e0cdb8",
+    ctrlText:   D ? "#c49090"                         : "#7a5a30",
+    // Search
+    sBg:        D ? "rgba(255,255,255,0.06)"          : "#ffffff",
+    sBorder:    D ? "rgba(255,200,180,0.15)"          : "#e0cdb8",
+    sColor:     D ? "#f5e8e8"                         : "#2a1f0f",
+    sPh:        D ? "#7a4f50"                         : "#b09070",
+    // Tabs (inside filter drawer)
+    tabBg:      D ? "rgba(255,255,255,0.04)"          : "rgba(0,0,0,0.03)",
+    tabABg:     D ? "rgba(224,80,80,0.15)"            : "rgba(200,120,32,0.12)",
+    tabC:       D ? "#a87070"                         : "#7a5a30",
+    tabAC:      D ? "#f5c0c0"                         : "#6a3800",
+    tabABorder: D ? "rgba(224,80,80,0.4)"             : "rgba(200,120,32,0.45)",
+    // Accent
+    acc:        D ? "#e05050"                         : "#c87820",
+    accHover:   D ? "#f06060"                         : "#b06810",
+    // Drawer
+    drawerBg:   D ? "#1e1010"                         : "#fefaf4",
+    drawerBorder:D? "rgba(255,200,180,0.1)"           : "#e8ddd0",
+    // Misc
+    div:        D ? "rgba(255,200,180,0.08)"          : "#ede0d0",
+    arrow:      D ? "#4a2828"                         : "#c0a070",
+    foot:       D ? "#6a3838"                         : "#a08060",
+    h1:         D ? "linear-gradient(135deg,#f5e8e8 0%,#e05050 100%)" : undefined,
+    h1C:        D ? undefined                         : "#2a1f0f",
+    glow:       D ? "radial-gradient(ellipse 70% 35% at 50% -5%,rgba(200,40,40,0.18) 0%,transparent 70%)" : "none",
+    float:      D ? "#c03030"                         : "#c87820",
+    stBg:       D ? "rgba(255,255,255,0.07)"          : "rgba(0,0,0,0.04)",
+    stTx:       D ? "#8a5858"                         : "#8a6840",
+    nBg:        D ? "rgba(200,120,32,0.14)"           : "rgba(200,120,32,0.1)",
+    nTx:        D ? "#f5c060"                         : "#7a4010",
+    hlMark:     D ? "rgba(224,80,80,0.25)"            : "rgba(200,120,32,0.2)",
+    recentBg:   D ? "rgba(255,255,255,0.02)"          : "rgba(0,0,0,0.02)",
+    recentB:    D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
+    filterBadge:D ? "#e05050"                         : "#c87820",
+    // form inputs
+    iBg:        D ? "rgba(255,255,255,0.05)"          : "#fdf0e0",
+    iBorder:    D ? "rgba(255,200,180,0.15)"          : "#e0cdb8",
+    iColor:     D ? "#f5e8e8"                         : "#2a1f0f",
+    label:      D ? "#c49090"                         : "#5c4a30",
+    submit:     D ? "#c03030"                         : "#c87820",
+    suggBg:     D ? "#211414"                         : "#ffffff",
+    suggB:      D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
+    suggHBg:    D ? "rgba(224,80,80,0.07)"            : "rgba(200,120,32,0.05)",
+    suggHB:     D ? "rgba(224,80,80,0.18)"            : "rgba(200,120,32,0.2)",
+    fade:       D ? "linear-gradient(to right,transparent,rgba(24,15,15,0.95))" : "linear-gradient(to right,transparent,rgba(253,246,237,0.97))",
   };
 
-  const iStyle = { width:"100%", padding:"0.52rem 0.8rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:9, color:t.iColor, fontSize:13.5, outline:"none", boxSizing:"border-box", fontFamily:"inherit" };
-  const ctrlBtn = (active=false, extra={}) => ({
-    display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.28rem 0.62rem",
-    borderRadius:7, border:`1px solid ${active ? t.tabAB : t.ctrlB}`,
-    background: active ? t.tabABg : t.ctrl,
-    color: active ? t.tabAC : t.tabC,
-    fontSize:11.5, fontWeight:500, cursor:"pointer", whiteSpace:"nowrap", ...extra
-  });
-
-  const activeFilters = (active !== "all" ? 1 : 0) + (fw !== "all" ? 1 : 0) + (query ? 1 : 0);
+  const iStyle = { width:"100%", padding:"0.5rem 0.75rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:8, color:t.iColor, fontSize:13, outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.15s" };
 
   return (
-    <div style={{ minHeight:"100vh", background:t.bg, color:t.title, fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif", transition:"background 0.25s,color 0.25s", paddingBottom: floatVis ? "5.5rem" : "2rem" }}>
+    <div style={{ minHeight:"100vh", background:t.bg, color:t.title, fontFamily:"'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", transition:"background 0.2s,color 0.2s" }}>
       <style>{`
-        @keyframes fadeIn  { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes blob1   { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.15)} 66%{transform:translate(-40px,30px) scale(0.92)} }
-        @keyframes blob2   { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-70px,50px) scale(1.1)} 66%{transform:translate(50px,-30px) scale(0.95)} }
-        @keyframes blob3   { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,60px) scale(0.9)} 66%{transform:translate(-50px,-40px) scale(1.12)} }
+        @keyframes fadeIn    { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeOut   { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-4px)} }
+        .recent-block { animation:fadeIn 0.2s ease; }
+        @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideDown { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(100%)} }
+        @keyframes blob1    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.15)} 66%{transform:translate(-40px,30px) scale(0.92)} }
+        @keyframes blob2    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-70px,50px) scale(1.1)} 66%{transform:translate(50px,-30px) scale(0.95)} }
+        @keyframes blob3    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,60px) scale(0.9)} 66%{transform:translate(-50px,-40px) scale(1.12)} }
         ::-webkit-scrollbar { display:none }
         * { box-sizing:border-box }
-        .lib-card { transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.14s, border-color 0.14s; }
-        .lib-card:not([data-pinned]):hover { transform: translateY(-2px); }
-        .lib-card[data-pinned] { transform: none !important; }
-        .lib-card a:focus { outline: none; }
-        .lib-card:focus-within:not([data-pinned]) { outline: 2px solid var(--focus-color, #e05050); outline-offset: 2px; }
-        mark { background: transparent; }
-        @media (max-width: 600px) {
-          .header-inner { flex-direction: column !important; align-items: stretch !important; }
-          .ctrl-row { justify-content: flex-start !important; flex-wrap: wrap !important; }
-          .search-box { width: 100% !important; }
+        .card { transition:transform 0.18s ease,box-shadow 0.18s ease,background 0.12s,border-color 0.12s; }
+        .card:not([data-pinned]):hover { transform:translateY(-2px); }
+        .card:not([data-pinned]):active { transform:scale(0.985) translateY(0px) !important; transition:transform 0.08s ease !important; }
+        .card[data-pinned] { transform:none !important; }
+        .card:focus-within { outline:2px solid ${t.acc}; outline-offset:2px; }
+        .card a:focus { outline:none; }
+        mark { background:transparent; }
+        .copy-wrap .copy-tip { opacity:0; transition:opacity 0.15s; }
+        .copy-wrap:hover .copy-tip { opacity:1; }
+        @media (max-width:580px) {
+          .nav-row { flex-direction:column !important; gap:0.5rem !important; }
+          .search-wrap { width:100% !important; }
         }
       `}</style>
 
-      {/* Aurora */}
+      {/* Aurora — dark only */}
       {D && (
         <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, overflow:"hidden" }}>
           <div style={{ position:"absolute", inset:0, background:t.glow }} />
@@ -471,122 +490,191 @@ export default function App() {
         </div>
       )}
 
-      {/* ── HEADER ──────────────────────────────────────────── */}
-      <header style={{ background:t.hBg, borderBottom:`1px solid ${t.hBorder}`, padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(14px)", WebkitBackdropFilter:"blur(14px)" }}>
-        <div style={{ maxWidth:860, margin:"0 auto", padding:"0.6rem 0 0.5rem" }}>
+      {/* ── HEADER — single compact row ───────────────────── */}
+      <header style={{ background:t.hBg, borderBottom:`1px solid ${t.hBorder}`, padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)" }}>
+        <div style={{ maxWidth:900, margin:"0 auto" }}>
+          <div className="nav-row" style={{ display:"flex", alignItems:"center", gap:"0.75rem", height:52 }}>
 
-          {/* top row */}
-          <div className="header-inner" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem" }}>
-            <div style={{ minWidth:0 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:"0.4rem", marginBottom:"0.2rem" }}>
-                <span style={{ width:6, height:6, borderRadius:"50%", background:t.acc, boxShadow:D?`0 0 8px ${t.acc}`:"none", flexShrink:0 }} />
-                <span style={{ fontSize:9, letterSpacing:"0.14em", textTransform:"uppercase", color:t.eyebrow, fontWeight:600 }}>Free & Open Source</span>
-              </div>
-              <h1 style={{ fontSize:"clamp(1rem,3.5vw,1.45rem)", fontWeight:800, margin:0, letterSpacing:"-0.03em", lineHeight:1.1, ...(D?{background:t.h1,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}:{color:t.h1C}) }}>
-                UI Component Libraries
+            {/* Logo / Title */}
+            <div style={{ flex:1, minWidth:0 }}>
+              <h1 style={{
+                fontSize:"1rem", fontWeight:800, margin:0, letterSpacing:"-0.02em", lineHeight:1,
+                whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+                ...(D
+                  ? { background:t.h1, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }
+                  : { color:t.h1C }
+                )
+              }}>
+                UI Libraries
               </h1>
-              <p style={{ marginTop:"0.15rem", color:t.desc, fontSize:"0.7rem", lineHeight:1.4 }}>
-                {LIBS.length} curated free resources — verified {VERIFIED_DATE}
+              <p style={{ margin:0, fontSize:"0.65rem", color:t.eyebrow, lineHeight:1, marginTop:2 }}>
+                {LIBS.length} free resources · {VERIFIED_DATE}
               </p>
             </div>
 
-            <div style={{ display:"flex", flexDirection:"column", gap:"0.3rem", alignItems:"flex-end", flexShrink:0 }}>
-              {/* control buttons */}
-              <div className="ctrl-row" style={{ display:"flex", gap:"0.25rem", flexWrap:"wrap", justifyContent:"flex-end" }}>
-                <button onClick={() => setDark(d => !d)} style={ctrlBtn()}>
-                  {D ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                     : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
-                  {D?"Light":"Dark"}
-                </button>
-                <select value={sort} onChange={e => setSort(e.target.value)} style={{ ...ctrlBtn(), appearance:"none", paddingRight:"0.5rem" }}>
-                  <option value="default">Default</option>
-                  <option value="alpha">A → Z</option>
-                  <option value="new">New first</option>
-                </select>
-                <button onClick={pickRandom} style={ctrlBtn()} title="Random library (highlights it in the list)">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
-                  Random
-                </button>
-                <button onClick={openAll} style={ctrlBtn()} title={`Open all ${filtered.length} results in new tabs (max 10)`}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  Open all
-                </button>
-                {/* Share filtered view */}
-                <button onClick={shareFilter} style={ctrlBtn(copiedShare)} title="Copy link to current filtered view">
-                  {copiedShare
-                    ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                    : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
-                  {copiedShare ? "Copied!" : "Share"}
-                </button>
-              </div>
-              {/* search */}
-              <div className="search-box" style={{ position:"relative", width:210 }}>
-                <svg style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", color:t.sPh, pointerEvents:"none" }} width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                </svg>
-                <input ref={searchRef} type="text" placeholder="Search… ( press / )" value={query} onChange={e => { setQuery(e.target.value); setFocusIdx(-1); }}
-                  style={{ width:"100%", padding:"0.38rem 1.75rem 0.38rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:7, color:t.sColor, fontSize:11.5, outline:"none", fontFamily:"inherit", transition:"border-color 0.15s" }}
-                  onFocus={e => e.target.style.borderColor = t.acc}
-                  onBlur={e => e.target.style.borderColor = t.sBorder}
-                />
-                {query && <button onClick={() => setQuery("")} style={{ position:"absolute", right:7, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:t.sPh, padding:2, fontSize:10, lineHeight:1 }}>✕</button>}
-              </div>
+            {/* Search */}
+            <div className="search-wrap" style={{ position:"relative", width:200, flexShrink:0 }}>
+              <svg style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", color:t.sPh, pointerEvents:"none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input ref={searchRef} type="text" placeholder="Search ( / )" value={query}
+                onChange={e => setQuery(e.target.value)}
+                style={{ width:"100%", padding:"0.42rem 1.75rem 0.42rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:8, color:t.sColor, fontSize:12.5, outline:"none", fontFamily:"inherit", transition:"border-color 0.15s" }}
+                onFocus={e => e.target.style.borderColor = t.acc}
+                onBlur={e => e.target.style.borderColor = t.sBorder}
+              />
+              {query && (
+                <button onClick={() => setQuery("")} style={{ position:"absolute", right:7, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:t.sPh, padding:2, lineHeight:1, fontSize:11 }}>✕</button>
+              )}
             </div>
-          </div>
 
-          {/* ── Framework filter pills ── */}
-          <div style={{ display:"flex", gap:"0.18rem", marginTop:"0.45rem", overflowX:"auto", scrollbarWidth:"none", paddingBottom:"1px" }}>
-            {FRAMEWORKS.map(f => {
-              const on = fw === f.id;
-              return (
-                <button key={f.id} onClick={() => { setFw(f.id); setFocusIdx(-1); }}
-                  style={{ ...ctrlBtn(on), fontSize:10.5, padding:"0.2rem 0.55rem", borderRadius:999, flexShrink:0 }}>
-                  {f.label}
-                </button>
-              );
-            })}
-            {/* active filter count + clear all */}
-            {activeFilters > 0 && (
-              <button onClick={() => { setQuery(""); setFw("all"); setActive("all"); }}
-                style={{ fontSize:10.5, padding:"0.2rem 0.55rem", borderRadius:999, border:`1px solid rgba(239,68,68,0.3)`, background:"rgba(239,68,68,0.08)", color:"#f87171", cursor:"pointer", flexShrink:0, fontWeight:500 }}>
-                ✕ Clear {activeFilters} filter{activeFilters > 1 ? "s" : ""}
-              </button>
-            )}
-          </div>
+            {/* Filter button */}
+            <button data-filter-btn onClick={() => filterOpen ? closeDrawer() : setFilterOpen(true)}
+              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.42rem 0.85rem", borderRadius:8, border:`1px solid ${filterOpen ? t.acc : t.ctrlBorder}`, background: filterOpen ? `${t.acc}18` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:12.5, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative" }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+              </svg>
+              Filters
+              {activeFilters > 0 && (
+                <span style={{ position:"absolute", top:-5, right:-5, width:16, height:16, borderRadius:"50%", background:t.filterBadge, color:"#fff", fontSize:9, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {activeFilters}
+                </span>
+              )}
+            </button>
 
-          {/* ── Category tabs ── */}
-          <div style={{ position:"relative", marginTop:"0.3rem" }}>
-            <div style={{ display:"flex", gap:"0.2rem", overflowX:"auto", paddingBottom:"2px", scrollbarWidth:"none" }}>
-              {CATEGORIES.map(cat => {
-                const on = active === cat.id;
-                return (
-                  <button key={cat.id} onClick={() => changeActive(cat.id)}
-                    style={{ padding:"0.25rem 0.62rem", borderRadius:6, border:"none", cursor:"pointer", fontSize:10.5, fontWeight:500, transition:"background 0.15s,color 0.15s,box-shadow 0.15s,outline-color 0.15s", background:on?t.tabABg:t.tabBg, color:on?t.tabAC:t.tabC, outline:on?`1px solid ${t.tabAB}`:"1px solid transparent", whiteSpace:"nowrap", flexShrink:0, boxShadow:on?`0 2px 10px rgba(224,80,80,0.25)`:"none" }}>
-                    {cat.label}
-                    <span style={{ marginLeft:3, fontSize:9, opacity:0.5 }}>{counts[cat.id]||0}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div style={{ position:"absolute", right:0, top:0, bottom:0, width:28, background:t.fade, pointerEvents:"none" }} />
+            {/* Theme toggle — icon only */}
+            <button onClick={() => setDark(d => !d)} title={D ? "Switch to light mode" : "Switch to dark mode"} aria-label={D ? "Switch to light mode" : "Switch to dark mode"}
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:34, height:34, borderRadius:8, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              {D
+                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
+            </button>
+
+            {/* Share — icon only */}
+            <button onClick={shareFilter} title="Copy link to current view" aria-label="Copy shareable link"
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:34, height:34, borderRadius:8, border:`1px solid ${copiedShare ? t.acc : t.ctrlBorder}`, background: copiedShare ? `${t.acc}18` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              {copiedShare
+                ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
+            </button>
+
+            {/* Suggest — text link */}
+            <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
+              style={{ fontSize:11.5, fontWeight:500, color:t.eyebrow, background:"none", border:"none", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap", padding:"0 2px", textDecoration:"none", opacity:0.75 }}
+              onMouseEnter={e => { e.currentTarget.style.color=t.acc; e.currentTarget.style.opacity="1"; }}
+              onMouseLeave={e => { e.currentTarget.style.color=t.eyebrow; e.currentTarget.style.opacity="0.75"; }}>
+              + Suggest
+            </button>
           </div>
         </div>
       </header>
 
-      {/* ── MAIN ──────────────────────────────────────────── */}
-      <main style={{ maxWidth:860, margin:"0 auto", padding:"0.85rem 1.25rem 1.5rem", position:"relative", zIndex:1 }}>
+      {/* ── FILTER DRAWER — bottom sheet ──────────────────── */}
+      {(filterOpen || filterClosing) && (
+        <>
+          {/* backdrop */}
+          <div onClick={() => closeDrawer()} style={{ position:"fixed", inset:0, zIndex:80, background:"rgba(0,0,0,0.4)", backdropFilter:"blur(2px)" }} />
+          {/* sheet */}
+          <div data-filter-drawer style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"20px 20px 0 0", padding:"0 1.25rem 2rem", maxHeight:"80vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:"0 -8px 40px rgba(0,0,0,0.3)" }}>
 
-        {/* ── Recently viewed ── */}
+            {/* Handle */}
+            <div style={{ display:"flex", justifyContent:"center", padding:"0.75rem 0 0.5rem" }}>
+              <div style={{ width:36, height:4, borderRadius:999, background:t.ctrlBorder }} />
+            </div>
+
+            {/* Header row */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"1.25rem" }}>
+              <span style={{ fontSize:15, fontWeight:700, color:t.title }}>Filters</span>
+              {activeFilters > 0 && (
+                <button onClick={clearAll} style={{ fontSize:12, color:t.acc, background:"none", border:"none", cursor:"pointer", fontWeight:500 }}>
+                  Clear all
+                </button>
+              )}
+            </div>
+
+            {/* Framework filter */}
+            <div style={{ marginBottom:"1.25rem" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.6rem" }}>Framework</div>
+              <div style={{ display:"flex", flexWrap:"wrap", gap:"0.4rem" }}>
+                {FRAMEWORKS.map(f => {
+                  const on = fw === f.id;
+                  return (
+                    <button key={f.id} onClick={() => setFw(f.id)}
+                      style={{ padding:"0.35rem 0.85rem", borderRadius:999, border:`1px solid ${on ? t.acc : t.ctrlBorder}`, background: on ? `${t.acc}18` : t.ctrl, color: on ? t.acc : t.ctrlText, fontSize:13, fontWeight: on ? 600 : 400, cursor:"pointer", transition:"all 0.12s" }}>
+                      {f.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category filter */}
+            <div style={{ marginBottom:"1.5rem" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.6rem" }}>Category</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"0.25rem" }}>
+                {CATEGORIES.map(cat => {
+                  const on = active === cat.id;
+                  return (
+                    <button key={cat.id} onClick={() => setActive(cat.id)}
+                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.55rem 0.75rem", borderRadius:9, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:13.5, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s" }}>
+                      <span>{cat.label}</span>
+                      <span style={{ fontSize:11, color: on ? t.acc : t.eyebrow, opacity:0.7 }}>{counts[cat.id] || 0}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Apply button */}
+            <button onClick={applyFilters}
+              style={{ width:"100%", padding:"0.75rem", borderRadius:12, border:"none", background:t.acc, color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", letterSpacing:"-0.01em" }}>
+              Show {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* ── MAIN ──────────────────────────────────────────── */}
+      <main style={{ maxWidth:900, margin:"0 auto", padding:"1rem 1.25rem 2rem", position:"relative", zIndex:1 }}>
+        {/* subtle inset to visually ground content below sticky header */}
+        <div style={{ height:1, background:`linear-gradient(to right,transparent,${t.div},transparent)`, marginBottom:"0.85rem", opacity:0.6 }} />
+
+        {/* Active filter chips */}
+        {activeFilters > 0 && (
+          <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.85rem", alignItems:"center" }}>
+            <span style={{ fontSize:11, color:t.eyebrow }}>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
+            {query && (
+              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
+                "{query}"
+                <button onClick={() => setQuery("")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
+              </span>
+            )}
+            {active !== "all" && (
+              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
+                {CATEGORIES.find(c => c.id === active)?.label}
+                <button onClick={() => setActive("all")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
+              </span>
+            )}
+            {fw !== "all" && (
+              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
+                {fw}
+                <button onClick={() => setFw("all")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Recently viewed */}
         {recent.length > 0 && !query && active === "all" && fw === "all" && (
-          <div style={{ marginBottom:"1.25rem", padding:"0.75rem 1rem", background:t.recentBg, border:`1px solid ${t.recentB}`, borderRadius:12 }}>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"0.5rem" }}>
-              <span style={{ fontSize:10.5, fontWeight:600, color:t.eyebrow, letterSpacing:"0.08em", textTransform:"uppercase" }}>Recently Visited</span>
+          <div className="recent-block" style={{ marginBottom:"1rem", padding:"0.65rem 0.9rem", background:t.recentBg, border:`1px solid ${t.recentB}`, borderRadius:10 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"0.4rem" }}>
+              <span style={{ fontSize:10, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase" }}>Recently Visited</span>
               <button onClick={() => { localStorage.removeItem("uidir-recent"); setRecent([]); }} style={{ fontSize:10, color:t.foot, background:"none", border:"none", cursor:"pointer" }}>Clear</button>
             </div>
-            <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:"0.35rem", flexWrap:"wrap" }}>
               {recent.map(r => (
                 <a key={r.id} href={`https://${r.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(r)}
-                  style={{ fontSize:11, padding:"0.2rem 0.6rem", borderRadius:6, background:t.ctrl, border:`1px solid ${t.ctrlB}`, color:t.desc, textDecoration:"none", display:"flex", alignItems:"center", gap:"0.3rem" }}>
+                  style={{ fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:6, background:t.ctrl, border:`1px solid ${t.ctrlBorder}`, color:t.desc, textDecoration:"none", display:"flex", alignItems:"center", gap:"0.28rem" }}>
                   {r.name}
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                 </a>
@@ -595,24 +683,12 @@ export default function App() {
           </div>
         )}
 
-        {/* ── Results ── */}
+        {/* Results */}
         {filtered.length === 0 ? (
-          <EmptyState query={query || fw} onClear={() => { setQuery(""); setFw("all"); setActive("all"); }} color={t.foot} />
+          <EmptyState query={query || fw} fw={fw} onClear={clearAll} t={t} />
         ) : (
-          <div ref={listRef} key={`${active}-${sort}-${fw}`} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.18s ease" }}>
-            {/* result count when filters active */}
-            {activeFilters > 0 && (
-              <div style={{ fontSize:11, color:t.foot, marginBottom:"0.15rem", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                <span>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
-                {filtered.length > 1 && (
-                  <button onClick={openAll} style={{ fontSize:10.5, color:t.acc, background:"none", border:"none", cursor:"pointer", textDecoration:"underline" }}>
-                    Open all in new tabs {filtered.length > 10 ? "(first 10)" : ""}
-                  </button>
-                )}
-              </div>
-            )}
-
-            {filtered.map((lib, idx) => {
+          <div ref={listRef} key={`${active}-${fw}`} style={{ display:"flex", flexDirection:"column", gap:"0.45rem", animation:"fadeIn 0.18s ease" }}>
+            {filtered.map(lib => {
               const m      = CAT_META[lib.cat] || CAT_META["dev-tools"];
               const bg     = D ? m.dBg  : m.lBg;
               const tx     = D ? m.dTx  : m.lTx;
@@ -623,64 +699,70 @@ export default function App() {
               const stacks = LIB_STACKS[lib.id] || [];
 
               return (
-                <div key={lib.id} id={`lib-${lib.id}`} className="lib-card"
+                <div key={lib.id} id={`lib-${lib.id}`} className="card"
                   data-pinned={isRand ? "" : undefined}
                   style={{
-                    display:"flex", alignItems:"center", gap:"0.65rem",
-                    padding:"0.9rem 1rem",
+                    display:"flex", alignItems:"center", gap:"0.7rem",
+                    padding:"0.85rem 1rem",
                     background: isRand ? t.hlBg : t.card,
-                    border: `1px solid ${isRand ? t.hlBorder : t.cBorder}`,
-                    borderRadius:11,
-                    boxShadow: isRand
-                      ? `0 0 0 2px ${t.hlBorder}, 0 8px 32px rgba(224,80,80,0.2)`
-                      : "0 1px 3px rgba(0,0,0,0.07)",
-                    "--focus-color": t.cFocus,
+                    border: `1px solid ${isRand ? t.hlBorder : t.cardBorder}`,
+                    borderRadius:12,
+                    boxShadow: isRand ? `0 0 0 2px ${t.hlBorder}, 0 8px 28px rgba(200,40,40,0.2)` : t.cardShadow,
                   }}
-                  onMouseEnter={e => { if(!isRand){ e.currentTarget.style.background=t.cHover; e.currentTarget.style.borderColor=t.cHBorder; e.currentTarget.style.boxShadow=`0 6px 24px rgba(0,0,0,0.18), 0 0 0 1px ${t.cHBorder}`; }}}
-                  onMouseLeave={e => { if(!isRand){ e.currentTarget.style.background=t.card; e.currentTarget.style.borderColor=t.cBorder; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.07)"; }}}
+                  onMouseEnter={e => { if(!isRand){ e.currentTarget.style.background=t.cardHover; e.currentTarget.style.borderColor=t.cardHBorder; e.currentTarget.style.boxShadow=t.cardHShadow; }}}
+                  onMouseLeave={e => { if(!isRand){ e.currentTarget.style.background=t.card; e.currentTarget.style.borderColor=t.cardBorder; e.currentTarget.style.boxShadow=t.cardShadow; }}}
                 >
                   <span style={{ width:7, height:7, borderRadius:"50%", background:dot, flexShrink:0, boxShadow:isRand?`0 0 10px ${dot}`:"none", marginTop:1 }} />
 
                   <a href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer"
-                    data-card="true"
-                    tabIndex={0}
-                    onClick={() => handleVisit(lib)}
+                    data-card="true" tabIndex={0} onClick={() => handleVisit(lib)}
                     style={{ flex:1, minWidth:0, textDecoration:"none", outline:"none" }}
                   >
-                    {/* name row */}
-                    <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap", marginBottom:"0.15rem" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap", marginBottom:"0.18rem" }}>
                       <span style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
                         <Highlight text={lib.name} query={query} color={t.hlMark} />
                       </span>
-                      <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.08em", textTransform:"uppercase", padding:"0.09rem 0.4rem", borderRadius:4, background:bg, color:tx }}>{m.label}</span>
-                      {isNew && <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.4rem", borderRadius:4, background:t.nBg, color:t.nTx }}>New</span>}
+                      <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.45rem", borderRadius:4, background:bg, color:tx }}>
+                        {m.label}
+                      </span>
+                      {isNew && (
+                        <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.45rem", borderRadius:4, background:t.nBg, color:t.nTx }}>
+                          New
+                        </span>
+                      )}
                       {stacks.map(s => (
-                        <span key={s} onClick={e => { e.preventDefault(); e.stopPropagation(); setFw(f => f === s ? "all" : s); }}
-                          style={{ fontSize:9, fontWeight:500, padding:"0.07rem 0.35rem", borderRadius:4, background: fw === s ? t.tabABg : t.stBg, color: fw === s ? t.tabAC : t.stTx, border:`1px solid ${fw === s ? t.tabAB : t.div}`, cursor:"pointer" }}>
-                          {s}
+                        <span key={s}
+                          onClick={e => { e.preventDefault(); e.stopPropagation(); setFw(f => f === s ? "all" : s); }}
+                          title={fw === s ? `Remove "${s}" filter` : `Filter by ${s}`}
+                          aria-label={fw === s ? `Remove ${s} filter` : `Filter by ${s}`}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={e => e.key === "Enter" && setFw(f => f === s ? "all" : s)}
+                          style={{ fontSize:9.5, fontWeight:500, padding:"0.07rem 0.38rem", borderRadius:4, background: fw===s ? `${t.acc}18` : t.stBg, color: fw===s ? t.acc : t.stTx, border:`1px solid ${fw===s ? t.acc+"40" : t.div}`, cursor:"pointer", transition:"background 0.12s,color 0.12s,border-color 0.12s", userSelect:"none" }}>
+                          {fw === s ? `✕ ${s}` : s}
                         </span>
                       ))}
                     </div>
-                    {/* description with highlight */}
-                    <div style={{ fontSize:13, color:t.desc, lineHeight:1.65 }}>
+                    <div style={{ fontSize:13, color:t.desc, lineHeight:1.6 }}>
                       <Highlight text={lib.desc} query={query} color={t.hlMark} />
                     </div>
-                    {/* url + verified */}
-                    <div style={{ marginTop:"0.18rem", fontSize:11, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace", display:"flex", alignItems:"center", gap:"0.35rem", flexWrap:"wrap" }}>
-                      <span>{lib.url}</span>
-                      <span style={{ color:t.div }}>·</span>
-                      <span style={{ color:t.foot }}>Verified {VERIFIED_DATE}</span>
+                    <div style={{ marginTop:"0.2rem", fontSize:11, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace" }}>
+                      {lib.url}
                     </div>
                   </a>
 
-                  {/* copy + arrow */}
-                  <div style={{ display:"flex", alignItems:"center", gap:"0.28rem", flexShrink:0 }}>
-                    <button onClick={e => copyUrl(lib.url, lib.id, e)} title="Copy URL"
-                      style={{ display:"flex", alignItems:"center", justifyContent:"center", width:24, height:24, borderRadius:6, border:`1px solid ${t.div}`, background:isCopy?t.nBg:t.copyBg, cursor:"pointer", color:isCopy?t.nTx:t.url, transition:"all 0.15s" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexShrink:0 }}>
+                    <div style={{ position:"relative", display:"flex" }} className="copy-wrap">
+                    <button onClick={e => copyUrl(lib.url, lib.id, e)} aria-label={isCopy ? "Copied!" : "Copy URL"}
+                      style={{ display:"flex", alignItems:"center", justifyContent:"center", width:26, height:26, borderRadius:6, border:`1px solid ${t.div}`, background: isCopy ? t.nBg : t.ctrl, cursor:"pointer", color: isCopy ? t.nTx : t.url, transition:"all 0.15s" }}>
                       {isCopy
                         ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                         : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
                     </button>
+                    <span className="copy-tip" style={{ position:"absolute", bottom:"calc(100% + 6px)", left:"50%", transform:"translateX(-50%)", background:D?"#2a1010":"#2a1f0f", color:D?"#f5e8e8":"#fdf6ed", fontSize:10, fontWeight:500, whiteSpace:"nowrap", padding:"3px 7px", borderRadius:5, pointerEvents:"none", zIndex:200 }}>
+                      {isCopy ? "Copied!" : "Copy URL"}
+                    </span>
+                  </div>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={t.arrow} strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                   </div>
                 </div>
@@ -689,15 +771,15 @@ export default function App() {
           </div>
         )}
 
-        {/* ── SUGGESTION BOX ──────────────────────────────── */}
-        <div style={{ marginTop:"1.5rem", borderRadius:13, border:`1px solid ${t.suggB}`, background:t.suggBg, overflow:"hidden" }}>
+        {/* Suggestion box */}
+        <div style={{ marginTop:"1.75rem", borderRadius:13, border:`1px solid ${t.suggB}`, background:t.suggBg, overflow:"hidden" }}>
           <button onClick={() => setSuggOpen(o => !o)}
-            style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem", padding:"0.8rem 1rem", background:t.suggHBg, border:"none", borderBottom:suggOpen?`1px solid ${t.suggHB}`:"1px solid transparent", cursor:"pointer" }}>
+            style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem", padding:"0.85rem 1rem", background:t.suggHBg, border:"none", borderBottom:suggOpen?`1px solid ${t.suggHB}`:"1px solid transparent", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"center", gap:"0.5rem" }}>
-              <span style={{ fontSize:13 }}>💡</span>
+              <span style={{ fontSize:14 }}>💡</span>
               <div style={{ textAlign:"left" }}>
-                <div style={{ fontSize:12, fontWeight:650, color:t.title }}>Know a useful open-source resource?</div>
-                <div style={{ fontSize:10.5, color:t.desc, marginTop:1 }}>Send us a suggestion — we review and add the best ones.</div>
+                <div style={{ fontSize:12.5, fontWeight:650, color:t.title }}>Know a resource that belongs here?</div>
+                <div style={{ fontSize:11, color:t.desc, marginTop:1 }}>Drop a link — I review and add the best ones.</div>
               </div>
             </div>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={t.acc} strokeWidth="2.5"
@@ -711,7 +793,7 @@ export default function App() {
                 <div style={{ textAlign:"center", padding:"1.5rem 0", color:t.nTx }}>
                   <div style={{ fontSize:20, marginBottom:4 }}>✓</div>
                   <div style={{ fontSize:13, fontWeight:600 }}>Opening your email app…</div>
-                  <div style={{ fontSize:11, marginTop:3, color:t.desc }}>Thank you!</div>
+                  <div style={{ fontSize:11, marginTop:3, color:t.desc }}>Appreciated!</div>
                 </div>
               ) : (
                 <div style={{ display:"flex", flexDirection:"column", gap:"0.6rem" }}>
@@ -721,26 +803,26 @@ export default function App() {
                       <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
                     </div>
                     <div>
-                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Website name <span style={{ color:"#ef4444" }}>*</span></label>
+                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Site name <span style={{ color:"#e05050" }}>*</span></label>
                       <input value={siteName} onChange={e => setSiteName(e.target.value)} placeholder="e.g. ShadcnBlocks" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Website URL <span style={{ color:"#ef4444" }}>*</span></label>
+                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>URL <span style={{ color:"#e05050" }}>*</span></label>
                     <input value={siteUrl} onChange={e => setSiteUrl(e.target.value)} placeholder="e.g. shadcnblocks.com" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
                   </div>
                   <div>
                     <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Why should it be listed? <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
-                    <textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Briefly describe what makes it useful…" rows={3}
+                    <textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="What makes it useful or unique…" rows={3}
                       style={{ ...iStyle, resize:"vertical", minHeight:60, lineHeight:1.55 }}
                       onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
                   </div>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem" }}>
-                    <p style={{ margin:0, fontSize:10.5, color:t.desc }}>Opens your default email app with details pre-filled.</p>
+                    <p style={{ margin:0, fontSize:10.5, color:t.desc }}>Opens your email app with details pre-filled.</p>
                     <button onClick={handleSuggest} disabled={!siteName.trim()||!siteUrl.trim()}
-                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.42rem 0.85rem", borderRadius:7, border:"none", background:(!siteName.trim()||!siteUrl.trim())?"rgba(200,80,30,0.15)":t.submit, color:(!siteName.trim()||!siteUrl.trim())?t.acc:"#fff", fontSize:12, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer", opacity:(!siteName.trim()||!siteUrl.trim())?0.6:1 }}>
+                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.45rem 0.9rem", borderRadius:8, border:"none", background:(!siteName.trim()||!siteUrl.trim())?`${t.acc}20`:t.submit, color:(!siteName.trim()||!siteUrl.trim())?t.acc:"#fff", fontSize:12.5, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer", opacity:(!siteName.trim()||!siteUrl.trim())?0.6:1 }}>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                      Send suggestion
+                      Send
                     </button>
                   </div>
                 </div>
@@ -749,30 +831,32 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── FOOTER ──────────────────────────────────────── */}
-        <div style={{ marginTop:"1.1rem", paddingTop:"1rem", borderTop:`1px solid ${t.div}`, display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem" }}>
-          <div>
-            <p style={{ margin:"0 0 0.18rem", fontSize:11.5, fontWeight:600, color:t.desc }}>UI Component Libraries Directory</p>
-            <p style={{ margin:0, fontSize:10.5, color:t.foot, lineHeight:1.6, maxWidth:420 }}>
-              Community-maintained list of free, open-source UI resources. All links hand-verified — {VERIFIED_DATE}.
-            </p>
-          </div>
-          <span style={{ fontSize:10.5, color:t.foot }}>{filtered.length} of {LIBS.length} shown</span>
+        {/* Footer */}
+        <div style={{ marginTop:"1rem", paddingTop:"0.85rem", borderTop:`1px solid ${t.div}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem" }}>
+          <p style={{ margin:0, fontSize:11, color:t.foot }}>
+            Hand-picked by a solo dev · All links verified {VERIFIED_DATE}
+          </p>
+          <span style={{ fontSize:11, color:t.foot }}>{filtered.length} / {LIBS.length}</span>
         </div>
       </main>
 
-      {/* ── FLOATING BUTTONS ─────────────────────────────── */}
+      {/* Back to top */}
       {showTop && (
-        <button onClick={() => window.scrollTo({ top:0, behavior:"smooth" })} title="Back to top"
-          style={{ position:"fixed", bottom:"5.25rem", right:"1.25rem", zIndex:100, width:36, height:36, borderRadius:"50%", border:`1px solid ${t.ctrlB}`, background:t.ctrl, color:t.tabC, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 12px rgba(0,0,0,0.2)", backdropFilter:"blur(8px)" }}>
+        <button onClick={() => window.scrollTo({ top:0, behavior:"smooth" })}
+          title="Back to top" aria-label="Back to top"
+          style={{ position:"fixed", bottom:"1.25rem", right:"7.5rem", zIndex:100, width:36, height:36, borderRadius:"50%", border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 10px rgba(0,0,0,0.2)", backdropFilter:"blur(8px)", transition:"transform 0.15s ease" }}
+          onMouseEnter={e => e.currentTarget.style.transform="translateY(-2px)"}
+          onMouseLeave={e => e.currentTarget.style.transform="none"}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6"/></svg>
         </button>
       )}
+
+      {/* Float suggest */}
       {floatVis && (
         <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-          style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:12, fontWeight:600, cursor:"pointer", boxShadow:"0 4px 18px rgba(200,40,40,0.4)", backdropFilter:"blur(8px)", transition:"transform 0.18s ease,box-shadow 0.18s ease" }}
-          onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px) scale(1.04)"; e.currentTarget.style.boxShadow="0 8px 28px rgba(200,40,40,0.5)"; }}
-          onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 4px 18px rgba(200,40,40,0.4)"; }}>
+          style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.9rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:12.5, fontWeight:600, cursor:"pointer", boxShadow:`0 4px 18px ${t.float}60`, backdropFilter:"blur(8px)", transition:"transform 0.18s ease,box-shadow 0.18s ease" }}
+          onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow=`0 8px 24px ${t.float}80`; }}
+          onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow=`0 4px 18px ${t.float}60`; }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
           Suggest
         </button>
