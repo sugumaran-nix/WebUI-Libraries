@@ -527,7 +527,6 @@ export default function App() {
         .float-row { padding-bottom:env(safe-area-inset-bottom); }
         header { padding-top:env(safe-area-inset-top); }
       `}</style>
-      `}</style>
 
       {/* Aurora — dark only */}
       {D && (
