@@ -450,34 +450,83 @@ export default function App() {
     fade:       D ? "linear-gradient(to right,transparent,rgba(24,15,15,0.95))" : "linear-gradient(to right,transparent,rgba(253,246,237,0.97))",
   };
 
-  const iStyle = { width:"100%", padding:"0.5rem 0.75rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:8, color:t.iColor, fontSize:13, outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.15s" };
+  const iStyle = { width:"100%", padding:"0.6rem 0.75rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:8, color:t.iColor, fontSize:"max(16px,13px)", outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.15s", minHeight:44 };
 
   return (
     <div style={{ minHeight:"100vh", background:t.bg, color:t.title, fontFamily:"'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", transition:"background 0.2s,color 0.2s" }}>
       <style>{`
+        /* ── Keyframes ── */
         @keyframes fadeIn    { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeOut   { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-4px)} }
-        .recent-block { animation:fadeIn 0.2s ease; }
         @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideDown { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(100%)} }
-        @keyframes blob1    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.15)} 66%{transform:translate(-40px,30px) scale(0.92)} }
-        @keyframes blob2    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-70px,50px) scale(1.1)} 66%{transform:translate(50px,-30px) scale(0.95)} }
-        @keyframes blob3    { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,60px) scale(0.9)} 66%{transform:translate(-50px,-40px) scale(1.12)} }
+        @keyframes blob1     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.15)} 66%{transform:translate(-40px,30px) scale(0.92)} }
+        @keyframes blob2     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-70px,50px) scale(1.1)} 66%{transform:translate(50px,-30px) scale(0.95)} }
+        @keyframes blob3     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,60px) scale(0.9)} 66%{transform:translate(-50px,-40px) scale(1.12)} }
+
+        /* ── Base reset ── */
+        *, *::before, *::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         ::-webkit-scrollbar { display:none }
-        * { box-sizing:border-box }
+        html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+        body { margin:0; min-width:360px; }
+
+        /* ── Cards ── */
         .card { transition:transform 0.18s ease,box-shadow 0.18s ease,background 0.12s,border-color 0.12s; }
-        .card:not([data-pinned]):hover { transform:translateY(-2px); }
-        .card:not([data-pinned]):active { transform:scale(0.985) translateY(0px) !important; transition:transform 0.08s ease !important; }
+        .card:not([data-pinned]):active { transform:scale(0.982) !important; transition:transform 0.08s ease !important; }
         .card[data-pinned] { transform:none !important; }
         .card:focus-within { outline:2px solid ${t.acc}; outline-offset:2px; }
         .card a:focus { outline:none; }
-        mark { background:transparent; }
-        .copy-wrap .copy-tip { opacity:0; transition:opacity 0.15s; }
-        .copy-wrap:hover .copy-tip { opacity:1; }
-        @media (max-width:580px) {
-          .nav-row { flex-direction:column !important; gap:0.5rem !important; }
-          .search-wrap { width:100% !important; }
+
+        /* ── Hover effects — desktop only ── */
+        @media (hover:hover) {
+          .card:not([data-pinned]):hover { transform:translateY(-2px); }
         }
+
+        /* ── Tooltip — desktop only ── */
+        mark { background:transparent; }
+        .copy-wrap .copy-tip { opacity:0; transition:opacity 0.15s; pointer-events:none; }
+        @media (hover:hover) { .copy-wrap:hover .copy-tip { opacity:1; } }
+
+        /* ── Recent block ── */
+        .recent-block { animation:fadeIn 0.2s ease; }
+
+        /* ── Min touch targets ── */
+        button, a, [role="button"] { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+        .card a { min-height:unset; display:block; }
+        .copy-wrap button { min-height:44px; min-width:44px; }
+
+        /* ── Mobile: 360–599px ── */
+        @media (max-width:599px) {
+          .nav-inner { gap:0.5rem !important; }
+          .nav-title h1 { font-size:0.95rem !important; }
+          .nav-title p { display:none !important; }
+          .nav-controls { gap:0.3rem !important; }
+          .search-wrap { width:100% !important; order:3; }
+          .suggest-link { display:none !important; }
+          .card-desc { font-size:13px !important; }
+          .card-name { font-size:0.9rem !important; }
+          .filter-drawer { max-height:92vh !important; }
+          .filter-drawer-inner { padding:0 1rem 6rem !important; }
+          .float-row { bottom:0.75rem !important; right:0.75rem !important; }
+          .chip-row { flex-wrap:wrap !important; }
+        }
+
+        /* ── Tablet: 600–899px ── */
+        @media (min-width:600px) and (max-width:899px) {
+          .nav-title p { font-size:0.65rem !important; }
+          .search-wrap { width:180px !important; }
+        }
+
+        /* ── Desktop: 900px+ ── */
+        @media (min-width:900px) {
+          .card:not([data-pinned]):hover { transform:translateY(-2px); }
+        }
+
+        /* ── Safe area for notch phones ── */
+        .filter-drawer-inner { padding-bottom:max(2rem, env(safe-area-inset-bottom)) !important; }
+        .float-row { padding-bottom:env(safe-area-inset-bottom); }
+        header { padding-top:env(safe-area-inset-top); }
+      `}</style>
       `}</style>
 
       {/* Aurora — dark only */}
@@ -493,12 +542,12 @@ export default function App() {
       {/* ── HEADER — single compact row ───────────────────── */}
       <header style={{ background:t.hBg, borderBottom:`1px solid ${t.hBorder}`, padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)" }}>
         <div style={{ maxWidth:900, margin:"0 auto" }}>
-          <div className="nav-row" style={{ display:"flex", alignItems:"center", gap:"0.75rem", height:52 }}>
+          <div className="nav-inner" style={{ display:"flex", alignItems:"center", gap:"0.6rem", flexWrap:"wrap", minHeight:52, paddingTop:"0.35rem", paddingBottom:"0.35rem" }}>
 
             {/* Logo / Title */}
-            <div style={{ flex:1, minWidth:0 }}>
+            <div className="nav-title" style={{ flex:1, minWidth:0 }}>
               <h1 style={{
-                fontSize:"1rem", fontWeight:800, margin:0, letterSpacing:"-0.02em", lineHeight:1,
+                fontSize:"1rem", fontWeight:800, margin:0, letterSpacing:"-0.02em", lineHeight:1.1,
                 whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
                 ...(D
                   ? { background:t.h1, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }
@@ -508,18 +557,18 @@ export default function App() {
                 UI Libraries
               </h1>
               <p style={{ margin:0, fontSize:"0.65rem", color:t.eyebrow, lineHeight:1, marginTop:2 }}>
-                {LIBS.length} free resources · {VERIFIED_DATE}
+                {LIBS.length} resources · {VERIFIED_DATE}
               </p>
             </div>
 
             {/* Search */}
-            <div className="search-wrap" style={{ position:"relative", width:200, flexShrink:0 }}>
+            <div className="search-wrap" style={{ position:"relative", width:190, flexShrink:0 }}>
               <svg style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", color:t.sPh, pointerEvents:"none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
               <input ref={searchRef} type="text" placeholder="Search ( / )" value={query}
                 onChange={e => setQuery(e.target.value)}
-                style={{ width:"100%", padding:"0.42rem 1.75rem 0.42rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:8, color:t.sColor, fontSize:12.5, outline:"none", fontFamily:"inherit", transition:"border-color 0.15s" }}
+                style={{ width:"100%", padding:"0.5rem 1.75rem 0.5rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:8, color:t.sColor, fontSize:"max(16px,12.5px)", outline:"none", fontFamily:"inherit", transition:"border-color 0.15s" }}
                 onFocus={e => e.target.style.borderColor = t.acc}
                 onBlur={e => e.target.style.borderColor = t.sBorder}
               />
@@ -530,7 +579,7 @@ export default function App() {
 
             {/* Filter button */}
             <button data-filter-btn onClick={() => filterOpen ? closeDrawer() : setFilterOpen(true)}
-              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.42rem 0.85rem", borderRadius:8, border:`1px solid ${filterOpen ? t.acc : t.ctrlBorder}`, background: filterOpen ? `${t.acc}18` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:12.5, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative" }}>
+              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", minHeight:44, borderRadius:8, border:`1px solid ${filterOpen ? t.acc : t.ctrlBorder}`, background: filterOpen ? `${t.acc}18` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative" }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
@@ -544,7 +593,7 @@ export default function App() {
 
             {/* Theme toggle — icon only */}
             <button onClick={() => setDark(d => !d)} title={D ? "Switch to light mode" : "Switch to dark mode"} aria-label={D ? "Switch to light mode" : "Switch to dark mode"}
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:34, height:34, borderRadius:8, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:8, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0 }}>
               {D
                 ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
                 : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
@@ -552,15 +601,15 @@ export default function App() {
 
             {/* Share — icon only */}
             <button onClick={shareFilter} title="Copy link to current view" aria-label="Copy shareable link"
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:34, height:34, borderRadius:8, border:`1px solid ${copiedShare ? t.acc : t.ctrlBorder}`, background: copiedShare ? `${t.acc}18` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:8, border:`1px solid ${copiedShare ? t.acc : t.ctrlBorder}`, background: copiedShare ? `${t.acc}18` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0 }}>
               {copiedShare
                 ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                 : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
             </button>
 
-            {/* Suggest — text link */}
-            <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-              style={{ fontSize:11.5, fontWeight:500, color:t.eyebrow, background:"none", border:"none", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap", padding:"0 2px", textDecoration:"none", opacity:0.75 }}
+            {/* Suggest — text link, hidden on mobile */}
+            <button className="suggest-link" onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
+              style={{ fontSize:11.5, fontWeight:500, color:t.eyebrow, background:"none", border:"none", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap", padding:"0 4px", minHeight:44, textDecoration:"none", opacity:0.75 }}
               onMouseEnter={e => { e.currentTarget.style.color=t.acc; e.currentTarget.style.opacity="1"; }}
               onMouseLeave={e => { e.currentTarget.style.color=t.eyebrow; e.currentTarget.style.opacity="0.75"; }}>
               + Suggest
@@ -575,21 +624,29 @@ export default function App() {
           {/* backdrop */}
           <div onClick={() => closeDrawer()} style={{ position:"fixed", inset:0, zIndex:80, background:"rgba(0,0,0,0.4)", backdropFilter:"blur(2px)" }} />
           {/* sheet */}
-          <div data-filter-drawer style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"20px 20px 0 0", padding:"0 1.25rem 2rem", maxHeight:"80vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:"0 -8px 40px rgba(0,0,0,0.3)" }}>
+          <div data-filter-drawer className="filter-drawer" style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"20px 20px 0 0", maxHeight:"85vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:"0 -8px 40px rgba(0,0,0,0.3)" }}>
+
+            {/* Scrollable inner */}
+            <div className="filter-drawer-inner" style={{ padding:"0 1.25rem 2rem" }}>
 
             {/* Handle */}
             <div style={{ display:"flex", justifyContent:"center", padding:"0.75rem 0 0.5rem" }}>
-              <div style={{ width:36, height:4, borderRadius:999, background:t.ctrlBorder }} />
+              <div style={{ width:40, height:4, borderRadius:999, background:t.ctrlBorder }} />
             </div>
 
             {/* Header row */}
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"1.25rem" }}>
-              <span style={{ fontSize:15, fontWeight:700, color:t.title }}>Filters</span>
-              {activeFilters > 0 && (
-                <button onClick={clearAll} style={{ fontSize:12, color:t.acc, background:"none", border:"none", cursor:"pointer", fontWeight:500 }}>
-                  Clear all
+              <span style={{ fontSize:16, fontWeight:700, color:t.title }}>Filters</span>
+              <div style={{ display:"flex", gap:"0.5rem", alignItems:"center" }}>
+                {activeFilters > 0 && (
+                  <button onClick={clearAll} style={{ fontSize:13, fontWeight:600, color:"#fff", background:"rgba(180,60,60,0.85)", border:"none", cursor:"pointer", padding:"0.35rem 0.85rem", borderRadius:8, minHeight:36 }}>
+                    Clear all
+                  </button>
+                )}
+                <button onClick={applyFilters} style={{ fontSize:13, fontWeight:700, color:"#fff", background:t.acc, border:"none", cursor:"pointer", padding:"0.35rem 0.85rem", borderRadius:8, minHeight:36 }}>
+                  Apply
                 </button>
-              )}
+              </div>
             </div>
 
             {/* Framework filter */}
@@ -600,7 +657,7 @@ export default function App() {
                   const on = fw === f.id;
                   return (
                     <button key={f.id} onClick={() => setFw(f.id)}
-                      style={{ padding:"0.35rem 0.85rem", borderRadius:999, border:`1px solid ${on ? t.acc : t.ctrlBorder}`, background: on ? `${t.acc}18` : t.ctrl, color: on ? t.acc : t.ctrlText, fontSize:13, fontWeight: on ? 600 : 400, cursor:"pointer", transition:"all 0.12s" }}>
+                      style={{ padding:"0.5rem 1rem", minHeight:44, borderRadius:999, border:`1px solid ${on ? t.acc : t.ctrlBorder}`, background: on ? `${t.acc}18` : t.ctrl, color: on ? t.acc : t.ctrlText, fontSize:14, fontWeight: on ? 600 : 400, cursor:"pointer", transition:"all 0.12s" }}>
                       {f.label}
                     </button>
                   );
@@ -616,7 +673,7 @@ export default function App() {
                   const on = active === cat.id;
                   return (
                     <button key={cat.id} onClick={() => setActive(cat.id)}
-                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.55rem 0.75rem", borderRadius:9, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:13.5, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s" }}>
+                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.65rem 0.85rem", minHeight:48, borderRadius:10, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:15, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s", width:"100%" }}>
                       <span>{cat.label}</span>
                       <span style={{ fontSize:11, color: on ? t.acc : t.eyebrow, opacity:0.7 }}>{counts[cat.id] || 0}</span>
                     </button>
@@ -625,23 +682,25 @@ export default function App() {
               </div>
             </div>
 
-            {/* Apply button */}
+            {/* Bottom apply button — full width */}
             <button onClick={applyFilters}
-              style={{ width:"100%", padding:"0.75rem", borderRadius:12, border:"none", background:t.acc, color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", letterSpacing:"-0.01em" }}>
+              style={{ width:"100%", padding:"0.85rem", borderRadius:12, border:"none", background:t.acc, color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:"-0.01em", marginTop:"0.5rem" }}>
               Show {filtered.length} result{filtered.length !== 1 ? "s" : ""}
             </button>
+
+            </div>{/* end filter-drawer-inner */}
           </div>
         </>
       )}
 
       {/* ── MAIN ──────────────────────────────────────────── */}
-      <main style={{ maxWidth:900, margin:"0 auto", padding:"1rem 1.25rem 2rem", position:"relative", zIndex:1 }}>
+      <main style={{ maxWidth:900, margin:"0 auto", padding:"clamp(0.75rem,2vw,1rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative", zIndex:1 }}>
         {/* subtle inset to visually ground content below sticky header */}
         <div style={{ height:1, background:`linear-gradient(to right,transparent,${t.div},transparent)`, marginBottom:"0.85rem", opacity:0.6 }} />
 
         {/* Active filter chips */}
         {activeFilters > 0 && (
-          <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.85rem", alignItems:"center" }}>
+          <div className="chip-row" style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.85rem", alignItems:"center" }}>
             <span style={{ fontSize:11, color:t.eyebrow }}>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
             {query && (
               <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
@@ -671,7 +730,7 @@ export default function App() {
               <span style={{ fontSize:10, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase" }}>Recently Visited</span>
               <button onClick={() => { localStorage.removeItem("uidir-recent"); setRecent([]); }} style={{ fontSize:10, color:t.foot, background:"none", border:"none", cursor:"pointer" }}>Clear</button>
             </div>
-            <div style={{ display:"flex", gap:"0.35rem", flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap" }}>
               {recent.map(r => (
                 <a key={r.id} href={`https://${r.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(r)}
                   style={{ fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:6, background:t.ctrl, border:`1px solid ${t.ctrlBorder}`, color:t.desc, textDecoration:"none", display:"flex", alignItems:"center", gap:"0.28rem" }}>
@@ -702,8 +761,8 @@ export default function App() {
                 <div key={lib.id} id={`lib-${lib.id}`} className="card"
                   data-pinned={isRand ? "" : undefined}
                   style={{
-                    display:"flex", alignItems:"center", gap:"0.7rem",
-                    padding:"0.85rem 1rem",
+                    display:"flex", alignItems:"center", gap:"0.65rem",
+                    padding:"clamp(0.75rem,2vw,0.9rem) clamp(0.75rem,2vw,1rem)",
                     background: isRand ? t.hlBg : t.card,
                     border: `1px solid ${isRand ? t.hlBorder : t.cardBorder}`,
                     borderRadius:12,
@@ -719,7 +778,7 @@ export default function App() {
                     style={{ flex:1, minWidth:0, textDecoration:"none", outline:"none" }}
                   >
                     <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap", marginBottom:"0.18rem" }}>
-                      <span style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
+                      <span className="card-name" style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
                         <Highlight text={lib.name} query={query} color={t.hlMark} />
                       </span>
                       <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.45rem", borderRadius:4, background:bg, color:tx }}>
@@ -743,7 +802,7 @@ export default function App() {
                         </span>
                       ))}
                     </div>
-                    <div style={{ fontSize:13, color:t.desc, lineHeight:1.6 }}>
+                    <div className="card-desc" style={{ fontSize:13.5, color:t.desc, lineHeight:1.65 }}>
                       <Highlight text={lib.desc} query={query} color={t.hlMark} />
                     </div>
                     <div style={{ marginTop:"0.2rem", fontSize:11, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace" }}>
@@ -797,7 +856,7 @@ export default function App() {
                 </div>
               ) : (
                 <div style={{ display:"flex", flexDirection:"column", gap:"0.6rem" }}>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.5rem" }}>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:"0.5rem" }}>
                     <div>
                       <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Your name <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
                       <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
@@ -841,26 +900,23 @@ export default function App() {
       </main>
 
       {/* Back to top */}
-      {showTop && (
-        <button onClick={() => window.scrollTo({ top:0, behavior:"smooth" })}
-          title="Back to top" aria-label="Back to top"
-          style={{ position:"fixed", bottom:"1.25rem", right:"7.5rem", zIndex:100, width:36, height:36, borderRadius:"50%", border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 10px rgba(0,0,0,0.2)", backdropFilter:"blur(8px)", transition:"transform 0.15s ease" }}
-          onMouseEnter={e => e.currentTarget.style.transform="translateY(-2px)"}
-          onMouseLeave={e => e.currentTarget.style.transform="none"}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6"/></svg>
-        </button>
-      )}
-
-      {/* Float suggest */}
-      {floatVis && (
-        <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-          style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.9rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:12.5, fontWeight:600, cursor:"pointer", boxShadow:`0 4px 18px ${t.float}60`, backdropFilter:"blur(8px)", transition:"transform 0.18s ease,box-shadow 0.18s ease" }}
-          onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow=`0 8px 24px ${t.float}80`; }}
-          onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow=`0 4px 18px ${t.float}60`; }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          Suggest
-        </button>
-      )}
+      {/* Floating action row — safe area aware */}
+      <div className="float-row" style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.5rem" }}>
+        {showTop && (
+          <button onClick={() => window.scrollTo({ top:0, behavior:"smooth" })}
+            title="Back to top" aria-label="Back to top"
+            style={{ width:44, height:44, borderRadius:"50%", border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 12px rgba(0,0,0,0.25)", backdropFilter:"blur(10px)" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+          </button>
+        )}
+        {floatVis && (
+          <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
+            style={{ height:44, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0 1rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:`0 4px 18px ${t.float}60`, backdropFilter:"blur(10px)", whiteSpace:"nowrap" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Suggest
+          </button>
+        )}
+      </div>
     </div>
   );
 }
