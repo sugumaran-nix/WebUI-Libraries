@@ -21,15 +21,14 @@ function addRecent(lib) {
 
 // ── URL ────────────────────────────────────────────────────────────
 function getUrlParams() {
-  if (typeof window === "undefined") return { cat: "all", q: "", fw: "all" };
+  if (typeof window === "undefined") return { cat: "all", q: "" };
   const p = new URLSearchParams(window.location.search);
-  return { cat: p.get("cat") || "all", q: p.get("q") || "", fw: p.get("fw") || "all" };
+  return { cat: p.get("cat") || "all", q: p.get("q") || "" };
 }
-function setUrlParams(cat, q, fw) {
+function setUrlParams(cat, q) {
   const p = new URLSearchParams();
   if (cat !== "all") p.set("cat", cat);
   if (q) p.set("q", q);
-  if (fw !== "all") p.set("fw", fw);
   const str = p.toString();
   window.history.replaceState(null, "", str ? `?${str}` : window.location.pathname);
 }
@@ -51,57 +50,78 @@ function Highlight({ text, query, color }) {
 }
 
 // ── Data ───────────────────────────────────────────────────────────
-const FRAMEWORKS = [
-  { id: "all", label: "All" },
-  { id: "React", label: "React" },
-  { id: "Vue", label: "Vue" },
-  { id: "Svelte", label: "Svelte" },
-  { id: "Angular", label: "Angular" },
-  { id: "Tailwind", label: "Tailwind" },
-  { id: "CSS", label: "CSS / HTML" },
-  { id: "Design", label: "Design" },
-];
+// Framework filter removed — categories are the single source of truth
 
 const CATEGORIES = [
-  { id: "all", label: "All Categories" },
-  { id: "animated", label: "Animated & Motion" },
-  { id: "shadcn", label: "shadcn Ecosystem" },
-  { id: "tailwind", label: "Tailwind CSS" },
-  { id: "css", label: "CSS / HTML / SVG" },
-  { id: "react", label: "Full React" },
-  { id: "angular", label: "Angular" },
-  { id: "headless", label: "Headless" },
-  { id: "multi", label: "Vue / Svelte" },
-  { id: "collections", label: "Collections" },
-  { id: "design-tools", label: "Design Tools" },
-  { id: "dev-tools", label: "Dev Tools" },
+  { id: "all",          label: "All",            emoji: "" },
+  { id: "animated",     label: "Animated",       emoji: "✦" },
+  { id: "shadcn",       label: "shadcn",         emoji: "" },
+  { id: "tailwind",     label: "Tailwind",       emoji: "" },
+  { id: "react",        label: "React",          emoji: "" },
+  { id: "vue-svelte",   label: "Vue / Svelte",   emoji: "" },
+  { id: "angular",      label: "Angular",        emoji: "" },
+  { id: "headless",     label: "Headless",       emoji: "" },
+  { id: "css",          label: "CSS / HTML",     emoji: "" },
+  { id: "collections",  label: "Collections",    emoji: "" },
+  { id: "design-tools", label: "Design Tools",   emoji: "" },
+  { id: "dev-tools",    label: "Dev Tools",      emoji: "" },
 ];
 
+// Map: "vue-svelte" category merges old "multi" cat
+const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
+
 const LIB_STACKS = {
-  1:["React","Tailwind"],2:["React","Tailwind"],3:["React"],4:["React","Tailwind"],
-  5:["React","shadcn"],6:["React"],7:["React"],8:["React","Tailwind"],9:["React"],
-  10:["React","shadcn"],11:["React"],12:["React","Tailwind"],13:["React","Tailwind"],15:["React"],
-  16:["React","shadcn"],17:["React","shadcn"],18:["React","shadcn"],19:["React","shadcn"],
-  20:["React","shadcn"],21:["React","shadcn"],22:["React","shadcn"],23:["React","shadcn"],
-  24:["React","shadcn"],25:["React","shadcn"],26:["React","shadcn"],27:["React","shadcn"],
-  28:["React","shadcn"],79:["React","shadcn"],
-  29:["Tailwind","CSS"],30:["Tailwind","React","Vue"],31:["Tailwind","CSS"],
-  32:["Tailwind","CSS"],33:["Tailwind","CSS"],77:["Tailwind","CSS"],
-  78:["React","Tailwind"],34:["Tailwind","CSS"],35:["Tailwind","CSS"],
-  36:["Tailwind","CSS"],37:["Tailwind","CSS"],38:["Tailwind","CSS"],39:["Tailwind","CSS"],
-  40:["CSS"],41:["React","shadcn"],42:["CSS"],43:["React","Tailwind"],
-  44:["React","shadcn"],45:["CSS"],46:["CSS"],47:["CSS"],48:["CSS"],
-  49:["React"],50:["React"],51:["React"],52:["React"],53:["React"],54:["React"],
-  75:["React","Tailwind"],80:["React"],81:["React"],82:["React"],
-  83:["React"],85:["React"],55:["React"],56:["React"],57:["React"],
-  95:["Angular"],96:["Angular"],97:["Angular"],
-  58:["React"],59:["React","Vue"],60:["React"],61:["React"],84:["React","Vue"],
-  14:["Vue"],62:["Svelte"],63:["Svelte"],76:["React","Vue","Svelte","CSS"],
-  64:["Vue"],65:["Vue"],93:["Vue"],
-  66:["React","Tailwind"],67:["React","Tailwind"],68:["React"],
-  70:["CSS","Tailwind"],71:["CSS"],87:["Design"],91:["Design"],94:["CSS"],
-  86:["Design","CSS"],90:["Design"],
-  72:["React","CSS"],73:["React","Vue","Svelte"],88:["React","Vue"],89:["Design"],
+  // Animated — React based
+  1:["React","Tailwind"], 2:["React","Tailwind"], 3:["React"],
+  4:["React","Tailwind"], 5:["React","shadcn"],   6:["React"],
+  7:["React"],            8:["React","Tailwind"], 9:["React"],
+  10:["React","shadcn"],  11:["React"],           12:["React","Tailwind"],
+  13:["React","Tailwind"],15:["React"],
+  // shadcn ecosystem
+  16:["React","shadcn"],  17:["React","shadcn"],  18:["React","shadcn"],
+  19:["React","shadcn"],  20:["React","shadcn"],  21:["React","shadcn"],
+  22:["React","shadcn"],  23:["React","shadcn"],  24:["React","shadcn"],
+  25:["React","shadcn"],  26:["React","shadcn"],  27:["React","shadcn"],
+  28:["React","shadcn"],  79:["React","shadcn"],
+  // Tailwind CSS (HTML-first, no specific JS framework)
+  29:["Tailwind"],        30:["Tailwind","React","Vue"],
+  31:["Tailwind"],        32:["Tailwind"],        33:["Tailwind"],
+  77:["Tailwind"],        78:["React","Tailwind"],34:["Tailwind"],
+  35:["Tailwind"],        36:["Tailwind"],        37:["Tailwind"],
+  38:["Tailwind"],        39:["Tailwind"],
+  // CSS / HTML / SVG — pure CSS, no framework
+  40:["CSS"],             41:["React","shadcn"],  42:["CSS"],
+  43:["React","Tailwind"],44:["React","shadcn"],  45:["CSS"],
+  46:["CSS"],             47:["CSS"],             48:["CSS"],
+  // Full React
+  49:["React"],  50:["React"],  51:["React"],  52:["React"],
+  53:["React"],  54:["React"],  75:["React","Tailwind"],
+  80:["React"],  81:["React"],  82:["React"],  83:["React"],
+  85:["React"],  55:["React"],  56:["React"],  57:["React"],
+  // Angular
+  95:["Angular"],  96:["Angular"],  97:["Angular"],
+  // Headless
+  58:["React"],  59:["React","Vue"],  60:["React"],
+  61:["React"],  84:["React","Vue","Svelte"],
+  // Vue / Svelte / Multi
+  14:["Vue"],    62:["Svelte"],  63:["Svelte"],
+  76:["React","Vue","Svelte"],  64:["Vue"],  65:["Vue"],  93:["Vue"],
+  // Collections
+  66:["React","Tailwind"],  67:["React","Tailwind","shadcn"],  68:["React"],
+  // Design Tools
+  70:["CSS","Tailwind"],  71:["CSS"],   87:["Design"],
+  91:["Design"],          94:["CSS"],   86:["Design"],  90:["Design"],
+  // Dev Tools
+  72:["React"],  73:["React","Vue","Svelte"],  88:["React","Vue"],  89:["Design"],
+  // New libraries (research-added 2026)
+  98:["Tailwind"],          // Pines UI — Alpine+Tailwind, Tailwind category
+  99:["React"],             // Tamagui — React + React Native
+  100:["React"],            // NativeWind — React Native
+  101:["Design"],           // fffuel — SVG generators
+  102:["Design"],           // WebGradients
+  103:["Design","CSS"],     // CSS Gradient
+  104:["Tailwind"],         // Pinemix — Alpine+Tailwind
+  105:["Design","CSS"],     // FrontendBaba
 };
 
 const LIBS = [
@@ -216,20 +236,22 @@ const VERIFIED_DATE = "August 2026";
 const RECIPIENT     = "your@email.com";
 
 const CAT_META = {
-  animated:      { label:"Animated",     dBg:"rgba(239,120,60,0.15)",  dTx:"#fdb07a", dDot:"#ef7840", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
-  shadcn:        { label:"shadcn",       dBg:"rgba(34,197,94,0.12)",   dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.09)",  lTx:"#14532d", lDot:"#16a34a" },
-  tailwind:      { label:"Tailwind",     dBg:"rgba(14,165,233,0.13)",  dTx:"#7dd3fc", dDot:"#0ea5e9", lBg:"rgba(2,132,199,0.09)",  lTx:"#075985", lDot:"#0284c7" },
-  css:           { label:"CSS / SVG",    dBg:"rgba(251,146,60,0.13)",  dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.09)",  lTx:"#9a3412", lDot:"#ea580c" },
-  react:         { label:"React",        dBg:"rgba(96,165,250,0.13)",  dTx:"#93c5fd", dDot:"#60a5fa", lBg:"rgba(37,99,235,0.09)",  lTx:"#1e3a8a", lDot:"#2563eb" },
-  angular:       { label:"Angular",      dBg:"rgba(220,53,69,0.14)",   dTx:"#fca5a5", dDot:"#ef4444", lBg:"rgba(185,28,28,0.09)",  lTx:"#991b1b", lDot:"#dc2626" },
-  headless:      { label:"Headless",     dBg:"rgba(248,113,113,0.13)", dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(159,18,57,0.09)",  lTx:"#881337", lDot:"#e11d48" },
-  multi:         { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.12)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.09)",   lTx:"#065f46", lDot:"#059669" },
-  collections:   { label:"Collection",   dBg:"rgba(245,158,11,0.14)",  dTx:"#fcd34d", dDot:"#f59e0b", lBg:"rgba(180,83,9,0.09)",   lTx:"#92400e", lDot:"#d97706" },
-  "design-tools":{ label:"Design",       dBg:"rgba(245,100,60,0.14)",  dTx:"#fdb09a", dDot:"#f56040", lBg:"rgba(180,50,20,0.09)",  lTx:"#7c1d06", lDot:"#dc4020" },
-  "dev-tools":   { label:"Dev Tool",     dBg:"rgba(20,184,166,0.13)",  dTx:"#5eead4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.09)", lTx:"#134e4a", lDot:"#0d9488" },
+  // Nebula-themed category badges — glass-tinted, luminous colors
+  animated:      { label:"Animated",     dBg:"rgba(251,146,60,0.15)",  dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.1)",   lTx:"#9a3412", lDot:"#ea580c" },
+  shadcn:        { label:"shadcn",       dBg:"rgba(34,197,94,0.15)",   dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.1)",   lTx:"#14532d", lDot:"#16a34a" },
+  tailwind:      { label:"Tailwind",     dBg:"rgba(56,189,248,0.15)",  dTx:"#bae6fd", dDot:"#38bdf8", lBg:"rgba(2,132,199,0.1)",   lTx:"#075985", lDot:"#0284c7" },
+  css:           { label:"CSS / HTML",   dBg:"rgba(251,191,36,0.15)",  dTx:"#fde68a", dDot:"#fbbf24", lBg:"rgba(180,83,9,0.1)",    lTx:"#92400e", lDot:"#d97706" },
+  react:         { label:"React",        dBg:"rgba(6,182,212,0.15)",   dTx:"#a5f3fc", dDot:"#06b6d4", lBg:"rgba(14,116,144,0.1)",  lTx:"#164e63", lDot:"#0891b2" },
+  angular:       { label:"Angular",      dBg:"rgba(248,113,113,0.15)", dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(185,28,28,0.1)",   lTx:"#991b1b", lDot:"#dc2626" },
+  headless:      { label:"Headless",     dBg:"rgba(192,132,252,0.15)", dTx:"#e9d5ff", dDot:"#c084fc", lBg:"rgba(109,40,217,0.1)",  lTx:"#5b21b6", lDot:"#7c3aed" },
+  "vue-svelte":  { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.15)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.1)",    lTx:"#065f46", lDot:"#059669" },
+  multi:         { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.15)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.1)",    lTx:"#065f46", lDot:"#059669" },
+  collections:   { label:"Collection",   dBg:"rgba(236,72,153,0.15)",  dTx:"#fbcfe8", dDot:"#ec4899", lBg:"rgba(157,23,77,0.1)",   lTx:"#831843", lDot:"#db2777" },
+  "design-tools":{ label:"Design",       dBg:"rgba(168,85,247,0.15)",  dTx:"#ddd6fe", dDot:"#a855f7", lBg:"rgba(109,40,217,0.1)",  lTx:"#5b21b6", lDot:"#7c3aed" },
+  "dev-tools":   { label:"Dev Tool",     dBg:"rgba(20,184,166,0.15)",  dTx:"#99f6e4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.1)",  lTx:"#134e4a", lDot:"#0d9488" },
 };
 
-function EmptyState({ query, fw, onClear, t }) {
+function EmptyState({ query, onClear, t }) {
   return (
     <div style={{ textAlign:"center", padding:"4rem 1rem 3rem" }}>
       <svg width="56" height="56" viewBox="0 0 64 64" fill="none" style={{ margin:"0 auto 1rem", display:"block", opacity:0.3 }}>
@@ -251,7 +273,6 @@ export default function App() {
   const [active,      setActive]      = useState(init.cat);
   const [query,       setQuery]       = useState(init.q);
   const [debouncedQ,  setDebouncedQ]  = useState(init.q);
-  const [fw,          setFw]          = useState(init.fw);
   const [dark,        setDark]        = useState(getSavedTheme);
   const [filterOpen,  setFilterOpen]  = useState(false);
   const [filterClosing, setFilterClosing] = useState(false);
@@ -271,14 +292,13 @@ export default function App() {
     const t = setTimeout(() => setDebouncedQ(query), 150);
     return () => clearTimeout(t);
   }, [query]);
-  useEffect(() => { setUrlParams(active, query, fw); }, [active, query, fw]);
+  useEffect(() => { setUrlParams(active, query); }, [active, query]);
   useEffect(() => {
     const parts = [];
     if (active !== "all") parts.push(CATEGORIES.find(c => c.id === active)?.label || active);
-    if (fw !== "all") parts.push(fw);
     if (query) parts.push(`"${query}"`);
     document.title = parts.length > 0 ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
-  }, [active, fw, query]);
+  }, [active, query]);
   useEffect(() => {
     const fn = () => { const y = window.scrollY; setShowTop(y > 500); setFloatVis(y > 400); };
     window.addEventListener("scroll", fn, { passive:true });
@@ -289,7 +309,8 @@ export default function App() {
       const inInput = ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
       if (e.key === "/" && !inInput) { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === "Escape") {
-        setQuery(""); closeDrawer(); searchRef.current?.blur();
+        if (query) { setQuery(""); } else { closeDrawer(); }
+        searchRef.current?.blur();
       }
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         if (inInput) return;
@@ -320,13 +341,12 @@ export default function App() {
   const filtered = useMemo(() => {
     const q = debouncedQ.toLowerCase();
     return LIBS.filter(l => {
-      const matchCat = active === "all" || l.cat === active;
+      const resolvedCat = CAT_RESOLVE(l.cat);
+      const matchCat = active === "all" || resolvedCat === active || l.cat === active;
       const matchQ   = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q);
-      const stacks   = LIB_STACKS[l.id] || [];
-      const matchFw  = fw === "all" || stacks.includes(fw);
-      return matchCat && matchQ && matchFw;
+      return matchCat && matchQ;
     });
-  }, [active, debouncedQ, fw]);
+  }, [active, debouncedQ]);
 
   const counts = useMemo(() => {
     const c = { all: LIBS.length };
@@ -334,13 +354,13 @@ export default function App() {
     return c;
   }, []);
 
-  const activeFilters = (active !== "all" ? 1 : 0) + (fw !== "all" ? 1 : 0) + (query ? 1 : 0);
+  const activeFilters = (active !== "all" ? 1 : 0) + (query ? 1 : 0);
 
   function closeDrawer() {
     setFilterClosing(true);
     setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 220);
   }
-  function clearAll() { setQuery(""); setFw("all"); setActive("all"); closeDrawer(); }
+  function clearAll() { setQuery(""); setActive("all"); closeDrawer(); }
 
   function applyFilters() { closeDrawer(); }
 
@@ -379,90 +399,119 @@ export default function App() {
   const [sent, setSent]         = useState(false);
 
   // ── Theme tokens ───────────────────────────────────────────────
-  // DARK: Crimson palette | LIGHT: Sand palette
-  // Dark uses same warmth/saturation family as light, just inverted brightness
+  // ── NEBULA GLASSMORPHISM THEME ──────────────────────────────────────
+  // Dark: deep space with colored nebula orbs + frosted glass surfaces
+  // Light: soft warm paper with tinted glass elements
   const t = {
-    // Base
-    bg:         D ? "#180f0f"                         : "#fdf6ed",
-    hBg:        D ? "rgba(24,15,15,0.95)"             : "rgba(253,246,237,0.97)",
-    hBorder:    D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
-    // Cards
-    card:       D ? "#211414"                         : "#ffffff",
-    cardBorder: D ? "rgba(255,200,180,0.08)"          : "#ede0d0",
-    cardHover:  D ? "#2a1818"                         : "#fff8f0",
-    cardHBorder:D ? "rgba(224,80,80,0.4)"             : "#c87820",
-    cardShadow: D ? "0 1px 4px rgba(0,0,0,0.4)"      : "0 1px 4px rgba(120,80,0,0.07)",
-    cardHShadow:D ? "0 6px 24px rgba(0,0,0,0.5)"     : "0 6px 20px rgba(120,80,0,0.12)",
-    hlBg:       D ? "rgba(224,80,80,0.1)"             : "rgba(200,120,32,0.08)",
-    hlBorder:   D ? "rgba(224,80,80,0.55)"            : "rgba(200,120,32,0.5)",
-    // Text hierarchy — WCAG AA on both
-    title:      D ? "#f5e8e8"                         : "#2a1f0f",   // AAA contrast
-    desc:       D ? "#c49090"                         : "#5c4a30",   // AA contrast
-    url:        D ? "#7a4f50"                         : "#a08060",
-    eyebrow:    D ? "#6a3838"                         : "#8a6040",
-    // Controls
-    ctrl:       D ? "rgba(255,255,255,0.05)"          : "rgba(0,0,0,0.04)",
-    ctrlBorder: D ? "rgba(255,200,180,0.12)"          : "#e0cdb8",
-    ctrlText:   D ? "#c49090"                         : "#7a5a30",
-    // Search
-    sBg:        D ? "rgba(255,255,255,0.06)"          : "#ffffff",
-    sBorder:    D ? "rgba(255,200,180,0.15)"          : "#e0cdb8",
-    sColor:     D ? "#f5e8e8"                         : "#2a1f0f",
-    sPh:        D ? "#7a4f50"                         : "#b09070",
-    // Tabs (inside filter drawer)
-    tabBg:      D ? "rgba(255,255,255,0.04)"          : "rgba(0,0,0,0.03)",
-    tabABg:     D ? "rgba(224,80,80,0.15)"            : "rgba(200,120,32,0.12)",
-    tabC:       D ? "#a87070"                         : "#7a5a30",
-    tabAC:      D ? "#f5c0c0"                         : "#6a3800",
-    tabABorder: D ? "rgba(224,80,80,0.4)"             : "rgba(200,120,32,0.45)",
-    // Accent
-    acc:        D ? "#e05050"                         : "#c87820",
-    accHover:   D ? "#f06060"                         : "#b06810",
-    // Drawer
-    drawerBg:   D ? "#1e1010"                         : "#fefaf4",
-    drawerBorder:D? "rgba(255,200,180,0.1)"           : "#e8ddd0",
-    // Misc
-    div:        D ? "rgba(255,200,180,0.08)"          : "#ede0d0",
-    arrow:      D ? "#4a2828"                         : "#c0a070",
-    foot:       D ? "#6a3838"                         : "#a08060",
-    h1:         D ? "linear-gradient(135deg,#f5e8e8 0%,#e05050 100%)" : undefined,
-    h1C:        D ? undefined                         : "#2a1f0f",
-    glow:       D ? "radial-gradient(ellipse 70% 35% at 50% -5%,rgba(200,40,40,0.18) 0%,transparent 70%)" : "none",
-    float:      D ? "#c03030"                         : "#c87820",
-    stBg:       D ? "rgba(255,255,255,0.07)"          : "rgba(0,0,0,0.04)",
-    stTx:       D ? "#8a5858"                         : "#8a6840",
-    nBg:        D ? "rgba(200,120,32,0.14)"           : "rgba(200,120,32,0.1)",
-    nTx:        D ? "#f5c060"                         : "#7a4010",
-    hlMark:     D ? "rgba(224,80,80,0.25)"            : "rgba(200,120,32,0.2)",
-    recentBg:   D ? "rgba(255,255,255,0.02)"          : "rgba(0,0,0,0.02)",
-    recentB:    D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
-    filterBadge:D ? "#e05050"                         : "#c87820",
-    // form inputs
-    iBg:        D ? "rgba(255,255,255,0.05)"          : "#fdf0e0",
-    iBorder:    D ? "rgba(255,200,180,0.15)"          : "#e0cdb8",
-    iColor:     D ? "#f5e8e8"                         : "#2a1f0f",
-    label:      D ? "#c49090"                         : "#5c4a30",
-    submit:     D ? "#c03030"                         : "#c87820",
-    suggBg:     D ? "#211414"                         : "#ffffff",
-    suggB:      D ? "rgba(255,200,180,0.08)"          : "#e8ddd0",
-    suggHBg:    D ? "rgba(224,80,80,0.07)"            : "rgba(200,120,32,0.05)",
-    suggHB:     D ? "rgba(224,80,80,0.18)"            : "rgba(200,120,32,0.2)",
-    fade:       D ? "linear-gradient(to right,transparent,rgba(24,15,15,0.95))" : "linear-gradient(to right,transparent,rgba(253,246,237,0.97))",
+    // ── Base backgrounds ──
+    // Dark: not pure black — deep space #05040f with hint of cosmic blue-purple
+    bg:         D ? "#05040f"                              : "#f2f0f7",
+    // Header glass: frosted, semi-transparent, blurs nebula behind it
+    hBg:        D ? "rgba(8,6,20,0.72)"                   : "rgba(242,240,247,0.88)",
+    hBorder:    D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
+
+    // ── Glass cards — the heart of glassmorphism ──
+    // Dark glass: very subtle white tint + blur (applied via CSS class)
+    card:       D ? "rgba(255,255,255,0.045)"              : "rgba(255,255,255,0.75)",
+    cardBorder: D ? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.15)",
+    cardHover:  D ? "rgba(255,255,255,0.075)"              : "rgba(255,255,255,0.95)",
+    cardHBorder:D ? "rgba(180,130,255,0.5)"                : "rgba(120,80,200,0.45)",
+    // Glass shadow: colored glow, not plain black
+    cardShadow: D ? "0 2px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)" : "0 2px 12px rgba(100,60,180,0.08)",
+    cardHShadow:D ? "0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(140,80,255,0.12)"   : "0 8px 28px rgba(100,60,180,0.14)",
+    // Random highlight: nebula pulse
+    hlBg:       D ? "rgba(140,80,255,0.12)"                : "rgba(120,80,200,0.08)",
+    hlBorder:   D ? "rgba(180,130,255,0.55)"               : "rgba(120,80,200,0.5)",
+
+    // ── Text — WCAG AA on glass ──
+    // On glass we need high contrast — pure white on dark, deep ink on light
+    title:      D ? "#ffffff"                              : "#1a1030",
+    desc:       D ? "rgba(220,210,255,0.82)"               : "#3d2f6a",
+    url:        D ? "rgba(180,160,255,0.45)"               : "rgba(100,70,180,0.55)",
+    eyebrow:    D ? "rgba(180,160,255,0.5)"                : "rgba(100,70,180,0.6)",
+
+    // ── Controls: glass buttons ──
+    ctrl:       D ? "rgba(255,255,255,0.06)"               : "rgba(255,255,255,0.6)",
+    ctrlBorder: D ? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.18)",
+    ctrlText:   D ? "rgba(220,210,255,0.7)"                : "#3d2f6a",
+
+    // ── Search: glass input ──
+    sBg:        D ? "rgba(255,255,255,0.07)"               : "rgba(255,255,255,0.8)",
+    sBorder:    D ? "rgba(255,255,255,0.12)"               : "rgba(120,80,200,0.2)",
+    sColor:     D ? "#ffffff"                              : "#1a1030",
+    sPh:        D ? "rgba(180,160,255,0.4)"                : "rgba(100,70,180,0.4)",
+
+    // ── Filter drawer tabs ──
+    tabBg:      D ? "rgba(255,255,255,0.04)"               : "rgba(255,255,255,0.4)",
+    tabABg:     D ? "rgba(160,100,255,0.18)"               : "rgba(120,80,200,0.12)",
+    tabC:       D ? "rgba(200,180,255,0.55)"               : "#5a3f9a",
+    tabAC:      D ? "#e8d8ff"                              : "#2d1a5e",
+    tabABorder: D ? "rgba(180,130,255,0.45)"               : "rgba(120,80,200,0.45)",
+
+    // ── Accent: nebula violet-blue ──
+    acc:        D ? "#a855f7"                              : "#7c3aed",
+    accHover:   D ? "#c084fc"                              : "#6d28d9",
+
+    // ── Drawer: deep glass sheet ──
+    drawerBg:   D ? "rgba(8,6,20,0.94)"                   : "rgba(242,240,247,0.97)",
+    drawerBorder:D? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.15)",
+
+    // ── Misc ──
+    div:        D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.1)",
+    arrow:      D ? "rgba(180,160,255,0.3)"                : "rgba(100,70,180,0.3)",
+    foot:       D ? "rgba(180,160,255,0.35)"               : "rgba(100,70,180,0.45)",
+
+    // ── H1: nebula gradient (white → cyan-violet) ──
+    h1:         D ? "linear-gradient(135deg,#ffffff 0%,#c084fc 50%,#67e8f9 100%)" : undefined,
+    h1C:        D ? undefined                              : "#1a1030",
+
+    // ── No static glow — handled by animated blobs ──
+    glow:       "none",
+
+    float:      D ? "#8b5cf6"                              : "#7c3aed",
+
+    // ── Stack tags: subtle glass tint ──
+    stBg:       D ? "rgba(255,255,255,0.07)"               : "rgba(120,80,200,0.07)",
+    stTx:       D ? "rgba(200,180,255,0.55)"               : "#5a3f9a",
+
+    // ── New badge: cyan-teal nebula ──
+    nBg:        D ? "rgba(34,211,238,0.13)"                : "rgba(5,182,212,0.1)",
+    nTx:        D ? "#67e8f9"                              : "#0e7490",
+
+    hlMark:     D ? "rgba(168,85,247,0.3)"                 : "rgba(124,58,237,0.18)",
+    recentBg:   D ? "rgba(255,255,255,0.03)"               : "rgba(255,255,255,0.4)",
+    recentB:    D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
+    filterBadge:D ? "#a855f7"                              : "#7c3aed",
+
+    // ── Form inputs ──
+    iBg:        D ? "rgba(255,255,255,0.06)"               : "rgba(255,255,255,0.8)",
+    iBorder:    D ? "rgba(255,255,255,0.12)"               : "rgba(120,80,200,0.2)",
+    iColor:     D ? "#ffffff"                              : "#1a1030",
+    label:      D ? "rgba(220,210,255,0.7)"                : "#3d2f6a",
+    submit:     D ? "#8b5cf6"                              : "#7c3aed",
+    suggBg:     D ? "rgba(255,255,255,0.04)"               : "rgba(255,255,255,0.75)",
+    suggB:      D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
+    suggHBg:    D ? "rgba(168,85,247,0.07)"                : "rgba(124,58,237,0.05)",
+    suggHB:     D ? "rgba(168,85,247,0.2)"                 : "rgba(124,58,237,0.15)",
+    fade:       D ? "linear-gradient(to right,transparent,rgba(5,4,15,0.95))"  : "linear-gradient(to right,transparent,rgba(242,240,247,0.95))",
   };
 
   const iStyle = { width:"100%", padding:"0.6rem 0.75rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:8, color:t.iColor, fontSize:"max(16px,13px)", outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.15s", minHeight:44 };
 
   return (
-    <div style={{ minHeight:"100vh", background:t.bg, color:t.title, fontFamily:"'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", transition:"background 0.2s,color 0.2s" }}>
+    <div style={{ minHeight:"100vh", background:D ? "#05040f" : t.bg, color:t.title, fontFamily:"'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", transition:"background 0.4s,color 0.3s" }}>
       <style>{`
         /* ── Keyframes ── */
         @keyframes fadeIn    { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeOut   { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-4px)} }
         @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideDown { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(100%)} }
-        @keyframes blob1     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(60px,-40px) scale(1.15)} 66%{transform:translate(-40px,30px) scale(0.92)} }
-        @keyframes blob2     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-70px,50px) scale(1.1)} 66%{transform:translate(50px,-30px) scale(0.95)} }
-        @keyframes blob3     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,60px) scale(0.9)} 66%{transform:translate(-50px,-40px) scale(1.12)} }
+        @keyframes blob1     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(80px,-60px) scale(1.18)} 66%{transform:translate(-50px,40px) scale(0.9)} }
+        @keyframes blob2     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-90px,60px) scale(1.12)} 66%{transform:translate(60px,-40px) scale(0.94)} }
+        @keyframes blob3     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(50px,80px) scale(0.88)} 66%{transform:translate(-60px,-50px) scale(1.15)} }
+        @keyframes shimmer   { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        @keyframes nebulaPulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+        @keyframes starTwinkle { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
 
         /* ── Base reset ── */
         *, *::before, *::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -470,14 +519,30 @@ export default function App() {
         html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
         body { margin:0; min-width:360px; }
 
-        /* ── Cards ── */
-        .card { transition:transform 0.18s ease,box-shadow 0.18s ease,background 0.12s,border-color 0.12s; }
+        /* ── Glassmorphism card ── */
+        .card {
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.15s, border-color 0.15s;
+        }
         .card:not([data-pinned]):active { transform:scale(0.982) !important; transition:transform 0.08s ease !important; }
         .card[data-pinned] { transform:none !important; }
-        .card:focus-within { outline:2px solid ${t.acc}; outline-offset:2px; }
+        .card:focus-within { outline:2px solid ${t.acc}99; outline-offset:2px; border-radius:13px; }
         .card a:focus { outline:none; }
 
-        /* ── Hover effects — desktop only ── */
+        /* ── Glass header ── */
+        header {
+          backdrop-filter: blur(20px) saturate(200%);
+          -webkit-backdrop-filter: blur(20px) saturate(200%);
+        }
+
+        /* ── Glass drawer ── */
+        .filter-drawer {
+          backdrop-filter: blur(24px) saturate(180%);
+          -webkit-backdrop-filter: blur(24px) saturate(180%);
+        }
+
+        /* ── Hover — desktop only ── */
         @media (hover:hover) {
           .card:not([data-pinned]):hover { transform:translateY(-2px); }
         }
@@ -528,14 +593,26 @@ export default function App() {
         header { padding-top:env(safe-area-inset-top); }
       `}</style>
 
-      {/* Aurora — dark only */}
+      {/* Nebula galaxy background — dark only */}
       {D && (
         <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, overflow:"hidden" }}>
-          <div style={{ position:"absolute", inset:0, background:t.glow }} />
-          <div style={{ position:"absolute", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle,rgba(200,40,40,0.12) 0%,transparent 70%)", top:"-15%", left:"20%", animation:"blob1 18s ease-in-out infinite", willChange:"transform" }} />
-          <div style={{ position:"absolute", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(180,30,30,0.09) 0%,transparent 70%)", top:"30%", right:"-10%", animation:"blob2 22s ease-in-out infinite", willChange:"transform" }} />
-          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(220,60,40,0.07) 0%,transparent 70%)", bottom:"5%", left:"10%", animation:"blob3 26s ease-in-out infinite", willChange:"transform" }} />
+          {/* Deep space base mesh */}
+          <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 120% 80% at 50% 0%,rgba(88,28,135,0.35) 0%,rgba(15,23,42,0.5) 40%,transparent 70%)" }} />
+          {/* Nebula orb 1 — violet/purple, top-left */}
+          <div style={{ position:"absolute", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle,rgba(139,92,246,0.28) 0%,rgba(109,40,217,0.12) 40%,transparent 70%)", top:"-20%", left:"-5%", filter:"blur(60px)", animation:"blob1 20s ease-in-out infinite", willChange:"transform" }} />
+          {/* Nebula orb 2 — cyan/teal, right */}
+          <div style={{ position:"absolute", width:550, height:550, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,0.22) 0%,rgba(14,116,144,0.1) 40%,transparent 70%)", top:"20%", right:"-8%", filter:"blur(50px)", animation:"blob2 25s ease-in-out infinite", willChange:"transform" }} />
+          {/* Nebula orb 3 — pink/magenta, bottom-center */}
+          <div style={{ position:"absolute", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(236,72,153,0.2) 0%,rgba(157,23,77,0.08) 40%,transparent 70%)", bottom:"-10%", left:"30%", filter:"blur(55px)", animation:"blob3 30s ease-in-out infinite", willChange:"transform" }} />
+          {/* Nebula orb 4 — deep blue, bottom-left */}
+          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(59,130,246,0.18) 0%,rgba(29,78,216,0.08) 40%,transparent 70%)", bottom:"10%", left:"-5%", filter:"blur(45px)", animation:"blob1 35s ease-in-out infinite reverse", willChange:"transform" }} />
+          {/* Star field overlay */}
+          <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.4) 0%,transparent 100%),radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.3) 0%,transparent 100%),radial-gradient(1px 1px at 50% 60%,rgba(255,255,255,0.25) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 10% 80%,rgba(255,255,255,0.35) 0%,transparent 100%),radial-gradient(1px 1px at 70% 75%,rgba(255,255,255,0.2) 0%,transparent 100%),radial-gradient(1px 1px at 35% 15%,rgba(255,255,255,0.3) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 90% 50%,rgba(255,255,255,0.25) 0%,transparent 100%),radial-gradient(1px 1px at 60% 40%,rgba(255,255,255,0.2) 0%,transparent 100%)" }} />
         </div>
+      )}
+      {/* Light mode — subtle paper texture */}
+      {!D && (
+        <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, background:"radial-gradient(ellipse 80% 60% at 30% 20%,rgba(139,92,246,0.06) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,58,237,0.05) 0%,transparent 60%)" }} />
       )}
 
       {/* ── HEADER — single compact row ───────────────────── */}
@@ -567,7 +644,7 @@ export default function App() {
               </svg>
               <input ref={searchRef} type="text" placeholder="Search ( / )" value={query}
                 onChange={e => setQuery(e.target.value)}
-                style={{ width:"100%", padding:"0.5rem 1.75rem 0.5rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:8, color:t.sColor, fontSize:"max(16px,12.5px)", outline:"none", fontFamily:"inherit", transition:"border-color 0.15s" }}
+                style={{ width:"100%", padding:"0.5rem 1.75rem 0.5rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:10, color:t.sColor, fontSize:"max(16px,12.5px)", outline:"none", fontFamily:"inherit", transition:"border-color 0.2s", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}
                 onFocus={e => e.target.style.borderColor = t.acc}
                 onBlur={e => e.target.style.borderColor = t.sBorder}
               />
@@ -578,7 +655,7 @@ export default function App() {
 
             {/* Filter button */}
             <button data-filter-btn onClick={() => filterOpen ? closeDrawer() : setFilterOpen(true)}
-              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", minHeight:44, borderRadius:8, border:`1px solid ${filterOpen ? t.acc : t.ctrlBorder}`, background: filterOpen ? `${t.acc}18` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative" }}>
+              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", minHeight:44, borderRadius:10, border:`1px solid ${filterOpen ? t.acc+"80" : t.ctrlBorder}`, background: filterOpen ? `${t.acc}20` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
@@ -592,7 +669,7 @@ export default function App() {
 
             {/* Theme toggle — icon only */}
             <button onClick={() => setDark(d => !d)} title={D ? "Switch to light mode" : "Switch to dark mode"} aria-label={D ? "Switch to light mode" : "Switch to dark mode"}
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:8, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:10, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
               {D
                 ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
                 : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
@@ -600,7 +677,7 @@ export default function App() {
 
             {/* Share — icon only */}
             <button onClick={shareFilter} title="Copy link to current view" aria-label="Copy shareable link"
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:8, border:`1px solid ${copiedShare ? t.acc : t.ctrlBorder}`, background: copiedShare ? `${t.acc}18` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0 }}>
+              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:10, border:`1px solid ${copiedShare ? t.acc+"80" : t.ctrlBorder}`, background: copiedShare ? `${t.acc}20` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
               {copiedShare
                 ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                 : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
@@ -623,7 +700,7 @@ export default function App() {
           {/* backdrop */}
           <div onClick={() => closeDrawer()} style={{ position:"fixed", inset:0, zIndex:80, background:"rgba(0,0,0,0.4)", backdropFilter:"blur(2px)" }} />
           {/* sheet */}
-          <div data-filter-drawer className="filter-drawer" style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"20px 20px 0 0", maxHeight:"85vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:"0 -8px 40px rgba(0,0,0,0.3)" }}>
+          <div data-filter-drawer className="filter-drawer" style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"24px 24px 0 0", maxHeight:"85vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:D?"0 -8px 60px rgba(0,0,0,0.7), 0 -1px 0 rgba(255,255,255,0.08)":"0 -8px 40px rgba(100,60,200,0.15)" }}>
 
             {/* Scrollable inner */}
             <div className="filter-drawer-inner" style={{ padding:"0 1.25rem 2rem" }}>
@@ -648,39 +725,27 @@ export default function App() {
               </div>
             </div>
 
-            {/* Framework filter */}
-            <div style={{ marginBottom:"1.25rem" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.6rem" }}>Framework</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:"0.4rem" }}>
-                {FRAMEWORKS.map(f => {
-                  const on = fw === f.id;
-                  return (
-                    <button key={f.id} onClick={() => setFw(f.id)}
-                      style={{ padding:"0.5rem 1rem", minHeight:44, borderRadius:999, border:`1px solid ${on ? t.acc : t.ctrlBorder}`, background: on ? `${t.acc}18` : t.ctrl, color: on ? t.acc : t.ctrlText, fontSize:14, fontWeight: on ? 600 : 400, cursor:"pointer", transition:"all 0.12s" }}>
-                      {f.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Category filter */}
+            {/* Single clean category filter */}
             <div style={{ marginBottom:"1.5rem" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.6rem" }}>Category</div>
-              <div style={{ display:"flex", flexDirection:"column", gap:"0.25rem" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.75rem" }}>Browse by type</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"0.2rem" }}>
                 {CATEGORIES.map(cat => {
                   const on = active === cat.id;
+                  const catCount = cat.id === "all"
+                    ? LIBS.length
+                    : cat.id === "vue-svelte"
+                      ? LIBS.filter(l => l.cat === "multi" || l.cat === "vue-svelte").length
+                      : counts[cat.id] || 0;
                   return (
                     <button key={cat.id} onClick={() => setActive(cat.id)}
-                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.65rem 0.85rem", minHeight:48, borderRadius:10, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:15, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s", width:"100%" }}>
+                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.6rem 0.85rem", minHeight:48, borderRadius:10, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:14.5, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s", width:"100%" }}>
                       <span>{cat.label}</span>
-                      <span style={{ fontSize:11, color: on ? t.acc : t.eyebrow, opacity:0.7 }}>{counts[cat.id] || 0}</span>
+                      <span style={{ fontSize:12, fontWeight:500, padding:"0.1rem 0.55rem", borderRadius:999, background: on ? `${t.acc}20` : t.tabBg, color: on ? t.acc : t.eyebrow }}>{catCount}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
-
             {/* Bottom apply button — full width */}
             <button onClick={applyFilters}
               style={{ width:"100%", padding:"0.85rem", borderRadius:12, border:"none", background:t.acc, color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:"-0.01em", marginTop:"0.5rem" }}>
@@ -713,18 +778,13 @@ export default function App() {
                 <button onClick={() => setActive("all")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
               </span>
             )}
-            {fw !== "all" && (
-              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
-                {fw}
-                <button onClick={() => setFw("all")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
-              </span>
-            )}
+
           </div>
         )}
 
         {/* Recently viewed */}
-        {recent.length > 0 && !query && active === "all" && fw === "all" && (
-          <div className="recent-block" style={{ marginBottom:"1rem", padding:"0.65rem 0.9rem", background:t.recentBg, border:`1px solid ${t.recentB}`, borderRadius:10 }}>
+        {recent.length > 0 && !query && active === "all" && (
+          <div className="recent-block" style={{ marginBottom:"1rem", padding:"0.65rem 0.9rem", background:t.recentBg, border:`1px solid ${t.recentB}`, borderRadius:12, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"0.4rem" }}>
               <span style={{ fontSize:10, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase" }}>Recently Visited</span>
               <button onClick={() => { localStorage.removeItem("uidir-recent"); setRecent([]); }} style={{ fontSize:10, color:t.foot, background:"none", border:"none", cursor:"pointer" }}>Clear</button>
@@ -743,9 +803,9 @@ export default function App() {
 
         {/* Results */}
         {filtered.length === 0 ? (
-          <EmptyState query={query || fw} fw={fw} onClear={clearAll} t={t} />
+          <EmptyState query={query} onClear={clearAll} t={t} />
         ) : (
-          <div ref={listRef} key={`${active}-${fw}`} style={{ display:"flex", flexDirection:"column", gap:"0.45rem", animation:"fadeIn 0.18s ease" }}>
+          <div ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.45rem", animation:"fadeIn 0.18s ease" }}>
             {filtered.map(lib => {
               const m      = CAT_META[lib.cat] || CAT_META["dev-tools"];
               const bg     = D ? m.dBg  : m.lBg;
@@ -764,11 +824,11 @@ export default function App() {
                     padding:"clamp(0.75rem,2vw,0.9rem) clamp(0.75rem,2vw,1rem)",
                     background: isRand ? t.hlBg : t.card,
                     border: `1px solid ${isRand ? t.hlBorder : t.cardBorder}`,
-                    borderRadius:12,
+                    borderRadius:16,
                     boxShadow: isRand ? `0 0 0 2px ${t.hlBorder}, 0 8px 28px rgba(200,40,40,0.2)` : t.cardShadow,
                   }}
-                  onMouseEnter={e => { if(!isRand){ e.currentTarget.style.background=t.cardHover; e.currentTarget.style.borderColor=t.cardHBorder; e.currentTarget.style.boxShadow=t.cardHShadow; }}}
-                  onMouseLeave={e => { if(!isRand){ e.currentTarget.style.background=t.card; e.currentTarget.style.borderColor=t.cardBorder; e.currentTarget.style.boxShadow=t.cardShadow; }}}
+                  onMouseEnter={e => { if(!isRand){ e.currentTarget.style.background=t.cardHover; e.currentTarget.style.borderColor=t.cardHBorder; e.currentTarget.style.boxShadow=t.cardHShadow; e.currentTarget.style.transform="translateY(-2px)"; }}}
+                  onMouseLeave={e => { if(!isRand){ e.currentTarget.style.background=t.card; e.currentTarget.style.borderColor=t.cardBorder; e.currentTarget.style.boxShadow=t.cardShadow; e.currentTarget.style.transform="none"; }}}
                 >
                   <span style={{ width:7, height:7, borderRadius:"50%", background:dot, flexShrink:0, boxShadow:isRand?`0 0 10px ${dot}`:"none", marginTop:1 }} />
 
@@ -780,24 +840,18 @@ export default function App() {
                       <span className="card-name" style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
                         <Highlight text={lib.name} query={query} color={t.hlMark} />
                       </span>
-                      <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.45rem", borderRadius:4, background:bg, color:tx }}>
+                      <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.12rem 0.5rem", borderRadius:5, background:bg, color:tx, backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", border:`1px solid ${tx}30` }}>
                         {m.label}
                       </span>
                       {isNew && (
-                        <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.09rem 0.45rem", borderRadius:4, background:t.nBg, color:t.nTx }}>
+                        <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.12rem 0.5rem", borderRadius:5, background:t.nBg, color:t.nTx, border:`1px solid ${t.nTx}40`, backdropFilter:"blur(8px)" }}>
                           New
                         </span>
                       )}
                       {stacks.map(s => (
                         <span key={s}
-                          onClick={e => { e.preventDefault(); e.stopPropagation(); setFw(f => f === s ? "all" : s); }}
-                          title={fw === s ? `Remove "${s}" filter` : `Filter by ${s}`}
-                          aria-label={fw === s ? `Remove ${s} filter` : `Filter by ${s}`}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={e => e.key === "Enter" && setFw(f => f === s ? "all" : s)}
-                          style={{ fontSize:9.5, fontWeight:500, padding:"0.07rem 0.38rem", borderRadius:4, background: fw===s ? `${t.acc}18` : t.stBg, color: fw===s ? t.acc : t.stTx, border:`1px solid ${fw===s ? t.acc+"40" : t.div}`, cursor:"pointer", transition:"background 0.12s,color 0.12s,border-color 0.12s", userSelect:"none" }}>
-                          {fw === s ? `✕ ${s}` : s}
+                          style={{ fontSize:9.5, fontWeight:500, padding:"0.07rem 0.38rem", borderRadius:4, background:t.stBg, color:t.stTx, border:`1px solid ${t.div}`, userSelect:"none" }}>
+                          {s}
                         </span>
                       ))}
                     </div>
@@ -830,7 +884,7 @@ export default function App() {
         )}
 
         {/* Suggestion box */}
-        <div style={{ marginTop:"1.75rem", borderRadius:13, border:`1px solid ${t.suggB}`, background:t.suggBg, overflow:"hidden" }}>
+        <div style={{ marginTop:"1.75rem", borderRadius:18, border:`1px solid ${t.suggB}`, background:t.suggBg, overflow:"hidden", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", boxShadow:D?"0 4px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)":"0 4px 20px rgba(100,60,200,0.08)" }}>
           <button onClick={() => setSuggOpen(o => !o)}
             style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem", padding:"0.85rem 1rem", background:t.suggHBg, border:"none", borderBottom:suggOpen?`1px solid ${t.suggHB}`:"1px solid transparent", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"center", gap:"0.5rem" }}>
@@ -910,7 +964,7 @@ export default function App() {
         )}
         {floatVis && (
           <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-            style={{ height:44, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0 1rem", borderRadius:999, border:"none", background:t.float, color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:`0 4px 18px ${t.float}60`, backdropFilter:"blur(10px)", whiteSpace:"nowrap" }}>
+            style={{ height:44, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0 1rem", borderRadius:999, border:`1px solid rgba(255,255,255,0.15)`, background:D?"rgba(139,92,246,0.75)":t.float, color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:D?`0 4px 24px rgba(139,92,246,0.5), 0 0 0 1px rgba(255,255,255,0.1)`:`0 4px 18px ${t.float}60`, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", whiteSpace:"nowrap" }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
             Suggest
           </button>
