@@ -1,14 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 
-// ── Theme ──────────────────────────────────────────────────────────
-function getSavedTheme() {
-  try { return localStorage.getItem("uidir-theme") !== "light"; } catch { return true; }
-}
-function saveTheme(dark) {
-  try { localStorage.setItem("uidir-theme", dark ? "dark" : "light"); } catch {}
-}
-
-// ── Recent ─────────────────────────────────────────────────────────
+// ── Persist helpers ────────────────────────────────────────────────
 function getRecent() {
   try { return JSON.parse(localStorage.getItem("uidir-recent") || "[]"); } catch { return []; }
 }
@@ -19,7 +11,7 @@ function addRecent(lib) {
   } catch {}
 }
 
-// ── URL ────────────────────────────────────────────────────────────
+// ── URL state ─────────────────────────────────────────────────────
 function getUrlParams() {
   if (typeof window === "undefined") return { cat: "all", q: "" };
   const p = new URLSearchParams(window.location.search);
@@ -33,15 +25,15 @@ function setUrlParams(cat, q) {
   window.history.replaceState(null, "", str ? `?${str}` : window.location.pathname);
 }
 
-// ── Highlight ──────────────────────────────────────────────────────
-function Highlight({ text, query, color }) {
+// ── Search highlight ──────────────────────────────────────────────
+function Highlight({ text, query }) {
   if (!query) return <>{text}</>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
   if (idx === -1) return <>{text}</>;
   return (
     <>
       {text.slice(0, idx)}
-      <mark style={{ background: color, color: "inherit", borderRadius: 2, padding: "0 1px" }}>
+      <mark style={{ background: "rgba(193,125,60,0.18)", color: "inherit", borderRadius: 2, padding: "0 1px" }}>
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -49,79 +41,75 @@ function Highlight({ text, query, color }) {
   );
 }
 
-// ── Data ───────────────────────────────────────────────────────────
-// Framework filter removed — categories are the single source of truth
-
+// ── Data ──────────────────────────────────────────────────────────
 const CATEGORIES = [
-  { id: "all",          label: "All",            emoji: "" },
-  { id: "animated",     label: "Animated",       emoji: "✦" },
-  { id: "shadcn",       label: "shadcn",         emoji: "" },
-  { id: "tailwind",     label: "Tailwind",       emoji: "" },
-  { id: "react",        label: "React",          emoji: "" },
-  { id: "vue-svelte",   label: "Vue / Svelte",   emoji: "" },
-  { id: "angular",      label: "Angular",        emoji: "" },
-  { id: "headless",     label: "Headless",       emoji: "" },
-  { id: "css",          label: "CSS / HTML",     emoji: "" },
-  { id: "collections",  label: "Collections",    emoji: "" },
-  { id: "design-tools", label: "Design Tools",   emoji: "" },
-  { id: "dev-tools",    label: "Dev Tools",      emoji: "" },
+  { id: "all",           label: "All" },
+  { id: "animated",      label: "Animated" },
+  { id: "shadcn",        label: "shadcn" },
+  { id: "tailwind",      label: "Tailwind" },
+  { id: "react",         label: "React" },
+  { id: "vue-svelte",    label: "Vue / Svelte" },
+  { id: "angular",       label: "Angular" },
+  { id: "headless",      label: "Headless" },
+  { id: "css",           label: "CSS / HTML" },
+  { id: "collections",   label: "Collections" },
+  { id: "design-tools",  label: "Design Tools" },
+  { id: "dev-tools",     label: "Dev Tools" },
 ];
 
-// Map: "vue-svelte" category merges old "multi" cat
 const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
 
+// Category accent colors — muted ink tones, not neon
+const CAT_COLOR = {
+  animated:      "#B85C2C",
+  shadcn:        "#2E7D52",
+  tailwind:      "#1B6CA8",
+  css:           "#7A5C1E",
+  react:         "#1A6B7A",
+  angular:       "#A02525",
+  headless:      "#5B3A8A",
+  "vue-svelte":  "#2A7A5A",
+  multi:         "#2A7A5A",
+  collections:   "#8A3A6A",
+  "design-tools":"#6A3A8A",
+  "dev-tools":   "#2A6A6A",
+};
+
 const LIB_STACKS = {
-  // Animated — React based
   1:["React","Tailwind"], 2:["React","Tailwind"], 3:["React"],
   4:["React","Tailwind"], 5:["React","shadcn"],   6:["React"],
   7:["React"],            8:["React","Tailwind"], 9:["React"],
   10:["React","shadcn"],  11:["React"],           12:["React","Tailwind"],
   13:["React","Tailwind"],15:["React"],
-  // shadcn ecosystem
   16:["React","shadcn"],  17:["React","shadcn"],  18:["React","shadcn"],
   19:["React","shadcn"],  20:["React","shadcn"],  21:["React","shadcn"],
   22:["React","shadcn"],  23:["React","shadcn"],  24:["React","shadcn"],
   25:["React","shadcn"],  26:["React","shadcn"],  27:["React","shadcn"],
   28:["React","shadcn"],  79:["React","shadcn"],
-  // Tailwind CSS (HTML-first, no specific JS framework)
   29:["Tailwind"],        30:["Tailwind","React","Vue"],
   31:["Tailwind"],        32:["Tailwind"],        33:["Tailwind"],
   77:["Tailwind"],        78:["React","Tailwind"],34:["Tailwind"],
   35:["Tailwind"],        36:["Tailwind"],        37:["Tailwind"],
   38:["Tailwind"],        39:["Tailwind"],
-  // CSS / HTML / SVG — pure CSS, no framework
   40:["CSS"],             41:["React","shadcn"],  42:["CSS"],
   43:["React","Tailwind"],44:["React","shadcn"],  45:["CSS"],
   46:["CSS"],             47:["CSS"],             48:["CSS"],
-  // Full React
   49:["React"],  50:["React"],  51:["React"],  52:["React"],
   53:["React"],  54:["React"],  75:["React","Tailwind"],
   80:["React"],  81:["React"],  82:["React"],  83:["React"],
   85:["React"],  55:["React"],  56:["React"],  57:["React"],
-  // Angular
   95:["Angular"],  96:["Angular"],  97:["Angular"],
-  // Headless
   58:["React"],  59:["React","Vue"],  60:["React"],
   61:["React"],  84:["React","Vue","Svelte"],
-  // Vue / Svelte / Multi
   14:["Vue"],    62:["Svelte"],  63:["Svelte"],
   76:["React","Vue","Svelte"],  64:["Vue"],  65:["Vue"],  93:["Vue"],
-  // Collections
   66:["React","Tailwind"],  67:["React","Tailwind","shadcn"],  68:["React"],
-  // Design Tools
   70:["CSS","Tailwind"],  71:["CSS"],   87:["Design"],
   91:["Design"],          94:["CSS"],   86:["Design"],  90:["Design"],
-  // Dev Tools
   72:["React"],  73:["React","Vue","Svelte"],  88:["React","Vue"],  89:["Design"],
-  // New libraries (research-added 2026)
-  98:["Tailwind"],          // Pines UI — Alpine+Tailwind, Tailwind category
-  99:["React"],             // Tamagui — React + React Native
-  100:["React"],            // NativeWind — React Native
-  101:["Design"],           // fffuel — SVG generators
-  102:["Design"],           // WebGradients
-  103:["Design","CSS"],     // CSS Gradient
-  104:["Tailwind"],         // Pinemix — Alpine+Tailwind
-  105:["Design","CSS"],     // FrontendBaba
+  98:["Tailwind"],  99:["React"],  100:["React"],
+  101:["Design"],   102:["Design"], 103:["Design","CSS"],
+  104:["Tailwind"], 105:["Design","CSS"],
 };
 
 const LIBS = [
@@ -218,139 +206,125 @@ const LIBS = [
   { id:72, name:"Lordicon",             url:"lordicon.com",                        cat:"dev-tools",     desc:"1000+ animated Lottie icons with a free tier", added:"2020-01" },
   { id:73, name:"Lucide Icons",         url:"lucide.dev",                          cat:"dev-tools",     desc:"1000+ open-source icons — MIT-licensed, React/Vue/Svelte packages included", added:"2021-01" },
   { id:88, name:"Iconify",              url:"iconify.design",                      cat:"dev-tools",     desc:"250,000+ SVG icons from 150+ icon sets under one unified API", added:"2020-01" },
-  { id:89,  name:"Squoosh",              url:"squoosh.app",                         cat:"dev-tools",     desc:"Open-source browser-based image compression — no upload, fully private", added:"2018-01" },
-
-  // ── NEW: Research-added ──
-  { id:98,  name:"Pines UI",             url:"devdojo.com/pines",                   cat:"tailwind",      desc:"Copy-paste Alpine.js + Tailwind UI library — animations, sliders, modals, tooltips, accordions, zero dependencies", added:"2026-02" },
-  { id:99,  name:"Tamagui",              url:"tamagui.dev",                         cat:"react",         desc:"Cross-platform React + React Native style library and UI kit with an optimizing compiler — write once, run on web and native", added:"2026-02" },
-  { id:100, name:"NativeWind",           url:"nativewind.dev",                      cat:"multi",         desc:"Tailwind CSS as a universal style system for React Native — same utility classes on iOS, Android, and web", added:"2026-02" },
-  { id:101, name:"fffuel",               url:"fffuel.co",                           cat:"design-tools",  desc:"Collection of free SVG generators for gradients, patterns, textures, blob shapes, and cool backgrounds — all copy-paste", added:"2026-02" },
-  { id:102, name:"WebGradients",         url:"webgradients.com",                    cat:"design-tools",  desc:"180 free linear gradients as CSS code, Sketch swatches, and PNG — copy-paste or download instantly", added:"2026-02" },
-  { id:103, name:"CSS Gradient",         url:"cssgradient.io",                      cat:"design-tools",  desc:"Free CSS gradient generator with live preview — create linear, radial, and conic gradients visually", added:"2026-02" },
-  { id:104, name:"Pinemix",              url:"pinemix.dev",                         cat:"tailwind",      desc:"Free open-source Alpine.js components styled with Tailwind CSS — accessible, interactive, copy-paste ready", added:"2026-02" },
-  { id:105, name:"FrontendBaba",         url:"frontendbaba.dev",                    cat:"dev-tools",     desc:"Free browser-based frontend tools — CSS gradient, clip-path, blob, glassmorphism, shadow generators and image utilities", added:"2026-02" },
+  { id:89, name:"Squoosh",              url:"squoosh.app",                         cat:"dev-tools",     desc:"Open-source browser-based image compression — no upload, fully private", added:"2018-01" },
+  { id:98, name:"Pines UI",             url:"devdojo.com/pines",                   cat:"tailwind",      desc:"Copy-paste Alpine.js + Tailwind UI library — animations, sliders, modals, tooltips, accordions, zero dependencies", added:"2026-02" },
+  { id:99, name:"Tamagui",              url:"tamagui.dev",                         cat:"react",         desc:"Cross-platform React + React Native style library and UI kit with an optimizing compiler", added:"2026-02" },
+  { id:100,name:"NativeWind",           url:"nativewind.dev",                      cat:"multi",         desc:"Tailwind CSS as a universal style system for React Native — same utility classes on iOS, Android, and web", added:"2026-02" },
+  { id:101,name:"fffuel",               url:"fffuel.co",                           cat:"design-tools",  desc:"Collection of free SVG generators for gradients, patterns, textures, blob shapes, and cool backgrounds", added:"2026-02" },
+  { id:102,name:"WebGradients",         url:"webgradients.com",                    cat:"design-tools",  desc:"180 free linear gradients as CSS code, Sketch swatches, and PNG — copy-paste or download instantly", added:"2026-02" },
+  { id:103,name:"CSS Gradient",         url:"cssgradient.io",                      cat:"design-tools",  desc:"Free CSS gradient generator with live preview — create linear, radial, and conic gradients visually", added:"2026-02" },
+  { id:104,name:"Pinemix",              url:"pinemix.dev",                         cat:"tailwind",      desc:"Free open-source Alpine.js components styled with Tailwind CSS — accessible, interactive, copy-paste ready", added:"2026-02" },
+  { id:105,name:"FrontendBaba",         url:"frontendbaba.dev",                    cat:"dev-tools",     desc:"Free browser-based frontend tools — CSS gradient, clip-path, blob, glassmorphism, shadow generators", added:"2026-02" },
 ];
 
 const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
 const VERIFIED_DATE = "August 2026";
-const RECIPIENT     = "your@email.com";
+const RECIPIENT     = "sugumarankugan@gmail.com";
 
-const CAT_META = {
-  // Nebula-themed category badges — glass-tinted, luminous colors
-  animated:      { label:"Animated",     dBg:"rgba(251,146,60,0.15)",  dTx:"#fdba74", dDot:"#f97316", lBg:"rgba(194,65,12,0.1)",   lTx:"#9a3412", lDot:"#ea580c" },
-  shadcn:        { label:"shadcn",       dBg:"rgba(34,197,94,0.15)",   dTx:"#86efac", dDot:"#22c55e", lBg:"rgba(22,163,74,0.1)",   lTx:"#14532d", lDot:"#16a34a" },
-  tailwind:      { label:"Tailwind",     dBg:"rgba(56,189,248,0.15)",  dTx:"#bae6fd", dDot:"#38bdf8", lBg:"rgba(2,132,199,0.1)",   lTx:"#075985", lDot:"#0284c7" },
-  css:           { label:"CSS / HTML",   dBg:"rgba(251,191,36,0.15)",  dTx:"#fde68a", dDot:"#fbbf24", lBg:"rgba(180,83,9,0.1)",    lTx:"#92400e", lDot:"#d97706" },
-  react:         { label:"React",        dBg:"rgba(6,182,212,0.15)",   dTx:"#a5f3fc", dDot:"#06b6d4", lBg:"rgba(14,116,144,0.1)",  lTx:"#164e63", lDot:"#0891b2" },
-  angular:       { label:"Angular",      dBg:"rgba(248,113,113,0.15)", dTx:"#fca5a5", dDot:"#f87171", lBg:"rgba(185,28,28,0.1)",   lTx:"#991b1b", lDot:"#dc2626" },
-  headless:      { label:"Headless",     dBg:"rgba(192,132,252,0.15)", dTx:"#e9d5ff", dDot:"#c084fc", lBg:"rgba(109,40,217,0.1)",  lTx:"#5b21b6", lDot:"#7c3aed" },
-  "vue-svelte":  { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.15)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.1)",    lTx:"#065f46", lDot:"#059669" },
-  multi:         { label:"Vue/Svelte",   dBg:"rgba(52,211,153,0.15)",  dTx:"#6ee7b7", dDot:"#34d399", lBg:"rgba(4,120,87,0.1)",    lTx:"#065f46", lDot:"#059669" },
-  collections:   { label:"Collection",   dBg:"rgba(236,72,153,0.15)",  dTx:"#fbcfe8", dDot:"#ec4899", lBg:"rgba(157,23,77,0.1)",   lTx:"#831843", lDot:"#db2777" },
-  "design-tools":{ label:"Design",       dBg:"rgba(168,85,247,0.15)",  dTx:"#ddd6fe", dDot:"#a855f7", lBg:"rgba(109,40,217,0.1)",  lTx:"#5b21b6", lDot:"#7c3aed" },
-  "dev-tools":   { label:"Dev Tool",     dBg:"rgba(20,184,166,0.15)",  dTx:"#99f6e4", dDot:"#14b8a6", lBg:"rgba(13,148,136,0.1)",  lTx:"#134e4a", lDot:"#0d9488" },
-};
-
-function EmptyState({ query, onClear, t }) {
+// ── Empty state ───────────────────────────────────────────────────
+function EmptyState({ onClear }) {
   return (
-    <div style={{ textAlign:"center", padding:"4rem 1rem 3rem" }}>
-      <svg width="56" height="56" viewBox="0 0 64 64" fill="none" style={{ margin:"0 auto 1rem", display:"block", opacity:0.3 }}>
-        <circle cx="28" cy="28" r="18" stroke={t.desc} strokeWidth="2.5"/>
-        <path d="M41 41L54 54" stroke={t.desc} strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M22 28h12M28 22v12" stroke={t.desc} strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-      </svg>
-      <div style={{ fontSize:15, fontWeight:600, color:t.title, marginBottom:"0.3rem" }}>No results found</div>
-      <div style={{ fontSize:13, color:t.desc, marginBottom:"1.25rem" }}>Try adjusting your filters or search term</div>
-      <button onClick={onClear} style={{ fontSize:13, fontWeight:500, color:t.acc, background:"none", border:`1px solid ${t.acc}40`, borderRadius:8, padding:"0.4rem 1rem", cursor:"pointer" }}>
-        Clear all filters
+    <div style={{ textAlign:"center", padding:"5rem 1rem 4rem" }}>
+      <div style={{ fontSize:32, marginBottom:12, opacity:0.25 }}>◎</div>
+      <div style={{ fontSize:15, fontWeight:600, color:"#1C1A17", marginBottom:6 }}>Nothing found</div>
+      <div style={{ fontSize:13, color:"#6B5F4B", marginBottom:20 }}>Try different keywords or clear filters</div>
+      <button onClick={onClear} style={{ fontSize:13, fontWeight:500, color:"#C17D3C", background:"none", border:"1px solid #C17D3C50", borderRadius:6, padding:"0.4rem 1rem", cursor:"pointer", transition:"all 0.15s" }}
+        onMouseEnter={e=>{e.currentTarget.style.background="#C17D3C10"}}
+        onMouseLeave={e=>{e.currentTarget.style.background="none"}}>
+        Clear filters
       </button>
     </div>
   );
 }
 
+// ── Main App ──────────────────────────────────────────────────────
 export default function App() {
   const init = getUrlParams();
   const [active,      setActive]      = useState(init.cat);
   const [query,       setQuery]       = useState(init.q);
   const [debouncedQ,  setDebouncedQ]  = useState(init.q);
-  const [dark,        setDark]        = useState(getSavedTheme);
   const [filterOpen,  setFilterOpen]  = useState(false);
-  const [filterClosing, setFilterClosing] = useState(false);
-  const [suggOpen,    setSuggOpen]    = useState(false);
+  const [filterClosing,setFilterClosing]=useState(false);
   const [copiedId,    setCopiedId]    = useState(null);
   const [copiedShare, setCopiedShare] = useState(false);
-  const [randomId,    setRandomId]    = useState(null);
   const [showTop,     setShowTop]     = useState(false);
-  const [floatVis,    setFloatVis]    = useState(false);
   const [recent,      setRecent]      = useState(getRecent);
+  const [suggOpen,    setSuggOpen]    = useState(false);
+  const [name,        setName]        = useState("");
+  const [siteName,    setSiteName]    = useState("");
+  const [siteUrl,     setSiteUrl]     = useState("");
+  const [reason,      setReason]      = useState("");
+  const [sent,        setSent]        = useState(false);
   const searchRef = useRef(null);
   const listRef   = useRef(null);
-  const D = dark;
 
-  useEffect(() => { saveTheme(dark); }, [dark]);
+  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQ(query), 150);
     return () => clearTimeout(t);
   }, [query]);
+
+  // URL sync
   useEffect(() => { setUrlParams(active, query); }, [active, query]);
+
+  // Page title
   useEffect(() => {
     const parts = [];
     if (active !== "all") parts.push(CATEGORIES.find(c => c.id === active)?.label || active);
     if (query) parts.push(`"${query}"`);
-    document.title = parts.length > 0 ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
+    document.title = parts.length ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
   }, [active, query]);
+
+  // Scroll listener
   useEffect(() => {
-    const fn = () => { const y = window.scrollY; setShowTop(y > 500); setFloatVis(y > 400); };
+    const fn = () => setShowTop(window.scrollY > 500);
     window.addEventListener("scroll", fn, { passive:true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const fn = (e) => {
       const inInput = ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
       if (e.key === "/" && !inInput) { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === "Escape") {
-        if (query) { setQuery(""); } else { closeDrawer(); }
+        if (query) setQuery("");
+        else closeDrawer();
         searchRef.current?.blur();
-      }
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        if (inInput) return;
-        e.preventDefault();
-        const cards = listRef.current?.querySelectorAll("a[data-card]");
-        if (!cards?.length) return;
-        const cur = Array.from(cards).indexOf(document.activeElement);
-        const next = e.key === "ArrowDown" ? Math.min(cur+1, cards.length-1) : Math.max(cur-1, 0);
-        cards[next]?.focus();
       }
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
-  }, []);
+  }, [query]);
 
-  // close filter drawer on outside click
+  // Close drawer on outside click
   useEffect(() => {
     if (!filterOpen) return;
     const fn = (e) => {
-      if (!e.target.closest("[data-filter-drawer]") && !e.target.closest("[data-filter-btn]")) {
-        closeDrawer();
-      }
+      if (!e.target.closest("[data-filter-drawer]") && !e.target.closest("[data-filter-btn]")) closeDrawer();
     };
     document.addEventListener("mousedown", fn);
     return () => document.removeEventListener("mousedown", fn);
   }, [filterOpen]);
 
+  // Filtered results
   const filtered = useMemo(() => {
     const q = debouncedQ.toLowerCase();
     return LIBS.filter(l => {
-      const resolvedCat = CAT_RESOLVE(l.cat);
-      const matchCat = active === "all" || resolvedCat === active || l.cat === active;
+      const resolved = CAT_RESOLVE(l.cat);
+      const matchCat = active === "all" || resolved === active || l.cat === active;
       const matchQ   = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q);
       return matchCat && matchQ;
     });
   }, [active, debouncedQ]);
 
+  // Category counts
   const counts = useMemo(() => {
     const c = { all: LIBS.length };
-    LIBS.forEach(l => { c[l.cat] = (c[l.cat] || 0) + 1; });
+    LIBS.forEach(l => {
+      const key = CAT_RESOLVE(l.cat);
+      c[key] = (c[key] || 0) + 1;
+    });
     return c;
   }, []);
 
@@ -358,11 +332,9 @@ export default function App() {
 
   function closeDrawer() {
     setFilterClosing(true);
-    setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 220);
+    setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 200);
   }
   function clearAll() { setQuery(""); setActive("all"); closeDrawer(); }
-
-  function applyFilters() { closeDrawer(); }
 
   function copyUrl(url, id, e) {
     e.preventDefault(); e.stopPropagation();
@@ -392,409 +364,323 @@ export default function App() {
     setTimeout(() => { setSent(false); setName(""); setSiteName(""); setSiteUrl(""); setReason(""); }, 3000);
   }
 
-  const [name, setName]         = useState("");
-  const [siteName, setSiteName] = useState("");
-  const [siteUrl, setSiteUrl]   = useState("");
-  const [reason, setReason]     = useState("");
-  const [sent, setSent]         = useState(false);
-
-  // ── Theme tokens ───────────────────────────────────────────────
-  // ── NEBULA GLASSMORPHISM THEME ──────────────────────────────────────
-  // Dark: deep space with colored nebula orbs + frosted glass surfaces
-  // Light: soft warm paper with tinted glass elements
-  const t = {
-    // ── Base backgrounds ──
-    // Dark: not pure black — deep space #05040f with hint of cosmic blue-purple
-    bg:         D ? "#05040f"                              : "#f2f0f7",
-    // Header glass: frosted, semi-transparent, blurs nebula behind it
-    hBg:        D ? "rgba(8,6,20,0.72)"                   : "rgba(242,240,247,0.88)",
-    hBorder:    D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
-
-    // ── Glass cards — the heart of glassmorphism ──
-    // Dark glass: very subtle white tint + blur (applied via CSS class)
-    card:       D ? "rgba(255,255,255,0.045)"              : "rgba(255,255,255,0.75)",
-    cardBorder: D ? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.15)",
-    cardHover:  D ? "rgba(255,255,255,0.075)"              : "rgba(255,255,255,0.95)",
-    cardHBorder:D ? "rgba(180,130,255,0.5)"                : "rgba(120,80,200,0.45)",
-    // Glass shadow: colored glow, not plain black
-    cardShadow: D ? "0 2px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)" : "0 2px 12px rgba(100,60,180,0.08)",
-    cardHShadow:D ? "0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(140,80,255,0.12)"   : "0 8px 28px rgba(100,60,180,0.14)",
-    // Random highlight: nebula pulse
-    hlBg:       D ? "rgba(140,80,255,0.12)"                : "rgba(120,80,200,0.08)",
-    hlBorder:   D ? "rgba(180,130,255,0.55)"               : "rgba(120,80,200,0.5)",
-
-    // ── Text — WCAG AA on glass ──
-    // On glass we need high contrast — pure white on dark, deep ink on light
-    title:      D ? "#ffffff"                              : "#1a1030",
-    desc:       D ? "rgba(220,210,255,0.82)"               : "#3d2f6a",
-    url:        D ? "rgba(180,160,255,0.45)"               : "rgba(100,70,180,0.55)",
-    eyebrow:    D ? "rgba(180,160,255,0.5)"                : "rgba(100,70,180,0.6)",
-
-    // ── Controls: glass buttons ──
-    ctrl:       D ? "rgba(255,255,255,0.06)"               : "rgba(255,255,255,0.6)",
-    ctrlBorder: D ? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.18)",
-    ctrlText:   D ? "rgba(220,210,255,0.7)"                : "#3d2f6a",
-
-    // ── Search: glass input ──
-    sBg:        D ? "rgba(255,255,255,0.07)"               : "rgba(255,255,255,0.8)",
-    sBorder:    D ? "rgba(255,255,255,0.12)"               : "rgba(120,80,200,0.2)",
-    sColor:     D ? "#ffffff"                              : "#1a1030",
-    sPh:        D ? "rgba(180,160,255,0.4)"                : "rgba(100,70,180,0.4)",
-
-    // ── Filter drawer tabs ──
-    tabBg:      D ? "rgba(255,255,255,0.04)"               : "rgba(255,255,255,0.4)",
-    tabABg:     D ? "rgba(160,100,255,0.18)"               : "rgba(120,80,200,0.12)",
-    tabC:       D ? "rgba(200,180,255,0.55)"               : "#5a3f9a",
-    tabAC:      D ? "#e8d8ff"                              : "#2d1a5e",
-    tabABorder: D ? "rgba(180,130,255,0.45)"               : "rgba(120,80,200,0.45)",
-
-    // ── Accent: nebula violet-blue ──
-    acc:        D ? "#a855f7"                              : "#7c3aed",
-    accHover:   D ? "#c084fc"                              : "#6d28d9",
-
-    // ── Drawer: deep glass sheet ──
-    drawerBg:   D ? "rgba(8,6,20,0.94)"                   : "rgba(242,240,247,0.97)",
-    drawerBorder:D? "rgba(255,255,255,0.1)"                : "rgba(120,80,200,0.15)",
-
-    // ── Misc ──
-    div:        D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.1)",
-    arrow:      D ? "rgba(180,160,255,0.3)"                : "rgba(100,70,180,0.3)",
-    foot:       D ? "rgba(180,160,255,0.35)"               : "rgba(100,70,180,0.45)",
-
-    // ── H1: nebula gradient (white → cyan-violet) ──
-    h1:         D ? "linear-gradient(135deg,#ffffff 0%,#c084fc 50%,#67e8f9 100%)" : undefined,
-    h1C:        D ? undefined                              : "#1a1030",
-
-    // ── No static glow — handled by animated blobs ──
-    glow:       "none",
-
-    float:      D ? "#8b5cf6"                              : "#7c3aed",
-
-    // ── Stack tags: subtle glass tint ──
-    stBg:       D ? "rgba(255,255,255,0.07)"               : "rgba(120,80,200,0.07)",
-    stTx:       D ? "rgba(200,180,255,0.55)"               : "#5a3f9a",
-
-    // ── New badge: cyan-teal nebula ──
-    nBg:        D ? "rgba(34,211,238,0.13)"                : "rgba(5,182,212,0.1)",
-    nTx:        D ? "#67e8f9"                              : "#0e7490",
-
-    hlMark:     D ? "rgba(168,85,247,0.3)"                 : "rgba(124,58,237,0.18)",
-    recentBg:   D ? "rgba(255,255,255,0.03)"               : "rgba(255,255,255,0.4)",
-    recentB:    D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
-    filterBadge:D ? "#a855f7"                              : "#7c3aed",
-
-    // ── Form inputs ──
-    iBg:        D ? "rgba(255,255,255,0.06)"               : "rgba(255,255,255,0.8)",
-    iBorder:    D ? "rgba(255,255,255,0.12)"               : "rgba(120,80,200,0.2)",
-    iColor:     D ? "#ffffff"                              : "#1a1030",
-    label:      D ? "rgba(220,210,255,0.7)"                : "#3d2f6a",
-    submit:     D ? "#8b5cf6"                              : "#7c3aed",
-    suggBg:     D ? "rgba(255,255,255,0.04)"               : "rgba(255,255,255,0.75)",
-    suggB:      D ? "rgba(255,255,255,0.08)"               : "rgba(120,80,200,0.12)",
-    suggHBg:    D ? "rgba(168,85,247,0.07)"                : "rgba(124,58,237,0.05)",
-    suggHB:     D ? "rgba(168,85,247,0.2)"                 : "rgba(124,58,237,0.15)",
-    fade:       D ? "linear-gradient(to right,transparent,rgba(5,4,15,0.95))"  : "linear-gradient(to right,transparent,rgba(242,240,247,0.95))",
+  // ── Input style ───────────────────────────────────────────────
+  const iStyle = {
+    width:"100%", padding:"0.55rem 0.75rem",
+    background:"#FFFFFF", border:"1px solid #D8D2C8",
+    borderRadius:6, color:"#1C1A17", fontSize:"max(16px,13px)",
+    outline:"none", boxSizing:"border-box", fontFamily:"inherit",
+    transition:"border-color 0.15s", minHeight:40,
   };
 
-  const iStyle = { width:"100%", padding:"0.6rem 0.75rem", background:t.iBg, border:`1px solid ${t.iBorder}`, borderRadius:8, color:t.iColor, fontSize:"max(16px,13px)", outline:"none", boxSizing:"border-box", fontFamily:"inherit", transition:"border-color 0.15s", minHeight:44 };
-
   return (
-    <div style={{ minHeight:"100vh", background:D ? "#05040f" : t.bg, color:t.title, fontFamily:"'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", transition:"background 0.4s,color 0.3s" }}>
+    <div style={{ minHeight:"100vh", background:"#F7F5F0", color:"#1C1A17", fontFamily:"'DM Sans', system-ui, -apple-system, sans-serif" }}>
       <style>{`
-        /* ── Keyframes ── */
-        @keyframes fadeIn    { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeOut   { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-4px)} }
+        @keyframes fadeIn    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideDown { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(100%)} }
-        @keyframes blob1     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(80px,-60px) scale(1.18)} 66%{transform:translate(-50px,40px) scale(0.9)} }
-        @keyframes blob2     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-90px,60px) scale(1.12)} 66%{transform:translate(60px,-40px) scale(0.94)} }
-        @keyframes blob3     { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(50px,80px) scale(0.88)} 66%{transform:translate(-60px,-50px) scale(1.15)} }
-        @keyframes shimmer   { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        @keyframes nebulaPulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
-        @keyframes starTwinkle { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
 
-        /* ── Base reset ── */
         *, *::before, *::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        ::-webkit-scrollbar { display:none }
-        html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
-        body { margin:0; min-width:360px; }
-
-        /* ── Glassmorphism card ── */
-        .card {
-          backdrop-filter: blur(16px) saturate(180%);
-          -webkit-backdrop-filter: blur(16px) saturate(180%);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.15s, border-color 0.15s;
-        }
-        .card:not([data-pinned]):active { transform:scale(0.982) !important; transition:transform 0.08s ease !important; }
-        .card[data-pinned] { transform:none !important; }
-        .card:focus-within { outline:2px solid ${t.acc}99; outline-offset:2px; border-radius:13px; }
-        .card a:focus { outline:none; }
-
-        /* ── Glass header ── */
-        header {
-          backdrop-filter: blur(20px) saturate(200%);
-          -webkit-backdrop-filter: blur(20px) saturate(200%);
-        }
-
-        /* ── Glass drawer ── */
-        .filter-drawer {
-          backdrop-filter: blur(24px) saturate(180%);
-          -webkit-backdrop-filter: blur(24px) saturate(180%);
-        }
-
-        /* ── Hover — desktop only ── */
-        @media (hover:hover) {
-          .card:not([data-pinned]):hover { transform:translateY(-2px); }
-        }
-
-        /* ── Tooltip — desktop only ── */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:#F7F5F0; }
+        ::-webkit-scrollbar-thumb { background:#D8D2C8; border-radius:3px; }
+        html { -webkit-text-size-adjust:100%; }
+        body { margin:0; min-width:320px; }
         mark { background:transparent; }
-        .copy-wrap .copy-tip { opacity:0; transition:opacity 0.15s; pointer-events:none; }
-        @media (hover:hover) { .copy-wrap:hover .copy-tip { opacity:1; } }
 
-        /* ── Recent block ── */
-        .recent-block { animation:fadeIn 0.2s ease; }
+        /* Card */
+        .lib-card {
+          display:flex; align-items:center; gap:0.75rem;
+          padding:0.875rem 1rem;
+          background:#FFFFFF;
+          border:1px solid #E8E3DC;
+          border-radius:10px;
+          transition:border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+          cursor:pointer;
+        }
+        .lib-card:hover {
+          border-color:#C17D3C50;
+          box-shadow:0 4px 16px rgba(28,26,23,0.08);
+          transform:translateY(-1px);
+        }
+        .lib-card:active { transform:translateY(0); transition-duration:0.06s; }
+        .lib-card a:focus { outline:none; }
+        .lib-card:focus-within { outline:2px solid #C17D3C80; outline-offset:2px; border-radius:10px; }
 
-        /* ── Min touch targets ── */
-        button, a, [role="button"] { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
-        .card a { min-height:unset; display:block; }
-        .copy-wrap button { min-height:44px; min-width:44px; }
+        /* Category pill */
+        .cat-pill {
+          display:inline-flex; align-items:center;
+          font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+          padding:0.2rem 0.5rem; border-radius:4px;
+          border:1px solid currentColor;
+          opacity:0.7;
+          transition:opacity 0.15s;
+        }
 
-        /* ── Mobile: 360–599px ── */
+        /* Stack tag */
+        .stack-tag {
+          font-size:10px; font-weight:400; letter-spacing:0.02em;
+          padding:0.12rem 0.4rem; border-radius:4px;
+          background:#F0EDE7; color:#6B5F4B;
+          border:1px solid #E0D9D0;
+        }
+
+        /* New badge */
+        .new-badge {
+          font-size:9.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+          padding:0.15rem 0.45rem; border-radius:4px;
+          background:#FEF3E2; color:#C17D3C;
+          border:1px solid #F0D5A8;
+        }
+
+        /* Copy button */
+        .copy-btn {
+          display:flex; align-items:center; justify-content:center;
+          width:28px; height:28px; border-radius:6px;
+          border:1px solid #E8E3DC; background:#F7F5F0;
+          color:#9B8E80; cursor:pointer;
+          transition:all 0.15s ease;
+          flex-shrink:0;
+        }
+        .copy-btn:hover { border-color:#C17D3C80; color:#C17D3C; background:#FEF3E2; }
+        .copy-btn.copied { border-color:#2E7D5250; color:#2E7D52; background:#F0FAF4; }
+
+        /* Category filter button */
+        .cat-btn {
+          width:100%; display:flex; align-items:center; justify-content:space-between;
+          padding:0.55rem 0.75rem; border-radius:8px;
+          border:1px solid transparent; background:transparent;
+          color:#6B5F4B; font-size:14px; font-weight:400;
+          cursor:pointer; text-align:left;
+          transition:all 0.12s ease; font-family:inherit;
+        }
+        .cat-btn:hover { background:#F0EDE7; color:#1C1A17; }
+        .cat-btn.active { background:#FEF3E2; color:#C17D3C; border-color:#F0D5A880; font-weight:600; }
+
+        /* Search input */
+        .search-input {
+          width:100%; padding:0.5rem 1.75rem 0.5rem 2rem;
+          background:#FFFFFF; border:1px solid #D8D2C8;
+          border-radius:8px; color:#1C1A17;
+          font-size:max(16px,13px); outline:none;
+          font-family:inherit;
+          transition:border-color 0.15s, box-shadow 0.15s;
+        }
+        .search-input:focus { border-color:#C17D3C; box-shadow:0 0 0 3px rgba(193,125,60,0.1); }
+        .search-input::placeholder { color:#B0A898; }
+
+        /* Control button */
+        .ctrl-btn {
+          display:flex; align-items:center; justify-content:center;
+          border-radius:8px; border:1px solid #D8D2C8; background:#FFFFFF;
+          color:#6B5F4B; cursor:pointer;
+          transition:all 0.15s ease; font-family:inherit;
+        }
+        .ctrl-btn:hover { border-color:#C17D3C80; color:#C17D3C; background:#FEF3E2; }
+
+        /* Drawer */
+        .filter-drawer {
+          position:fixed; bottom:0; left:0; right:0; z-index:90;
+          background:#FDFCFA; border-top:1px solid #E8E3DC;
+          border-radius:20px 20px 0 0;
+          max-height:85vh; overflow-y:auto;
+          box-shadow:0 -8px 40px rgba(28,26,23,0.12);
+        }
+
+        /* Suggest section */
+        .suggest-panel {
+          margin-top:1.5rem;
+          border:1px solid #E8E3DC; border-radius:12px;
+          background:#FFFFFF; overflow:hidden;
+        }
+
+        /* Floating top btn */
+        .float-btn {
+          width:40px; height:40px; border-radius:50%;
+          border:1px solid #D8D2C8; background:#FFFFFF;
+          color:#6B5F4B; cursor:pointer;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 8px rgba(28,26,23,0.1);
+          transition:all 0.15s ease;
+        }
+        .float-btn:hover { border-color:#C17D3C80; color:#C17D3C; }
+
+        /* Recent chip */
+        .recent-chip {
+          font-size:11.5px; padding:0.2rem 0.6rem; border-radius:5px;
+          background:#F0EDE7; border:1px solid #E0D9D0;
+          color:#6B5F4B; text-decoration:none;
+          display:inline-flex; align-items:center; gap:0.3rem;
+          transition:all 0.12s ease;
+        }
+        .recent-chip:hover { background:#FEF3E2; border-color:#F0D5A8; color:#C17D3C; }
+
+        /* Mobile */
         @media (max-width:599px) {
-          .nav-inner { gap:0.5rem !important; }
-          .nav-title h1 { font-size:0.95rem !important; }
-          .nav-title p { display:none !important; }
-          .nav-controls { gap:0.3rem !important; }
+          .nav-title-sub { display:none !important; }
           .search-wrap { width:100% !important; order:3; }
           .suggest-link { display:none !important; }
-          .card-desc { font-size:13px !important; }
-          .card-name { font-size:0.9rem !important; }
-          .filter-drawer { max-height:92vh !important; }
-          .filter-drawer-inner { padding:0 1rem 6rem !important; }
-          .float-row { bottom:0.75rem !important; right:0.75rem !important; }
-          .chip-row { flex-wrap:wrap !important; }
+        }
+        @media (max-width:899px) {
+          .nav-title h1 { font-size:1rem !important; }
         }
 
-        /* ── Tablet: 600–899px ── */
-        @media (min-width:600px) and (max-width:899px) {
-          .nav-title p { font-size:0.65rem !important; }
-          .search-wrap { width:180px !important; }
+        /* Reduced motion */
+        @media (prefers-reduced-motion:reduce) {
+          *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
         }
 
-        /* ── Desktop: 900px+ ── */
-        @media (min-width:900px) {
-          .card:not([data-pinned]):hover { transform:translateY(-2px); }
-        }
-
-        /* ── Safe area for notch phones ── */
-        .filter-drawer-inner { padding-bottom:max(2rem, env(safe-area-inset-bottom)) !important; }
-        .float-row { padding-bottom:env(safe-area-inset-bottom); }
         header { padding-top:env(safe-area-inset-top); }
+        .filter-drawer { padding-bottom:env(safe-area-inset-bottom); }
       `}</style>
 
-      {/* Nebula galaxy background — dark only */}
-      {D && (
-        <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, overflow:"hidden" }}>
-          {/* Deep space base mesh */}
-          <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 120% 80% at 50% 0%,rgba(88,28,135,0.35) 0%,rgba(15,23,42,0.5) 40%,transparent 70%)" }} />
-          {/* Nebula orb 1 — violet/purple, top-left */}
-          <div style={{ position:"absolute", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle,rgba(139,92,246,0.28) 0%,rgba(109,40,217,0.12) 40%,transparent 70%)", top:"-20%", left:"-5%", filter:"blur(60px)", animation:"blob1 20s ease-in-out infinite", willChange:"transform" }} />
-          {/* Nebula orb 2 — cyan/teal, right */}
-          <div style={{ position:"absolute", width:550, height:550, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,0.22) 0%,rgba(14,116,144,0.1) 40%,transparent 70%)", top:"20%", right:"-8%", filter:"blur(50px)", animation:"blob2 25s ease-in-out infinite", willChange:"transform" }} />
-          {/* Nebula orb 3 — pink/magenta, bottom-center */}
-          <div style={{ position:"absolute", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(236,72,153,0.2) 0%,rgba(157,23,77,0.08) 40%,transparent 70%)", bottom:"-10%", left:"30%", filter:"blur(55px)", animation:"blob3 30s ease-in-out infinite", willChange:"transform" }} />
-          {/* Nebula orb 4 — deep blue, bottom-left */}
-          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(59,130,246,0.18) 0%,rgba(29,78,216,0.08) 40%,transparent 70%)", bottom:"10%", left:"-5%", filter:"blur(45px)", animation:"blob1 35s ease-in-out infinite reverse", willChange:"transform" }} />
-          {/* Star field overlay */}
-          <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(1px 1px at 20% 30%,rgba(255,255,255,0.4) 0%,transparent 100%),radial-gradient(1px 1px at 80% 10%,rgba(255,255,255,0.3) 0%,transparent 100%),radial-gradient(1px 1px at 50% 60%,rgba(255,255,255,0.25) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 10% 80%,rgba(255,255,255,0.35) 0%,transparent 100%),radial-gradient(1px 1px at 70% 75%,rgba(255,255,255,0.2) 0%,transparent 100%),radial-gradient(1px 1px at 35% 15%,rgba(255,255,255,0.3) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 90% 50%,rgba(255,255,255,0.25) 0%,transparent 100%),radial-gradient(1px 1px at 60% 40%,rgba(255,255,255,0.2) 0%,transparent 100%)" }} />
-        </div>
-      )}
-      {/* Light mode — subtle paper texture */}
-      {!D && (
-        <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, background:"radial-gradient(ellipse 80% 60% at 30% 20%,rgba(139,92,246,0.06) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(124,58,237,0.05) 0%,transparent 60%)" }} />
-      )}
+      {/* ── HEADER ─────────────────────────────────────────────── */}
+      <header style={{ background:"rgba(247,245,240,0.92)", borderBottom:"1px solid #E8E3DC", padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)" }}>
+        <div style={{ maxWidth:860, margin:"0 auto" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:"0.6rem", flexWrap:"wrap", minHeight:52, paddingTop:"0.3rem", paddingBottom:"0.3rem" }}>
 
-      {/* ── HEADER — single compact row ───────────────────── */}
-      <header style={{ background:t.hBg, borderBottom:`1px solid ${t.hBorder}`, padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)" }}>
-        <div style={{ maxWidth:900, margin:"0 auto" }}>
-          <div className="nav-inner" style={{ display:"flex", alignItems:"center", gap:"0.6rem", flexWrap:"wrap", minHeight:52, paddingTop:"0.35rem", paddingBottom:"0.35rem" }}>
-
-            {/* Logo / Title */}
+            {/* Wordmark */}
             <div className="nav-title" style={{ flex:1, minWidth:0 }}>
-              <h1 style={{
-                fontSize:"1rem", fontWeight:800, margin:0, letterSpacing:"-0.02em", lineHeight:1.1,
-                whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
-                ...(D
-                  ? { background:t.h1, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }
-                  : { color:t.h1C }
-                )
-              }}>
+              <h1 style={{ fontFamily:"'DM Serif Display', Georgia, serif", fontSize:"1.1rem", fontWeight:400, margin:0, letterSpacing:"-0.01em", color:"#1C1A17", lineHeight:1.1 }}>
                 UI Libraries
               </h1>
-              <p style={{ margin:0, fontSize:"0.65rem", color:t.eyebrow, lineHeight:1, marginTop:2 }}>
-                {LIBS.length} resources · {VERIFIED_DATE}
+              <p className="nav-title-sub" style={{ margin:0, fontSize:"0.65rem", color:"#9B8E80", lineHeight:1, marginTop:2 }}>
+                {LIBS.length} resources · verified {VERIFIED_DATE}
               </p>
             </div>
 
             {/* Search */}
-            <div className="search-wrap" style={{ position:"relative", width:190, flexShrink:0 }}>
-              <svg style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", color:t.sPh, pointerEvents:"none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <div className="search-wrap" style={{ position:"relative", width:200, flexShrink:0 }}>
+              <svg style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:"#B0A898", pointerEvents:"none" }} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              <input ref={searchRef} type="text" placeholder="Search ( / )" value={query}
-                onChange={e => setQuery(e.target.value)}
-                style={{ width:"100%", padding:"0.5rem 1.75rem 0.5rem 1.85rem", background:t.sBg, border:`1px solid ${t.sBorder}`, borderRadius:10, color:t.sColor, fontSize:"max(16px,12.5px)", outline:"none", fontFamily:"inherit", transition:"border-color 0.2s", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}
-                onFocus={e => e.target.style.borderColor = t.acc}
-                onBlur={e => e.target.style.borderColor = t.sBorder}
-              />
+              <input ref={searchRef} className="search-input" type="text" placeholder="Search ( / )"
+                value={query} onChange={e => setQuery(e.target.value)} />
               {query && (
-                <button onClick={() => setQuery("")} style={{ position:"absolute", right:7, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:t.sPh, padding:2, lineHeight:1, fontSize:11 }}>✕</button>
+                <button onClick={() => setQuery("")} style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#9B8E80", padding:2, fontSize:11, lineHeight:1 }}>✕</button>
               )}
             </div>
 
             {/* Filter button */}
-            <button data-filter-btn onClick={() => filterOpen ? closeDrawer() : setFilterOpen(true)}
-              style={{ display:"flex", alignItems:"center", gap:"0.35rem", padding:"0.5rem 0.85rem", minHeight:44, borderRadius:10, border:`1px solid ${filterOpen ? t.acc+"80" : t.ctrlBorder}`, background: filterOpen ? `${t.acc}20` : t.ctrl, color: filterOpen ? t.acc : t.ctrlText, fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0, position:"relative", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
+            <button data-filter-btn className="ctrl-btn" onClick={() => filterOpen ? closeDrawer() : setFilterOpen(true)}
+              style={{ gap:"0.3rem", padding:"0.5rem 0.85rem", minHeight:40, fontSize:13, fontWeight:500, position:"relative",
+                ...(filterOpen ? { borderColor:"#C17D3C80", color:"#C17D3C", background:"#FEF3E2" } : {}) }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
               Filters
               {activeFilters > 0 && (
-                <span style={{ position:"absolute", top:-5, right:-5, width:16, height:16, borderRadius:"50%", background:t.filterBadge, color:"#fff", fontSize:9, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ position:"absolute", top:-5, right:-5, width:16, height:16, borderRadius:"50%", background:"#C17D3C", color:"#FFF", fontSize:9, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {activeFilters}
                 </span>
               )}
             </button>
 
-            {/* Theme toggle — icon only */}
-            <button onClick={() => setDark(d => !d)} title={D ? "Switch to light mode" : "Switch to dark mode"} aria-label={D ? "Switch to light mode" : "Switch to dark mode"}
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:10, border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", flexShrink:0, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
-              {D
-                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
-            </button>
-
-            {/* Share — icon only */}
-            <button onClick={shareFilter} title="Copy link to current view" aria-label="Copy shareable link"
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", width:44, height:44, borderRadius:10, border:`1px solid ${copiedShare ? t.acc+"80" : t.ctrlBorder}`, background: copiedShare ? `${t.acc}20` : t.ctrl, color: copiedShare ? t.acc : t.ctrlText, cursor:"pointer", flexShrink:0, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
+            {/* Share */}
+            <button className="ctrl-btn" onClick={shareFilter} title="Copy shareable link" aria-label="Copy shareable link"
+              style={{ width:40, height:40, ...(copiedShare ? { borderColor:"#2E7D5250", color:"#2E7D52", background:"#F0FAF4" } : {}) }}>
               {copiedShare
-                ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
+                ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>}
             </button>
 
-            {/* Suggest — text link, hidden on mobile */}
-            <button className="suggest-link" onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-              style={{ fontSize:11.5, fontWeight:500, color:t.eyebrow, background:"none", border:"none", cursor:"pointer", flexShrink:0, whiteSpace:"nowrap", padding:"0 4px", minHeight:44, textDecoration:"none", opacity:0.75 }}
-              onMouseEnter={e => { e.currentTarget.style.color=t.acc; e.currentTarget.style.opacity="1"; }}
-              onMouseLeave={e => { e.currentTarget.style.color=t.eyebrow; e.currentTarget.style.opacity="0.75"; }}>
+            {/* Suggest link */}
+            <button className="suggest-link ctrl-btn" onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
+              style={{ fontSize:12, fontWeight:500, padding:"0 0.75rem", height:40, color:"#9B8E80", whiteSpace:"nowrap" }}>
               + Suggest
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── FILTER DRAWER — bottom sheet ──────────────────── */}
+      {/* ── FILTER DRAWER ──────────────────────────────────────── */}
       {(filterOpen || filterClosing) && (
         <>
-          {/* backdrop */}
-          <div onClick={() => closeDrawer()} style={{ position:"fixed", inset:0, zIndex:80, background:"rgba(0,0,0,0.4)", backdropFilter:"blur(2px)" }} />
-          {/* sheet */}
-          <div data-filter-drawer className="filter-drawer" style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:90, background:t.drawerBg, borderTop:`1px solid ${t.drawerBorder}`, borderRadius:"24px 24px 0 0", maxHeight:"85vh", overflowY:"auto", animation:`${filterClosing ? "slideDown 0.22s ease forwards" : "slideUp 0.28s ease"}`, boxShadow:D?"0 -8px 60px rgba(0,0,0,0.7), 0 -1px 0 rgba(255,255,255,0.08)":"0 -8px 40px rgba(100,60,200,0.15)" }}>
-
-            {/* Scrollable inner */}
-            <div className="filter-drawer-inner" style={{ padding:"0 1.25rem 2rem" }}>
-
-            {/* Handle */}
-            <div style={{ display:"flex", justifyContent:"center", padding:"0.75rem 0 0.5rem" }}>
-              <div style={{ width:40, height:4, borderRadius:999, background:t.ctrlBorder }} />
-            </div>
-
-            {/* Header row */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"1.25rem" }}>
-              <span style={{ fontSize:16, fontWeight:700, color:t.title }}>Filters</span>
-              <div style={{ display:"flex", gap:"0.5rem", alignItems:"center" }}>
-                {activeFilters > 0 && (
-                  <button onClick={clearAll} style={{ fontSize:13, fontWeight:600, color:"#fff", background:"rgba(180,60,60,0.85)", border:"none", cursor:"pointer", padding:"0.35rem 0.85rem", borderRadius:8, minHeight:36 }}>
-                    Clear all
-                  </button>
-                )}
-                <button onClick={applyFilters} style={{ fontSize:13, fontWeight:700, color:"#fff", background:t.acc, border:"none", cursor:"pointer", padding:"0.35rem 0.85rem", borderRadius:8, minHeight:36 }}>
-                  Apply
-                </button>
+          <div onClick={closeDrawer} style={{ position:"fixed", inset:0, zIndex:80, background:"rgba(28,26,23,0.3)" }} />
+          <div data-filter-drawer className="filter-drawer" style={{ animation:`${filterClosing ? "slideDown 0.2s ease forwards" : "slideUp 0.25s ease"}` }}>
+            <div style={{ padding:"0 1.25rem 2rem" }}>
+              {/* Handle */}
+              <div style={{ display:"flex", justifyContent:"center", padding:"0.75rem 0 0.5rem" }}>
+                <div style={{ width:36, height:3, borderRadius:999, background:"#D8D2C8" }} />
               </div>
-            </div>
 
-            {/* Single clean category filter */}
-            <div style={{ marginBottom:"1.5rem" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"0.75rem" }}>Browse by type</div>
-              <div style={{ display:"flex", flexDirection:"column", gap:"0.2rem" }}>
+              {/* Header */}
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"1rem" }}>
+                <span style={{ fontSize:15, fontWeight:600, color:"#1C1A17" }}>Browse by type</span>
+                <div style={{ display:"flex", gap:"0.5rem" }}>
+                  {activeFilters > 0 && (
+                    <button onClick={clearAll} className="ctrl-btn" style={{ fontSize:12, padding:"0.3rem 0.75rem", height:34, color:"#9B4A2A", borderColor:"#E8C4B0", background:"#FDF0EA" }}>
+                      Clear all
+                    </button>
+                  )}
+                  <button onClick={closeDrawer} className="ctrl-btn" style={{ fontSize:12, fontWeight:600, padding:"0.3rem 0.75rem", height:34, background:"#1C1A17", color:"#F7F5F0", border:"none" }}
+                    onMouseEnter={e=>{e.currentTarget.style.background="#3A3632"}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="#1C1A17"}}>
+                    Done
+                  </button>
+                </div>
+              </div>
+
+              {/* Category list */}
+              <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
                 {CATEGORIES.map(cat => {
                   const on = active === cat.id;
-                  const catCount = cat.id === "all"
-                    ? LIBS.length
-                    : cat.id === "vue-svelte"
-                      ? LIBS.filter(l => l.cat === "multi" || l.cat === "vue-svelte").length
-                      : counts[cat.id] || 0;
+                  const catCount = cat.id === "all" ? LIBS.length : counts[cat.id] || 0;
                   return (
-                    <button key={cat.id} onClick={() => setActive(cat.id)}
-                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0.6rem 0.85rem", minHeight:48, borderRadius:10, border:`1px solid ${on ? t.acc : "transparent"}`, background: on ? `${t.acc}14` : "transparent", color: on ? t.acc : t.ctrlText, fontSize:14.5, fontWeight: on ? 600 : 400, cursor:"pointer", textAlign:"left", transition:"all 0.12s", width:"100%" }}>
+                    <button key={cat.id} className={`cat-btn${on ? " active" : ""}`} onClick={() => setActive(cat.id)}>
                       <span>{cat.label}</span>
-                      <span style={{ fontSize:12, fontWeight:500, padding:"0.1rem 0.55rem", borderRadius:999, background: on ? `${t.acc}20` : t.tabBg, color: on ? t.acc : t.eyebrow }}>{catCount}</span>
+                      <span style={{ fontSize:11.5, padding:"0.1rem 0.5rem", borderRadius:999, background: on ? "rgba(193,125,60,0.12)" : "#F0EDE7", color: on ? "#C17D3C" : "#9B8E80", fontWeight:500 }}>
+                        {catCount}
+                      </span>
                     </button>
                   );
                 })}
               </div>
-            </div>
-            {/* Bottom apply button — full width */}
-            <button onClick={applyFilters}
-              style={{ width:"100%", padding:"0.85rem", borderRadius:12, border:"none", background:t.acc, color:"#fff", fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:"-0.01em", marginTop:"0.5rem" }}>
-              Show {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-            </button>
 
-            </div>{/* end filter-drawer-inner */}
+              <button onClick={closeDrawer} style={{ width:"100%", marginTop:"1rem", padding:"0.75rem", borderRadius:8, border:"none", background:"#1C1A17", color:"#F7F5F0", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
+                onMouseEnter={e=>{e.currentTarget.style.background="#3A3632"}}
+                onMouseLeave={e=>{e.currentTarget.style.background="#1C1A17"}}>
+                Show {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+              </button>
+            </div>
           </div>
         </>
       )}
 
-      {/* ── MAIN ──────────────────────────────────────────── */}
-      <main style={{ maxWidth:900, margin:"0 auto", padding:"clamp(0.75rem,2vw,1rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative", zIndex:1 }}>
-        {/* subtle inset to visually ground content below sticky header */}
-        <div style={{ height:1, background:`linear-gradient(to right,transparent,${t.div},transparent)`, marginBottom:"0.85rem", opacity:0.6 }} />
+      {/* ── MAIN ───────────────────────────────────────────────── */}
+      <main style={{ maxWidth:860, margin:"0 auto", padding:"clamp(0.75rem,2vw,1.25rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative" }}>
 
         {/* Active filter chips */}
         {activeFilters > 0 && (
-          <div className="chip-row" style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.85rem", alignItems:"center" }}>
-            <span style={{ fontSize:11, color:t.eyebrow }}>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
+          <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.75rem", alignItems:"center" }}>
+            <span style={{ fontSize:11, color:"#9B8E80" }}>{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
             {query && (
-              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
+              <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:999, background:"#FEF3E2", color:"#C17D3C", border:"1px solid #F0D5A8" }}>
                 "{query}"
-                <button onClick={() => setQuery("")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
+                <button onClick={() => setQuery("")} style={{ background:"none", border:"none", cursor:"pointer", color:"#C17D3C", padding:0, fontSize:10 }}>✕</button>
               </span>
             )}
             {active !== "all" && (
-              <span style={{ display:"flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.2rem 0.55rem", borderRadius:999, background:`${t.acc}14`, color:t.acc, border:`1px solid ${t.acc}30` }}>
+              <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:999, background:"#FEF3E2", color:"#C17D3C", border:"1px solid #F0D5A8" }}>
                 {CATEGORIES.find(c => c.id === active)?.label}
-                <button onClick={() => setActive("all")} style={{ background:"none", border:"none", cursor:"pointer", color:t.acc, padding:0, lineHeight:1, fontSize:11 }}>✕</button>
+                <button onClick={() => setActive("all")} style={{ background:"none", border:"none", cursor:"pointer", color:"#C17D3C", padding:0, fontSize:10 }}>✕</button>
               </span>
             )}
-
           </div>
         )}
 
         {/* Recently viewed */}
         {recent.length > 0 && !query && active === "all" && (
-          <div className="recent-block" style={{ marginBottom:"1rem", padding:"0.65rem 0.9rem", background:t.recentBg, border:`1px solid ${t.recentB}`, borderRadius:12, backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }}>
+          <div style={{ marginBottom:"1rem", padding:"0.65rem 0.9rem", background:"#FFFFFF", border:"1px solid #E8E3DC", borderRadius:10, animation:"fadeIn 0.2s ease" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"0.4rem" }}>
-              <span style={{ fontSize:10, fontWeight:600, color:t.eyebrow, letterSpacing:"0.1em", textTransform:"uppercase" }}>Recently Visited</span>
-              <button onClick={() => { localStorage.removeItem("uidir-recent"); setRecent([]); }} style={{ fontSize:10, color:t.foot, background:"none", border:"none", cursor:"pointer" }}>Clear</button>
+              <span style={{ fontSize:10, fontWeight:600, color:"#9B8E80", letterSpacing:"0.08em", textTransform:"uppercase" }}>Recently visited</span>
+              <button onClick={() => { localStorage.removeItem("uidir-recent"); setRecent([]); }} style={{ fontSize:10, color:"#B0A898", background:"none", border:"none", cursor:"pointer" }}>Clear</button>
             </div>
             <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap" }}>
               {recent.map(r => (
-                <a key={r.id} href={`https://${r.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(r)}
-                  style={{ fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:6, background:t.ctrl, border:`1px solid ${t.ctrlBorder}`, color:t.desc, textDecoration:"none", display:"flex", alignItems:"center", gap:"0.28rem" }}>
+                <a key={r.id} href={`https://${r.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(r)} className="recent-chip">
                   {r.name}
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                 </a>
               ))}
             </div>
@@ -803,79 +689,49 @@ export default function App() {
 
         {/* Results */}
         {filtered.length === 0 ? (
-          <EmptyState query={query} onClear={clearAll} t={t} />
+          <EmptyState onClear={clearAll} />
         ) : (
-          <div ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.45rem", animation:"fadeIn 0.18s ease" }}>
+          <div ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.2s ease" }}>
             {filtered.map(lib => {
-              const m      = CAT_META[lib.cat] || CAT_META["dev-tools"];
-              const bg     = D ? m.dBg  : m.lBg;
-              const tx     = D ? m.dTx  : m.lTx;
-              const dot    = D ? m.dDot : m.lDot;
-              const isRand = randomId === lib.id;
-              const isCopy = copiedId === lib.id;
-              const isNew  = NEW_IDS.has(lib.id);
-              const stacks = LIB_STACKS[lib.id] || [];
+              const catColor = CAT_COLOR[lib.cat] || CAT_COLOR["dev-tools"];
+              const isCopy   = copiedId === lib.id;
+              const isNew    = NEW_IDS.has(lib.id);
+              const stacks   = LIB_STACKS[lib.id] || [];
+              const catLabel = CATEGORIES.find(c => c.id === CAT_RESOLVE(lib.cat))?.label || lib.cat;
 
               return (
-                <div key={lib.id} id={`lib-${lib.id}`} className="card"
-                  data-pinned={isRand ? "" : undefined}
-                  style={{
-                    display:"flex", alignItems:"center", gap:"0.65rem",
-                    padding:"clamp(0.75rem,2vw,0.9rem) clamp(0.75rem,2vw,1rem)",
-                    background: isRand ? t.hlBg : t.card,
-                    border: `1px solid ${isRand ? t.hlBorder : t.cardBorder}`,
-                    borderRadius:16,
-                    boxShadow: isRand ? `0 0 0 2px ${t.hlBorder}, 0 8px 28px rgba(200,40,40,0.2)` : t.cardShadow,
-                  }}
-                  onMouseEnter={e => { if(!isRand){ e.currentTarget.style.background=t.cardHover; e.currentTarget.style.borderColor=t.cardHBorder; e.currentTarget.style.boxShadow=t.cardHShadow; e.currentTarget.style.transform="translateY(-2px)"; }}}
-                  onMouseLeave={e => { if(!isRand){ e.currentTarget.style.background=t.card; e.currentTarget.style.borderColor=t.cardBorder; e.currentTarget.style.boxShadow=t.cardShadow; e.currentTarget.style.transform="none"; }}}
-                >
-                  <span style={{ width:7, height:7, borderRadius:"50%", background:dot, flexShrink:0, boxShadow:isRand?`0 0 10px ${dot}`:"none", marginTop:1 }} />
+                <div key={lib.id} className="lib-card">
+                  {/* Left dot — category color */}
+                  <div style={{ width:6, height:6, borderRadius:"50%", background:catColor, flexShrink:0, marginTop:1, opacity:0.7 }} />
 
+                  {/* Main link */}
                   <a href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer"
-                    data-card="true" tabIndex={0} onClick={() => handleVisit(lib)}
-                    style={{ flex:1, minWidth:0, textDecoration:"none", outline:"none" }}
-                  >
-                    <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexWrap:"wrap", marginBottom:"0.18rem" }}>
-                      <span className="card-name" style={{ fontSize:"0.95rem", fontWeight:700, color:t.title, letterSpacing:"-0.015em" }}>
-                        <Highlight text={lib.name} query={query} color={t.hlMark} />
+                    onClick={() => handleVisit(lib)}
+                    style={{ flex:1, minWidth:0, textDecoration:"none", outline:"none", display:"block" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:"0.35rem", flexWrap:"wrap", marginBottom:"0.2rem" }}>
+                      <span style={{ fontSize:"0.95rem", fontWeight:600, color:"#1C1A17", letterSpacing:"-0.01em" }}>
+                        <Highlight text={lib.name} query={query} />
                       </span>
-                      <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.12rem 0.5rem", borderRadius:5, background:bg, color:tx, backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", border:`1px solid ${tx}30` }}>
-                        {m.label}
-                      </span>
-                      {isNew && (
-                        <span style={{ fontSize:9.5, fontWeight:700, letterSpacing:"0.06em", textTransform:"uppercase", padding:"0.12rem 0.5rem", borderRadius:5, background:t.nBg, color:t.nTx, border:`1px solid ${t.nTx}40`, backdropFilter:"blur(8px)" }}>
-                          New
-                        </span>
-                      )}
-                      {stacks.map(s => (
-                        <span key={s}
-                          style={{ fontSize:9.5, fontWeight:500, padding:"0.07rem 0.38rem", borderRadius:4, background:t.stBg, color:t.stTx, border:`1px solid ${t.div}`, userSelect:"none" }}>
-                          {s}
-                        </span>
-                      ))}
+                      <span className="cat-pill" style={{ color:catColor }}>{catLabel}</span>
+                      {isNew && <span className="new-badge">New</span>}
+                      {stacks.map(s => <span key={s} className="stack-tag">{s}</span>)}
                     </div>
-                    <div className="card-desc" style={{ fontSize:13.5, color:t.desc, lineHeight:1.65 }}>
-                      <Highlight text={lib.desc} query={query} color={t.hlMark} />
+                    <div style={{ fontSize:13.5, color:"#6B5F4B", lineHeight:1.6 }}>
+                      <Highlight text={lib.desc} query={query} />
                     </div>
-                    <div style={{ marginTop:"0.2rem", fontSize:11, color:t.url, fontFamily:"'SF Mono','Fira Code',monospace" }}>
+                    <div style={{ marginTop:"0.2rem", fontSize:11, color:"#B0A898", fontFamily:"'DM Mono', 'Fira Code', monospace" }}>
                       {lib.url}
                     </div>
                   </a>
 
-                  <div style={{ display:"flex", alignItems:"center", gap:"0.3rem", flexShrink:0 }}>
-                    <div style={{ position:"relative", display:"flex" }} className="copy-wrap">
-                    <button onClick={e => copyUrl(lib.url, lib.id, e)} aria-label={isCopy ? "Copied!" : "Copy URL"}
-                      style={{ display:"flex", alignItems:"center", justifyContent:"center", width:26, height:26, borderRadius:6, border:`1px solid ${t.div}`, background: isCopy ? t.nBg : t.ctrl, cursor:"pointer", color: isCopy ? t.nTx : t.url, transition:"all 0.15s" }}>
+                  {/* Copy + arrow */}
+                  <div style={{ display:"flex", alignItems:"center", gap:"0.35rem", flexShrink:0 }}>
+                    <button className={`copy-btn${isCopy ? " copied" : ""}`} onClick={e => copyUrl(lib.url, lib.id, e)} aria-label={isCopy ? "Copied!" : "Copy URL"}>
                       {isCopy
-                        ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
+                        ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>}
                     </button>
-                    <span className="copy-tip" style={{ position:"absolute", bottom:"calc(100% + 6px)", left:"50%", transform:"translateX(-50%)", background:D?"#2a1010":"#2a1f0f", color:D?"#f5e8e8":"#fdf6ed", fontSize:10, fontWeight:500, whiteSpace:"nowrap", padding:"3px 7px", borderRadius:5, pointerEvents:"none", zIndex:200 }}>
-                      {isCopy ? "Copied!" : "Copy URL"}
-                    </span>
-                  </div>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={t.arrow} strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#C8BFB4" strokeWidth="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                   </div>
                 </div>
               );
@@ -883,58 +739,65 @@ export default function App() {
           </div>
         )}
 
-        {/* Suggestion box */}
-        <div style={{ marginTop:"1.75rem", borderRadius:18, border:`1px solid ${t.suggB}`, background:t.suggBg, overflow:"hidden", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", boxShadow:D?"0 4px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)":"0 4px 20px rgba(100,60,200,0.08)" }}>
+        {/* ── Suggest section ─────────────────────────────────── */}
+        <div className="suggest-panel">
           <button onClick={() => setSuggOpen(o => !o)}
-            style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem", padding:"0.85rem 1rem", background:t.suggHBg, border:"none", borderBottom:suggOpen?`1px solid ${t.suggHB}`:"1px solid transparent", cursor:"pointer" }}>
+            style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"0.75rem", padding:"0.85rem 1rem", background:"transparent", border:"none", cursor:"pointer", fontFamily:"inherit" }}>
             <div style={{ display:"flex", alignItems:"center", gap:"0.5rem" }}>
-              <span style={{ fontSize:14 }}>💡</span>
+              <span style={{ fontSize:13 }}>💡</span>
               <div style={{ textAlign:"left" }}>
-                <div style={{ fontSize:12.5, fontWeight:650, color:t.title }}>Know a resource that belongs here?</div>
-                <div style={{ fontSize:11, color:t.desc, marginTop:1 }}>Drop a link — I review and add the best ones.</div>
+                <div style={{ fontSize:13, fontWeight:600, color:"#1C1A17" }}>Know a resource that belongs here?</div>
+                <div style={{ fontSize:11.5, color:"#9B8E80", marginTop:1 }}>Drop a link — I review and add the best ones.</div>
               </div>
             </div>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={t.acc} strokeWidth="2.5"
-              style={{ flexShrink:0, transform:suggOpen?"rotate(180deg)":"rotate(0deg)", transition:"transform 0.25s" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9B8E80" strokeWidth="2.5"
+              style={{ flexShrink:0, transform:suggOpen?"rotate(180deg)":"rotate(0deg)", transition:"transform 0.22s ease" }}>
               <path d="M6 9l6 6 6-6"/>
             </svg>
           </button>
-          <div style={{ maxHeight:suggOpen?640:0, overflow:"hidden", transition:"max-height 0.35s ease" }}>
-            <div style={{ padding:"1rem" }}>
+
+          <div style={{ maxHeight:suggOpen ? 600 : 0, overflow:"hidden", transition:"max-height 0.32s ease" }}>
+            <div style={{ padding:"0 1rem 1rem", borderTop:"1px solid #E8E3DC" }}>
               {sent ? (
-                <div style={{ textAlign:"center", padding:"1.5rem 0", color:t.nTx }}>
-                  <div style={{ fontSize:20, marginBottom:4 }}>✓</div>
+                <div style={{ textAlign:"center", padding:"1.5rem 0", color:"#2E7D52" }}>
+                  <div style={{ fontSize:22, marginBottom:4 }}>✓</div>
                   <div style={{ fontSize:13, fontWeight:600 }}>Opening your email app…</div>
-                  <div style={{ fontSize:11, marginTop:3, color:t.desc }}>Appreciated!</div>
+                  <div style={{ fontSize:11, marginTop:3, color:"#9B8E80" }}>Appreciated!</div>
                 </div>
               ) : (
-                <div style={{ display:"flex", flexDirection:"column", gap:"0.6rem" }}>
+                <div style={{ display:"flex", flexDirection:"column", gap:"0.6rem", paddingTop:"0.75rem" }}>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:"0.5rem" }}>
                     <div>
-                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Your name <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
-                      <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
+                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:"#6B5F4B", marginBottom:"0.2rem" }}>Your name <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
+                      <input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Alex" style={iStyle}
+                        onFocus={e=>e.target.style.borderColor="#C17D3C"} onBlur={e=>e.target.style.borderColor="#D8D2C8"} />
                     </div>
                     <div>
-                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Site name <span style={{ color:"#e05050" }}>*</span></label>
-                      <input value={siteName} onChange={e => setSiteName(e.target.value)} placeholder="e.g. ShadcnBlocks" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
+                      <label style={{ display:"block", fontSize:11, fontWeight:600, color:"#6B5F4B", marginBottom:"0.2rem" }}>Site name <span style={{ color:"#B85C2C" }}>*</span></label>
+                      <input value={siteName} onChange={e=>setSiteName(e.target.value)} placeholder="e.g. ShadcnBlocks" style={iStyle}
+                        onFocus={e=>e.target.style.borderColor="#C17D3C"} onBlur={e=>e.target.style.borderColor="#D8D2C8"} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>URL <span style={{ color:"#e05050" }}>*</span></label>
-                    <input value={siteUrl} onChange={e => setSiteUrl(e.target.value)} placeholder="e.g. shadcnblocks.com" style={iStyle} onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
+                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:"#6B5F4B", marginBottom:"0.2rem" }}>URL <span style={{ color:"#B85C2C" }}>*</span></label>
+                    <input value={siteUrl} onChange={e=>setSiteUrl(e.target.value)} placeholder="e.g. shadcnblocks.com" style={iStyle}
+                      onFocus={e=>e.target.style.borderColor="#C17D3C"} onBlur={e=>e.target.style.borderColor="#D8D2C8"} />
                   </div>
                   <div>
-                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:t.label, marginBottom:"0.22rem" }}>Why should it be listed? <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
-                    <textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="What makes it useful or unique…" rows={3}
-                      style={{ ...iStyle, resize:"vertical", minHeight:60, lineHeight:1.55 }}
-                      onFocus={e=>e.target.style.borderColor=t.acc} onBlur={e=>e.target.style.borderColor=t.iBorder} />
+                    <label style={{ display:"block", fontSize:11, fontWeight:600, color:"#6B5F4B", marginBottom:"0.2rem" }}>Why should it be listed? <span style={{ opacity:0.5, fontWeight:400 }}>(optional)</span></label>
+                    <textarea value={reason} onChange={e=>setReason(e.target.value)} placeholder="What makes it useful or unique…" rows={3}
+                      style={{ ...iStyle, resize:"vertical", minHeight:64, lineHeight:1.55 }}
+                      onFocus={e=>e.target.style.borderColor="#C17D3C"} onBlur={e=>e.target.style.borderColor="#D8D2C8"} />
                   </div>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem" }}>
-                    <p style={{ margin:0, fontSize:10.5, color:t.desc }}>Opens your email app with details pre-filled.</p>
+                    <p style={{ margin:0, fontSize:11, color:"#B0A898" }}>Opens your email client with details pre-filled.</p>
                     <button onClick={handleSuggest} disabled={!siteName.trim()||!siteUrl.trim()}
-                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.45rem 0.9rem", borderRadius:8, border:"none", background:(!siteName.trim()||!siteUrl.trim())?`${t.acc}20`:t.submit, color:(!siteName.trim()||!siteUrl.trim())?t.acc:"#fff", fontSize:12.5, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer", opacity:(!siteName.trim()||!siteUrl.trim())?0.6:1 }}>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                      Send
+                      style={{ display:"flex", alignItems:"center", gap:"0.3rem", padding:"0.45rem 1rem", borderRadius:7, border:"none",
+                        background:(!siteName.trim()||!siteUrl.trim())?"#E8E3DC":"#1C1A17",
+                        color:(!siteName.trim()||!siteUrl.trim())?"#9B8E80":"#F7F5F0",
+                        fontSize:12.5, fontWeight:600, cursor:(!siteName.trim()||!siteUrl.trim())?"not-allowed":"pointer",
+                        fontFamily:"inherit", transition:"background 0.15s" }}>
+                      Send suggestion
                     </button>
                   </div>
                 </div>
@@ -944,32 +807,20 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop:"1rem", paddingTop:"0.85rem", borderTop:`1px solid ${t.div}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem" }}>
-          <p style={{ margin:0, fontSize:11, color:t.foot }}>
-            Hand-picked by a solo dev · All links verified {VERIFIED_DATE}
-          </p>
-          <span style={{ fontSize:11, color:t.foot }}>{filtered.length} / {LIBS.length}</span>
+        <div style={{ marginTop:"1rem", paddingTop:"0.85rem", borderTop:"1px solid #E8E3DC", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem" }}>
+          <p style={{ margin:0, fontSize:11, color:"#B0A898" }}>Hand-picked · All links verified {VERIFIED_DATE}</p>
+          <span style={{ fontSize:11, color:"#B0A898" }}>{filtered.length} / {LIBS.length}</span>
         </div>
       </main>
 
       {/* Back to top */}
-      {/* Floating action row — safe area aware */}
-      <div className="float-row" style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100, display:"flex", alignItems:"center", gap:"0.5rem" }}>
-        {showTop && (
-          <button onClick={() => window.scrollTo({ top:0, behavior:"smooth" })}
-            title="Back to top" aria-label="Back to top"
-            style={{ width:44, height:44, borderRadius:"50%", border:`1px solid ${t.ctrlBorder}`, background:t.ctrl, color:t.ctrlText, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 12px rgba(0,0,0,0.25)", backdropFilter:"blur(10px)" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+      {showTop && (
+        <div style={{ position:"fixed", bottom:"1.25rem", right:"1.25rem", zIndex:100 }}>
+          <button className="float-btn" onClick={() => window.scrollTo({ top:0, behavior:"smooth" })} title="Back to top" aria-label="Back to top">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6"/></svg>
           </button>
-        )}
-        {floatVis && (
-          <button onClick={() => { setSuggOpen(true); setTimeout(() => window.scrollTo({ top:document.body.scrollHeight, behavior:"smooth" }), 80); }}
-            style={{ height:44, display:"flex", alignItems:"center", gap:"0.35rem", padding:"0 1rem", borderRadius:999, border:`1px solid rgba(255,255,255,0.15)`, background:D?"rgba(139,92,246,0.75)":t.float, color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer", boxShadow:D?`0 4px 24px rgba(139,92,246,0.5), 0 0 0 1px rgba(255,255,255,0.1)`:`0 4px 18px ${t.float}60`, backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", whiteSpace:"nowrap" }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            Suggest
-          </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
