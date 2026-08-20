@@ -10,8 +10,30 @@ function Highlight({ text, query }) {
 
 export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopied, query, onCopy, onVisit }) {
   const [previewState, setPreviewState] = useState("loading");
-  const previewUrl = `https://image.thum.io/get/width/1200/crop/760/noanimate/https://${lib.url}`;
+  const [previewAttempt, setPreviewAttempt] = useState(0);
+  const previewUrl = `https://image.thum.io/get/width/1200/crop/760/${previewAttempt ? "wait/2/" : ""}noanimate/https://${lib.url}`;
   const initials = lib.name.replace(/[^a-z0-9 ]/gi, "").split(" ").filter(Boolean).slice(0, 2).map(word => word[0]).join("").toUpperCase() || "UI";
+  const retryPreview = (event) => {
+    const image = event.currentTarget;
+    if (image.naturalWidth < 320 || image.naturalHeight < 160) {
+      if (previewAttempt === 0) {
+        setPreviewAttempt(1);
+        setPreviewState("retrying");
+      } else {
+        setPreviewState("error");
+      }
+      return;
+    }
+    setPreviewState("loaded");
+  };
+  const handlePreviewError = () => {
+    if (previewAttempt === 0) {
+      setPreviewAttempt(1);
+      setPreviewState("retrying");
+    } else {
+      setPreviewState("error");
+    }
+  };
 
   return (
     <article className="resource-card" style={{ "--card-accent": lib.accent || "#7C5CFC" }}>
@@ -26,8 +48,8 @@ export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopi
       </div>
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
         <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
-          {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={() => setPreviewState("loaded")} onError={() => setPreviewState("error")} />}
-          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : "Preview unavailable"}</small></div>}
+          {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={retryPreview} onError={handlePreviewError} />}
+          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : previewState === "retrying" ? "Retrying capture" : "Live preview unavailable"}</small>{previewState === "error" && <span className="preview-fallback-link">Open the site directly ↗</span>}</div>}
           {previewState === "loaded" && <div className="preview-overlay"><span>Open live site</span><Icon name="arrow" size={13} /></div>}
         </div>
         <div className="resource-category">{categoryLabel}</div>

@@ -10,7 +10,7 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
 
       <div className="filter-block">
         <div className="filter-label">Resource type</div>
-        <div className="filter-options">
+        <div className="filter-options" role="group" aria-label="Resource type filters">
           {categories.map(category => {
             const selected = activeCategory === category.id;
             const count = category.id === "all" ? Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0) : counts[category.id] || 0;
@@ -23,7 +23,7 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
 
       <div className="filter-block">
         <div className="filter-label">Built with</div>
-        <div className="filter-pills">{stacks.map(stack => <button type="button" key={stack} className={`filter-pill ${stackFilter === stack ? "selected" : ""}`} onClick={() => setStackFilter(stack)} aria-pressed={stackFilter === stack}>{stack === "all" ? "Everything" : stack}</button>)}</div>
+        <div className="filter-pills" role="group" aria-label="Framework filters">{stacks.map(stack => <button type="button" key={stack} className={`filter-pill ${stackFilter === stack ? "selected" : ""}`} onClick={() => setStackFilter(stack)} aria-pressed={stackFilter === stack}>{stack === "all" ? "Everything" : stack}</button>)}</div>
       </div>
 
       <div className="filter-block">
