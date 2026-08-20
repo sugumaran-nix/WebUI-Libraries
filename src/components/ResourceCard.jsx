@@ -8,7 +8,7 @@ function Highlight({ text, query }) {
   return <>{text.slice(0, index)}<mark>{text.slice(index, index + query.length)}</mark>{text.slice(index + query.length)}</>;
 }
 
-export default function ResourceCard({ lib, categoryLabel, stacks, accent, isNew, isCopied, query, onCopy, onVisit }) {
+export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopied, query, onCopy, onVisit }) {
   const [previewState, setPreviewState] = useState("loading");
   const [previewAttempt, setPreviewAttempt] = useState(0);
   const previewUrl = `https://image.thum.io/get/width/1200/crop/760/${previewAttempt ? "wait/2/" : ""}noanimate/https://${lib.url}`;
@@ -37,17 +37,16 @@ export default function ResourceCard({ lib, categoryLabel, stacks, accent, isNew
 
   return (
     <article className="resource-card" style={{ "--card-accent": accent || lib.accent || "#2B7574" }}>
-      <div className="resource-card-top">
-        <span className="resource-orbit" aria-hidden="true"><span /></span>
-        <button type="button" className={`icon-button ${isCopied ? "is-copied" : ""}`} onClick={(event) => onCopy(lib, event)} aria-label={isCopied ? "URL copied" : `Copy ${lib.name} URL`} title={isCopied ? "Copied" : "Copy URL"}>
-          <Icon name={isCopied ? "check" : "copy"} size={14} />
-        </button>
-      </div>
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
         <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={retryPreview} onError={handlePreviewError} />}
           {(previewState === "loading" || previewState === "retrying") && <div className="preview-skeleton" aria-label={`${lib.name} preview loading`}><span className="preview-skeleton-line" /><span className="preview-skeleton-line short" /></div>}
           {previewState === "error" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>Preview unavailable · card opens site</small></div>}
+          <div className="resource-preview-tools">
+            <button type="button" className={`icon-button ${isCopied ? "is-copied" : ""}`} onClick={(event) => onCopy(lib, event)} aria-label={isCopied ? "URL copied" : `Copy ${lib.name} URL`} title={isCopied ? "Copied" : "Copy URL"}>
+              <Icon name={isCopied ? "check" : "copy"} size={14} />
+            </button>
+          </div>
         </div>
         <div className="resource-card-copy">
           <div className="resource-category-line"><span className="resource-category">{categoryLabel}</span>{isNew && <span className="new-badge">New</span>}</div>
@@ -55,10 +54,6 @@ export default function ResourceCard({ lib, categoryLabel, stacks, accent, isNew
           <p><Highlight text={lib.desc} query={query} /></p>
         </div>
       </a>
-      <div className="resource-card-footer">
-        <span className="resource-domain">{lib.url}</span>
-        <div className="resource-stacks">{stacks.slice(0, 3).map(stack => <span key={stack}>{stack}</span>)}</div>
-      </div>
     </article>
   );
 }
