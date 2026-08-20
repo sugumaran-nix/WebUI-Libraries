@@ -300,6 +300,7 @@ export default function App() {
         .spotlight-card h3 { max-width:220px; margin:25px 0 7px; font-size:17px; letter-spacing:-.04em; }
         .spotlight-card p { max-width:270px; margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
         .workspace { display:grid; grid-template-columns:230px minmax(0,1fr); gap:24px; align-items:start; }
+        .app-main > .quick-filter-bar { margin-top:4px; }
         .desktop-filter { position:sticky; top:96px; }
         .filter-panel { max-height:calc(100vh - 118px); overflow:auto; padding:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 14px 34px rgba(65,41,130,.06); scrollbar-width:thin; }
         .filter-panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding-bottom:16px; border-bottom:1px solid var(--line); }
@@ -475,7 +476,6 @@ export default function App() {
         </>}
 
         {isDirectory && <>
-        <section className="directory-intro" aria-labelledby="directory-title"><div><div className="eyebrow">The resource index · 175 verified links</div><h1 id="directory-title">Find the right starting point.</h1><p>Browse libraries, inspiration, assets, research tools, and everything that helps an interface become a product.</p></div><button type="button" className="button button-secondary" onClick={() => navigateTo("/")}><Icon name="arrowLeft" size={14} /> Back to landing</button></section>
         <div className="quick-filter-bar" aria-label="Quick filters"><span className="quick-filter-label">Quick access</span><div className="quick-filter-options">{STACK_FILTERS.map(stack => <button type="button" key={stack} className={`quick-filter-chip ${stackFilter === stack ? "selected" : ""}`} onClick={() => setStackFilter(stack)} aria-pressed={stackFilter === stack}>{stack === "all" ? "Everything" : stack}</button>)}</div><label className="topic-jump"><span className="sr-only">Jump to topic</span><select value={activeCategory} onChange={event => setActiveCategory(event.target.value)} aria-label="Jump to topic">{CATEGORIES.map(category => <option value={category.id} key={category.id}>{category.label}</option>)}</select><Icon name="chevron" size={13} /></label></div>
         <section className="workspace" id="results" aria-label="Resource discovery workspace">
           <aside className="desktop-filter"><FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} /></aside>
