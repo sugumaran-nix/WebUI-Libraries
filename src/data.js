@@ -103,7 +103,8 @@ export const LIB_STACKS = {
   104:["Tailwind"], 105:["Design","CSS"],
   137:["Design"], 138:["Design"], 139:["Design"], 140:["Design"], 141:["Design"], 142:["Design"], 143:["Design"], 144:["Design"],
   145:["Design"], 146:["Design"], 147:["Design"], 148:["CSS"], 149:["Design"], 150:["React"], 151:["Vue"], 152:["React","Tailwind"],
-  153:["React","Vue","Svelte"], 154:["React","Vue","Svelte"], 155:["React","Vue","Svelte"], 156:["Design"], 157:["Design"], 158:["Design"], 159:["Design"], 160:["Design"], 161:["Design"], 162:["Design"], 163:["Design"], 164:["Design"], 165:["Design"], 166:["Design"], 167:["Design"], 168:["Design"], 169:["Design"], 170:["Design"], 171:["Design"], 172:["Design"], 173:["Design"], 174:["Design"],   178:["Design"], 179:["Design"], 180:["Design"], 181:["Design"],
+  153:["React","Vue","Svelte"], 154:["React","Vue","Svelte"], 155:["React","Vue","Svelte"], 156:["Design"], 157:["Design"], 158:["Design"], 159:["Design"], 160:["Design"], 161:["Design"], 162:["Design"], 163:["Design"], 164:["Design"], 165:["Design"], 166:["Design"], 167:["Design"], 168:["Design"], 169:["Design"], 170:["Design"], 171:["Design"], 172:["Design"], 173:["Design"], 174:["Design"],   178:["Design"], 179:["Design"], 180:["Design"],   181:["Design"], 182:["Design"], 183:["Design"], 184:["Design"], 185:["Design"],
+
 
 };
 
@@ -292,6 +293,10 @@ export const LIBS = [
   { id:179,name:"Pafolios",                url:"pafolios.com",                        cat:"portfolios",     desc:"Explore 816 curated design portfolios and case studies from product designers, creative studios, developers, and independent makers worldwide.", added:"2026-08" },
   { id:180,name:"Relume",                  url:"relume.ai",                           cat:"ai-tools",      desc:"Use AI as your design ally, not as a replacement. Effortlessly generate sitemaps and wireframes for marketing websites in minutes with Relume’s AI website builder.", added:"2026-08" },
   { id:181,name:"Superdesign",              url:"app.superdesign.dev",                 cat:"ai-tools",      desc:"AI-powered design platform for creating beautiful interfaces and experiences", added:"2026-08" },
+  { id:182,name:"Land-book",               url:"land-book.com",                        cat:"inspiration",   desc:"Hand-picked website design inspiration for creatives, updated daily with website, section, mobile, motion, landing, portfolio, and ecommerce references", added:"2026-08" },
+  { id:183,name:"Minimal Gallery",         url:"minimal.gallery",                      cat:"inspiration",   desc:"Long-running curated source of website design inspiration, templates, tools, and themed references for creatives", added:"2026-08" },
+  { id:184,name:"Curated",                 url:"curated.design",                       cat:"inspiration",   desc:"Hand-picked live websites and landing pages organized by industry and style, with direct links to the real sites", added:"2026-08" },
+  { id:185,name:"Pttrns",                  url:"app.pttrns.com",                       cat:"ux-research",   desc:"Curated mobile design patterns and in-production app screenshots for interface research and inspiration", added:"2026-08" },
 ];
 
 export const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
