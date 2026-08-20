@@ -4,6 +4,12 @@ import { useState, useMemo, useEffect, useRef } from "react";
 function getRecent() {
   try { return JSON.parse(localStorage.getItem("uidir-recent") || "[]"); } catch { return []; }
 }
+function getInitialTheme() {
+  if (typeof window === "undefined") return "light";
+  const saved = localStorage.getItem("ui-folio-theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 function addRecent(lib) {
   try {
     const prev = getRecent().filter(r => r.id !== lib.id);
@@ -320,6 +326,7 @@ export default function App() {
   const [stackFilter, setStackFilter] = useState(init.stack);
   const [sortBy,      setSortBy]      = useState(init.sort);
   const [viewMode,    setViewMode]    = useState(init.view);
+  const [theme,       setTheme]       = useState(getInitialTheme);
   const [filterOpen,  setFilterOpen]  = useState(false);
   const [filterClosing,setFilterClosing]=useState(false);
   const [copiedId,    setCopiedId]    = useState(null);
@@ -334,6 +341,13 @@ export default function App() {
   const [sent,        setSent]        = useState(false);
   const searchRef = useRef(null);
   const listRef   = useRef(null);
+
+  // Theme persistence and document chrome
+  useEffect(() => {
+    localStorage.setItem("ui-folio-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    document.body.style.background = theme === "dark" ? "#111126" : "#FFF9F1";
+  }, [theme]);
 
   // Debounce search
   useEffect(() => {
@@ -462,7 +476,7 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell" style={{ minHeight:"100vh", background:"#F5F3EE", color:"#181714", fontFamily:"'DM Sans', system-ui, -apple-system, sans-serif" }}>
+    <div className="app-shell" data-theme={theme} style={{ minHeight:"100vh", background:"#F5F3EE", color:"#181714", fontFamily:"'DM Sans', system-ui, -apple-system, sans-serif" }}>
       <style>{`
         @keyframes fadeIn    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
@@ -618,7 +632,51 @@ export default function App() {
           *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
         }
 
-        :root { --ink:#181714; --muted:#817B70; --line:rgba(24,23,20,.11); --paper:#F5F3EE; --card:#FFFEFB; --accent:#C8F169; --accent-ink:#17210B; --warm:#E9D5BC; --ease-out:cubic-bezier(.23,1,.32,1); }
+        :root { --ink:#181329; --muted:#726B84; --line:rgba(24,19,41,.12); --paper:#FFF9F1; --card:#FFFFFF; --accent:#C9F45A; --accent-ink:#17210B; --accent-2:#FF4D8D; --violet:#7C5CFC; --cyan:#36D1DC; --warm:#FFE2EC; --ease-out:cubic-bezier(.23,1,.32,1); }
+        .app-shell[data-theme="light"] { --ink:#181329; --muted:#726B84; --line:rgba(24,19,41,.12); --paper:#FFF9F1; --card:#FFFFFF; --accent:#C9F45A; --accent-ink:#17210B; --accent-2:#FF4D8D; --violet:#7C5CFC; --cyan:#36D1DC; background-color:#FFF9F1 !important; color:#181329 !important; background-image:radial-gradient(circle at 8% 0%, rgba(255,255,255,.96), transparent 25rem), radial-gradient(circle at 98% 21%, rgba(255,77,141,.11), transparent 22rem), linear-gradient(rgba(124,92,252,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(124,92,252,.035) 1px, transparent 1px) !important; }
+        .app-shell[data-theme="dark"] { --ink:#F9F7FF; --muted:#A9A3C2; --line:rgba(255,255,255,.12); --paper:#111126; --card:#19183A; --accent:#D7FF5D; --accent-ink:#101126; --accent-2:#FF6FA9; --violet:#A28BFF; --cyan:#5FE4EC; background-color:#111126 !important; color:#F9F7FF !important; background-image:radial-gradient(circle at 2% 0%, rgba(124,92,252,.24), transparent 27rem), radial-gradient(circle at 100% 24%, rgba(255,77,141,.16), transparent 23rem), linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px) !important; }
+        .app-shell[data-theme="light"] .topbar { background:rgba(255,249,241,.84) !important; border-color:rgba(24,19,41,.1) !important; }
+        .app-shell[data-theme="dark"] .topbar { background:rgba(17,17,38,.82) !important; border-color:rgba(255,255,255,.1) !important; }
+        .app-shell[data-theme="light"] .hero-panel { background:linear-gradient(118deg,#6547F5 0%,#8A53F2 46%,#FF4D8D 100%) !important; box-shadow:0 28px 72px rgba(124,92,252,.25) !important; }
+        .app-shell[data-theme="dark"] .hero-panel { background:linear-gradient(118deg,#241A55 0%,#3A2471 46%,#641F52 100%) !important; box-shadow:0 28px 72px rgba(0,0,0,.36) !important; }
+        .app-shell[data-theme="light"] .hero-panel::after { border-color:rgba(201,244,90,.5) !important; box-shadow:0 0 0 36px rgba(201,244,90,.08),0 0 0 76px rgba(255,255,255,.08),0 0 0 118px rgba(255,77,141,.08) !important; }
+        .app-shell[data-theme="dark"] .hero-panel::after { border-color:rgba(215,255,93,.4) !important; }
+        .app-shell[data-theme="dark"] .brand-name, .app-shell[data-theme="dark"] .section-title, .app-shell[data-theme="dark"] .result-count, .app-shell[data-theme="dark"] .featured-card h3 { color:#F9F7FF !important; }
+        .app-shell[data-theme="dark"] .brand-sub, .app-shell[data-theme="dark"] .section-eyebrow, .app-shell[data-theme="dark"] .result-context, .app-shell[data-theme="dark"] .featured-card p { color:#A9A3C2 !important; }
+        .app-shell[data-theme="dark"] .featured-card, .app-shell[data-theme="dark"] .discovery-toolbar, .app-shell[data-theme="dark"] .recent-chip, .app-shell[data-theme="dark"] .suggest-panel { background:#19183A !important; border-color:rgba(255,255,255,.12) !important; color:#F9F7FF !important; }
+        .app-shell[data-theme="light"] .featured-card, .app-shell[data-theme="light"] .discovery-toolbar, .app-shell[data-theme="light"] .suggest-panel { background:rgba(255,255,255,.82) !important; border-color:rgba(24,19,41,.1) !important; }
+        .app-shell[data-theme="dark"] .sort-select, .app-shell[data-theme="dark"] .view-toggle, .app-shell[data-theme="dark"] .stack-chip { background:#211F47 !important; border-color:rgba(255,255,255,.14) !important; color:#C9C4E1 !important; }
+        .app-shell[data-theme="dark"] .stack-chip.active, .app-shell[data-theme="dark"] .view-toggle button.active { background:#D7FF5D !important; color:#101126 !important; border-color:#D7FF5D !important; }
+        .app-shell[data-theme="dark"] .lib-card { background:#19183A !important; border-color:rgba(255,255,255,.11) !important; box-shadow:0 10px 28px rgba(0,0,0,.13) !important; }
+        .app-shell[data-theme="dark"] .lib-card span[style*="color:#1C1A17"], .app-shell[data-theme="dark"] .lib-card div[style*="color:#6B5F4B"] { color:#F9F7FF !important; }
+        .app-shell[data-theme="dark"] .lib-card div[style*="color:#6B5F4B"] { color:#B7B1CC !important; }
+        .app-shell[data-theme="dark"] .search-input { background:#19183A !important; color:#F9F7FF !important; border-color:rgba(255,255,255,.16) !important; }
+        .app-shell[data-theme="light"] .search-input { background:#FFFFFF !important; color:#181329 !important; border-color:rgba(24,19,41,.12) !important; }
+        .app-shell[data-theme="dark"] .theme-toggle, .app-shell[data-theme="dark"] .ctrl-btn { background:#19183A !important; border-color:rgba(255,255,255,.15) !important; color:#C9C4E1 !important; }
+        .app-shell[data-theme="light"] .theme-toggle, .app-shell[data-theme="light"] .ctrl-btn { background:#FFFFFF !important; border-color:rgba(24,19,41,.12) !important; color:#726B84 !important; }
+        .page-layout { display:grid; grid-template-columns:190px minmax(0,1fr); gap:clamp(1rem,3vw,2.4rem); align-items:start; }
+        .content-stream { min-width:0; }
+        .browse-rail { position:sticky; top:5.75rem; align-self:start; padding:.75rem 0; }
+        .rail-heading { display:flex; flex-direction:column; gap:.25rem; margin:0 0 1rem; }
+        .rail-heading strong { color:var(--ink); font-family:'DM Serif Display',Georgia,serif; font-size:1.35rem; font-weight:400; letter-spacing:-.04em; }
+        .rail-kicker { color:var(--accent-2); font-size:9px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+        .rail-category-list { display:flex; flex-direction:column; gap:.18rem; }
+        .rail-category { display:flex; align-items:center; justify-content:space-between; gap:.5rem; width:100%; padding:.56rem .62rem; border:1px solid transparent; border-radius:9px; background:transparent; color:var(--muted); font:600 11px inherit; text-align:left; cursor:pointer; transition:all .18s var(--ease-out); }
+        .rail-category:hover { color:var(--ink); background:rgba(124,92,252,.08); transform:translateX(3px); }
+        .rail-category.active { border-color:rgba(124,92,252,.2); background:linear-gradient(90deg,rgba(124,92,252,.15),rgba(255,77,141,.08)); color:var(--ink); box-shadow:0 7px 18px rgba(124,92,252,.08); }
+        .rail-category > span:last-child { color:var(--muted); font-size:10px; font-weight:700; }
+        .rail-category-name { display:flex; align-items:center; gap:.5rem; min-width:0; }
+        .rail-dot { width:7px; height:7px; flex-shrink:0; border-radius:50%; box-shadow:0 0 0 4px rgba(124,92,252,.08); }
+        .rail-note { display:flex; gap:.55rem; margin-top:1.25rem; padding:.75rem; border:1px solid var(--line); border-radius:12px; background:linear-gradient(135deg,rgba(201,244,90,.18),rgba(255,77,141,.09)); }
+        .rail-note-icon { display:grid; place-items:center; width:22px; height:22px; flex-shrink:0; border-radius:7px; background:var(--ink); color:var(--accent); font-size:11px; }
+        .rail-note strong, .rail-note span { display:block; }
+        .rail-note strong { color:var(--ink); font-size:10px; }
+        .rail-note span { margin-top:3px; color:var(--muted); font-size:9px; line-height:1.35; }
+        .theme-toggle { display:inline-flex; align-items:center; gap:.38rem; min-height:34px; padding:0 .6rem; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.65); color:var(--ink); font:700 10px inherit; cursor:pointer; transition:transform .18s var(--ease-out), background .18s var(--ease-out), border-color .18s var(--ease-out); }
+        .theme-toggle:hover { transform:translateY(-1px); background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+        .theme-toggle:active { transform:scale(.97); }
+        .app-shell[data-theme="dark"] .theme-toggle:hover { background:var(--accent-2); border-color:var(--accent-2); color:#FFF; }
+        .main-canvas { transition:color .24s var(--ease-out); }
         .app-shell { position:relative; overflow:hidden; background-image:radial-gradient(circle at 10% 0%, rgba(255,255,255,.85), transparent 26rem), linear-gradient(rgba(24,23,20,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(24,23,20,.025) 1px, transparent 1px); background-size:auto, 32px 32px, 32px 32px; }
         .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.18; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E"); mix-blend-mode:multiply; z-index:0; }
         .app-shell > * { position:relative; z-index:1; }
@@ -706,6 +764,11 @@ export default function App() {
               <button type="button" onClick={() => setActive("inspiration")}>Inspiration</button>
               <button type="button" onClick={() => setActive("react")}>Libraries</button>
             </nav>
+
+            <button type="button" className="theme-toggle" onClick={() => setTheme(current => current === "light" ? "dark" : "light")} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`} title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}>
+              {theme === "light" ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="4"/></svg> : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20.8 15.2A8.5 8.5 0 0 1 8.8 3.2 8.5 8.5 0 1 0 20.8 15.2Z"/></svg>}
+              <span>{theme === "light" ? "Bright" : "Dark"}</span>
+            </button>
 
             {/* Search */}
             <div className="search-wrap" style={{ position:"relative", width:200, flexShrink:0 }}>
@@ -811,7 +874,19 @@ export default function App() {
       )}
 
       {/* ── MAIN ───────────────────────────────────────────────── */}
-      <main style={{ maxWidth:1180, margin:"0 auto", padding:"clamp(0.75rem,2vw,1.25rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative" }}>
+      <main className="main-canvas" style={{ maxWidth:1280, margin:"0 auto", padding:"clamp(0.75rem,2vw,1.25rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative" }}>
+        <div className="page-layout">
+          <aside className="browse-rail" aria-label="Browse resource categories">
+            <div className="rail-heading"><span className="rail-kicker">Explore the index</span><strong>Browse by vibe</strong></div>
+            <div className="rail-category-list">
+              {CATEGORIES.map(cat => <button type="button" key={cat.id} className={`rail-category${active === cat.id ? " active" : ""}`} onClick={() => { setActive(cat.id); jumpToResults(); }}>
+                <span className="rail-category-name"><span className="rail-dot" style={{ background:cat.id === "all" ? "#FF4D8D" : CAT_COLOR[cat.id] || "#7C5CFC" }} />{cat.label}</span>
+                <span>{cat.id === "all" ? LIBS.length : counts[cat.id] || 0}</span>
+              </button>)}
+            </div>
+            <div className="rail-note"><span className="rail-note-icon">✦</span><div><strong>Fresh every week</strong><span>Independent finds for better interfaces.</span></div></div>
+          </aside>
+          <div className="content-stream">
 
         <section className="hero-panel" aria-labelledby="hero-title">
           <div>
@@ -1038,6 +1113,8 @@ export default function App() {
         <div style={{ marginTop:"1rem", paddingTop:"0.85rem", borderTop:"1px solid #E8E3DC", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem" }}>
           <p style={{ margin:0, fontSize:11, color:"#B0A898" }}>Hand-picked · All links verified {VERIFIED_DATE}</p>
           <span style={{ fontSize:11, color:"#B0A898" }}>{filtered.length} / {LIBS.length}</span>
+        </div>
+          </div>
         </div>
       </main>
 
