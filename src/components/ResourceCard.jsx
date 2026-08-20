@@ -36,7 +36,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
   };
 
   return (
-    <article className="resource-card" style={{ "--card-accent": accent || lib.accent || "#2B7574" }}>
+    <article className="resource-card" style={{ "--card-accent": accent || lib.accent || "#0066B3" }}>
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
         <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={retryPreview} onError={handlePreviewError} />}
