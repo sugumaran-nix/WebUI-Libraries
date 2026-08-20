@@ -310,7 +310,7 @@ export default function App() {
         .icon-button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:0; color:var(--muted); background:var(--surface); cursor:pointer; transition:all .18s var(--ease); }
         .icon-button:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-2px); }
         .icon-button.is-copied { color:#173B19; border-color:var(--lime); background:var(--lime); }
-        .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; } .github-link { padding:.48rem .62rem; color:var(--muted); text-decoration:none; font-size:10px; font-weight:800; } .github-link svg { flex:0 0 auto; }
+        .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; } .github-link { display:grid; place-items:center; width:34px; height:34px; padding:0; color:var(--muted); text-decoration:none; } .github-link svg { flex:0 0 auto; } .github-link:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-1px); }
         .vengeance-main { width:100%; max-width:none; margin:0; padding:72px 0 0; }
         .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#F4F1EA; --landing-fg:#142A2E; --landing-accent:#B54D47; --landing-cool:#2F6B67; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#101B1D; --landing-fg:#F4F1EA; --landing-accent:#D16B62; --landing-cool:#72AAA3; }
         .vengeance-landing::before { content:""; position:absolute; inset:0; z-index:-2; opacity:.6; background-image:linear-gradient(color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%); }
@@ -520,7 +520,7 @@ export default function App() {
             <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
           </nav>
           <div className="header-actions">
-            <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open sugumaran-nix on GitHub" title="github.com/sugumaran-nix"><Icon name="github" size={15} /><span>@sugumaran-nix</span></a>
+            <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open sugumaran-nix on GitHub" title="Open GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
             <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
           </div>
