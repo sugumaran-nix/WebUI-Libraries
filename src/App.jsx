@@ -368,12 +368,14 @@ export default function App() {
   }, []);
 
   const activeFilters = (active !== "all" ? 1 : 0) + (query ? 1 : 0);
+  const featured = useMemo(() => LIBS.filter(l => NEW_IDS.has(l.id)).slice(0, 4), []);
 
   function closeDrawer() {
     setFilterClosing(true);
     setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 200);
   }
   function clearAll() { setQuery(""); setActive("all"); closeDrawer(); }
+  function jumpToResults() { document.getElementById("results")?.scrollIntoView({ behavior:"smooth", block:"start" }); }
 
   function copyUrl(url, id, e) {
     e.preventDefault(); e.stopPropagation();
@@ -413,7 +415,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"#F7F5F0", color:"#1C1A17", fontFamily:"'DM Sans', system-ui, -apple-system, sans-serif" }}>
+    <div className="app-shell" style={{ minHeight:"100vh", background:"#F5F3EE", color:"#181714", fontFamily:"'DM Sans', system-ui, -apple-system, sans-serif" }}>
       <style>{`
         @keyframes fadeIn    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes slideUp   { from{opacity:0;transform:translateY(100%)} to{opacity:1;transform:translateY(0)} }
@@ -569,24 +571,66 @@ export default function App() {
           *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
         }
 
+        :root { --ink:#181714; --muted:#817B70; --line:rgba(24,23,20,.11); --paper:#F5F3EE; --card:#FFFEFB; --accent:#C8F169; --accent-ink:#17210B; --warm:#E9D5BC; --ease-out:cubic-bezier(.23,1,.32,1); }
+        .app-shell { position:relative; overflow:hidden; background-image:radial-gradient(circle at 10% 0%, rgba(255,255,255,.85), transparent 26rem), linear-gradient(rgba(24,23,20,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(24,23,20,.025) 1px, transparent 1px); background-size:auto, 32px 32px, 32px 32px; }
+        .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.18; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E"); mix-blend-mode:multiply; z-index:0; }
+        .app-shell > * { position:relative; z-index:1; }
+        .topbar { background:rgba(245,243,238,.82) !important; border-bottom:1px solid var(--line) !important; }
+        .brand-mark { width:30px; height:30px; display:grid; place-items:center; border-radius:9px; background:var(--ink); color:var(--accent); font-size:15px; box-shadow:0 6px 18px rgba(24,23,20,.16); }
+        .brand-name { font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        .brand-sub { display:block; margin-top:3px; color:#9C9589; font-size:10px; letter-spacing:.02em; }
+        .topnav { display:flex; align-items:center; gap:.15rem; }
+        .topnav button { border:0; background:transparent; padding:.45rem .65rem; color:#817B70; font:500 12px inherit; cursor:pointer; border-radius:7px; transition:all .18s var(--ease-out); }
+        .topnav button:hover { color:var(--ink); background:rgba(24,23,20,.05); }
+        .hero-panel { position:relative; display:grid; grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr); gap:2rem; min-height:420px; margin:1.25rem 0 1.5rem; padding:clamp(1.5rem,4vw,3.75rem); overflow:hidden; border-radius:24px; background:linear-gradient(115deg,#1D1C19 0%,#292822 60%,#38362D 100%); color:#F6F3EA; box-shadow:0 26px 70px rgba(24,23,20,.17); }
+        .hero-panel::after { content:""; position:absolute; width:520px; height:520px; top:-220px; right:-130px; border:1px solid rgba(200,241,105,.26); border-radius:50%; box-shadow:0 0 0 36px rgba(200,241,105,.035),0 0 0 76px rgba(200,241,105,.025),0 0 0 118px rgba(200,241,105,.018); }
+        .hero-kicker { display:flex; align-items:center; gap:.5rem; color:var(--accent); font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+        .hero-kicker::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px rgba(200,241,105,.12); }
+        .hero-title { max-width:680px; margin:1rem 0 1.1rem; font-family:'DM Serif Display',Georgia,serif; font-size:clamp(2.8rem,7vw,6.5rem); font-weight:400; letter-spacing:-.055em; line-height:.9; }
+        .hero-title em { color:var(--accent); font-style:normal; }
+        .hero-copy { max-width:590px; color:rgba(246,243,234,.68); font-size:14px; line-height:1.65; }
+        .hero-actions { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.6rem; }
+        .hero-primary { display:inline-flex; align-items:center; gap:.55rem; border:0; border-radius:8px; padding:.7rem 1rem; background:var(--accent); color:var(--accent-ink); font:700 12px inherit; cursor:pointer; transition:transform .18s var(--ease-out), box-shadow .18s var(--ease-out); box-shadow:0 8px 24px rgba(200,241,105,.12); }
+        .hero-primary:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(200,241,105,.2); }
+        .hero-secondary { display:inline-flex; align-items:center; gap:.5rem; border:1px solid rgba(246,243,234,.18); border-radius:8px; padding:.7rem 1rem; background:rgba(255,255,255,.05); color:#F6F3EA; font:600 12px inherit; cursor:pointer; }
+        .hero-secondary:hover { background:rgba(255,255,255,.11); }
+        .hero-index { align-self:end; display:grid; grid-template-columns:1fr 1fr; gap:.7rem; max-width:360px; padding:1rem; border:1px solid rgba(246,243,234,.14); border-radius:16px; background:rgba(255,255,255,.055); backdrop-filter:blur(12px); }
+        .hero-stat { padding:.65rem .7rem; border-radius:10px; background:rgba(0,0,0,.12); }
+        .hero-stat strong { display:block; color:#F6F3EA; font-family:'DM Serif Display',Georgia,serif; font-size:28px; font-weight:400; letter-spacing:-.04em; }
+        .hero-stat span { display:block; margin-top:2px; color:rgba(246,243,234,.52); font-size:10px; letter-spacing:.06em; text-transform:uppercase; }
+        .section-intro { display:flex; align-items:end; justify-content:space-between; gap:1rem; margin:0 0 .75rem; }
+        .section-eyebrow { margin:0 0 .25rem; color:#9C9589; font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+        .section-title { margin:0; color:var(--ink); font-family:'DM Serif Display',Georgia,serif; font-size:1.65rem; font-weight:400; letter-spacing:-.04em; }
+        .featured-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.65rem; margin-bottom:2rem; }
+        .featured-card { min-height:132px; padding:1rem; border:1px solid var(--line); border-radius:14px; background:rgba(255,254,251,.78); transition:transform .22s var(--ease-out), box-shadow .22s var(--ease-out), border-color .22s var(--ease-out); }
+        .featured-card:hover { transform:translateY(-4px); border-color:rgba(24,23,20,.24); box-shadow:0 16px 30px rgba(24,23,20,.09); }
+        .featured-card .eyebrow { display:flex; align-items:center; justify-content:space-between; color:#9C9589; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+        .featured-card h3 { margin:.8rem 0 .35rem; color:var(--ink); font-size:14px; letter-spacing:-.02em; }
+        .featured-card p { margin:0; color:#817B70; font-size:11px; line-height:1.45; }
         header { padding-top:env(safe-area-inset-top); }
         .filter-drawer { padding-bottom:env(safe-area-inset-bottom); }
+        @media (max-width:899px) { .topnav { display:none; } .hero-panel { grid-template-columns:1fr; min-height:auto; } .hero-index { align-self:auto; max-width:none; } .featured-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:599px) { .hero-panel { margin-top:.75rem; border-radius:18px; padding:1.25rem; } .hero-title { font-size:clamp(2.8rem,16vw,4.8rem); } .featured-strip { grid-template-columns:1fr 1fr; overflow-x:auto; } .featured-card { min-width:160px; } }
       `}</style>
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
-      <header style={{ background:"rgba(247,245,240,0.92)", borderBottom:"1px solid #E8E3DC", padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)" }}>
-        <div style={{ maxWidth:860, margin:"0 auto" }}>
+      <header className="topbar" style={{ background:"rgba(247,245,240,0.92)", borderBottom:"1px solid #E8E3DC", padding:"0 1.25rem", position:"sticky", top:0, zIndex:50, backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)" }}>
+        <div style={{ maxWidth:1180, margin:"0 auto" }}>
           <div style={{ display:"flex", alignItems:"center", gap:"0.6rem", flexWrap:"wrap", minHeight:52, paddingTop:"0.3rem", paddingBottom:"0.3rem" }}>
 
             {/* Wordmark */}
-            <div className="nav-title" style={{ flex:1, minWidth:0 }}>
-              <h1 style={{ fontFamily:"'DM Serif Display', Georgia, serif", fontSize:"1.1rem", fontWeight:400, margin:0, letterSpacing:"-0.01em", color:"#1C1A17", lineHeight:1.1 }}>
-                UI Libraries
-              </h1>
-              <p className="nav-title-sub" style={{ margin:0, fontSize:"0.65rem", color:"#9B8E80", lineHeight:1, marginTop:2 }}>
-                {LIBS.length} resources · verified {VERIFIED_DATE}
-              </p>
+            <div className="nav-title" style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:".65rem" }}>
+              <span className="brand-mark" aria-hidden="true">✦</span>
+              <div>
+                <h1 className="brand-name" style={{ margin:0, color:"#181714", lineHeight:1.1 }}>UI / FOLIO</h1>
+                <p className="brand-sub nav-title-sub" style={{ margin:0 }}>The independent resource index</p>
+              </div>
             </div>
+            <nav className="topnav" aria-label="Primary navigation">
+              <button type="button" onClick={jumpToResults}>Explore</button>
+              <button type="button" onClick={() => setActive("inspiration")}>Inspiration</button>
+              <button type="button" onClick={() => setActive("react")}>Libraries</button>
+            </nav>
 
             {/* Search */}
             <div className="search-wrap" style={{ position:"relative", width:200, flexShrink:0 }}>
@@ -687,7 +731,36 @@ export default function App() {
       )}
 
       {/* ── MAIN ───────────────────────────────────────────────── */}
-      <main style={{ maxWidth:860, margin:"0 auto", padding:"clamp(0.75rem,2vw,1.25rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative" }}>
+      <main style={{ maxWidth:1180, margin:"0 auto", padding:"clamp(0.75rem,2vw,1.25rem) clamp(0.85rem,3vw,1.25rem) clamp(4rem,8vw,6rem)", position:"relative" }}>
+
+        <section className="hero-panel" aria-labelledby="hero-title">
+          <div>
+            <div className="hero-kicker">Curated interface intelligence · Issue 08</div>
+            <h2 id="hero-title" className="hero-title">Find the <em>good stuff.</em></h2>
+            <p className="hero-copy">A refined index of the UI libraries, design systems, inspiration galleries, and frontend tools that make digital work feel considered.</p>
+            <div className="hero-actions">
+              <button type="button" className="hero-primary" onClick={jumpToResults}>Start exploring <span aria-hidden="true">↗</span></button>
+              <button type="button" className="hero-secondary" onClick={() => setFilterOpen(true)}>Open filters <span aria-hidden="true">⌘K</span></button>
+            </div>
+          </div>
+          <div className="hero-index" aria-label="Directory statistics">
+            <div className="hero-stat"><strong>{LIBS.length}</strong><span>Resources</span></div>
+            <div className="hero-stat"><strong>{CATEGORIES.length - 1}</strong><span>Curated lanes</span></div>
+            <div className="hero-stat"><strong>08</strong><span>New this issue</span></div>
+            <div className="hero-stat"><strong>100%</strong><span>Independent</span></div>
+          </div>
+        </section>
+
+        <div className="section-intro">
+          <div><p className="section-eyebrow">Freshly indexed</p><h2 className="section-title">Worth a closer look</h2></div>
+          <span style={{ fontSize:11, color:"#9C9589" }}>New resources · {VERIFIED_DATE}</span>
+        </div>
+        <section className="featured-strip" aria-label="Featured new resources">
+          {featured.map(lib => <a key={lib.id} className="featured-card" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(lib)}>
+            <div className="eyebrow"><span>{CATEGORIES.find(c => c.id === CAT_RESOLVE(lib.cat))?.label || lib.cat}</span><span aria-hidden="true">↗</span></div>
+            <h3>{lib.name}</h3><p>{lib.desc}</p>
+          </a>)}
+        </section>
 
         {/* Active filter chips */}
         {activeFilters > 0 && (
@@ -730,7 +803,7 @@ export default function App() {
         {filtered.length === 0 ? (
           <EmptyState onClear={clearAll} />
         ) : (
-          <div ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.2s ease" }}>
+          <div id="results" ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.2s ease" }}>
             {filtered.map(lib => {
               const catColor = CAT_COLOR[lib.cat] || CAT_COLOR["dev-tools"];
               const isCopy   = copiedId === lib.id;
