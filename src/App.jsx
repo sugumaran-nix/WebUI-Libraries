@@ -90,6 +90,54 @@ function ThemeToggle({ theme, onToggle }) {
   );
 }
 
+function VengeanceLanding({ onNavigate }) {
+  const sectionRef = useRef(null);
+  const marqueeImages = [
+    "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1560972550-aba3456b5564?q=80&w=800&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=800&auto=format&fit=crop",
+  ];
+  const marqueeTiles = [...marqueeImages, ...marqueeImages];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return undefined;
+    const handlePointerMove = event => {
+      const rect = section.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+      section.style.setProperty("--pointer-x", `${x}%`);
+      section.style.setProperty("--pointer-y", `${y}%`);
+    };
+    section.addEventListener("pointermove", handlePointerMove);
+    return () => section.removeEventListener("pointermove", handlePointerMove);
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
+      <div className="vengeance-glow" aria-hidden="true" />
+      <div className="vengeance-topline">
+        <a href="mailto:hello@vengeance.ui">hello@vengeance.ui</a>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}>Documentation</button><button type="button" onClick={() => onNavigate("/directory")}>Components</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+      </div>
+      <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
+      <div className="vengeance-content">
+        <div className="vengeance-kicker">Premium components · React · modern interfaces</div>
+        <h1 id="vengeance-title">VengeanceUI</h1>
+        <div className="vengeance-intro">
+          <div className="vengeance-subtitle"><span>BUILD FASTER</span><span>SHIP BETTER</span></div>
+          <div className="vengeance-copy"><p>Vengeance UI is a premium component library specializing in smooth animations, interactive interfaces, and modern design.</p><p>We prioritize developer experience and aesthetics. Our components span complex interactions, 3D elements, and smooth animations built for React and modern frameworks.</p></div>
+        </div>
+        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Explore the index <Icon name="arrowRight" size={15} /></button>
+      </div>
+      <p className="vengeance-footer">We navigate in no-nonsense environments pushing the boundaries of web design. Whether you&apos;re a startup or a global leader, building a new identity or interactive platform, Vengeance UI is your partner in innovation. Our premium components ensure that every project feels magical, collaborative, and smooth.</p>
+    </section>
+  );
+}
+
 export default function App() {
   const initial = getUrlParams();
   const [route, setRoute] = useState(getRoute);
@@ -245,10 +293,10 @@ export default function App() {
         .site-header { position:relative; z-index:40; border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--paper) 84%, transparent); backdrop-filter:blur(18px); }
         .directory-header { position:fixed; inset:0 0 auto; z-index:80; }
         .header-inner { display:flex; align-items:center; gap:1rem; width:min(1440px,100%); min-height:72px; margin:0 auto; padding:0 28px; }
-        .brand-lockup { display:flex; align-items:center; gap:.7rem; min-width:220px; }
+        .brand-lockup { display:flex; align-items:center; gap:.7rem; min-width:220px; padding:0; border:0; color:var(--ink); background:transparent; text-align:left; cursor:pointer; }
         .brand-symbol { display:grid; place-items:center; width:36px; height:36px; border-radius:12px; color:var(--ink); background:linear-gradient(135deg,var(--lime),var(--cyan)); box-shadow:0 8px 22px rgba(67,217,232,.2); }
         .brand-name { font-size:12px; font-weight:900; letter-spacing:.15em; line-height:1; }
-        .brand-caption { margin-top:5px; color:var(--muted); font-size:10px; font-weight:600; }
+        .brand-caption { display:block; margin-top:5px; color:var(--muted); font-size:10px; font-weight:600; } .brand-lockup:hover { transform:none; }
         .header-nav { display:flex; align-items:center; gap:.2rem; margin-left:auto; }
         .header-nav button, .theme-switch { border:0; background:transparent; color:var(--muted); cursor:pointer; transition:all .18s var(--ease); }
         .header-nav button { padding:.55rem .7rem; border-radius:9px; font-size:11px; font-weight:800; }
@@ -266,6 +314,32 @@ export default function App() {
         .icon-button:hover { color:var(--ink); border-color:var(--violet); transform:translateY(-2px); }
         .icon-button.is-copied { color:#173B19; border-color:var(--lime); background:var(--lime); }
         .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; }
+        .vengeance-main { width:100%; max-width:none; margin:0; padding:0; }
+        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:#F5F2EA; background:#090C10; --pointer-x:50%; --pointer-y:50%; }
+        .vengeance-landing::before { content:""; position:absolute; inset:0; z-index:-2; opacity:.55; background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%); }
+        .vengeance-glow { position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(circle at var(--pointer-x) var(--pointer-y),rgba(91,169,157,.2),transparent 30%),radial-gradient(circle at 70% 20%,rgba(134,18,17,.18),transparent 32%); transition:background .25s var(--ease); }
+        .vengeance-topline { position:absolute; top:24px; left:clamp(22px,5vw,72px); right:clamp(22px,5vw,72px); z-index:5; display:flex; align-items:center; justify-content:space-between; gap:18px; color:rgba(245,242,234,.68); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+        .vengeance-topline a, .vengeance-toplinks button { color:inherit; text-decoration:none; transition:color .18s var(--ease); }
+        .vengeance-topline a:hover, .vengeance-toplinks button:hover { color:#F5F2EA; }
+        .vengeance-toplinks { display:flex; align-items:center; gap:18px; }
+        .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
+        .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:1; height:min(48vh,420px); overflow:hidden; opacity:.42; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
+        .vengeance-marquee-track { display:flex; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
+        .vengeance-tile { width:clamp(130px,15vw,200px); aspect-ratio:1; flex:0 0 auto; overflow:hidden; border:1px solid rgba(245,242,234,.2); background:#15191d; filter:saturate(.7) contrast(1.04); }
+        .vengeance-tile img { display:block; width:100%; height:100%; object-fit:cover; }
+        @keyframes vengeance-marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
+        .vengeance-content { position:relative; z-index:3; display:flex; flex-direction:column; justify-content:center; width:min(1280px,100%); min-height:calc(100vh - 72px); margin:0 auto; padding:clamp(100px,14vh,160px) clamp(22px,6vw,92px) 130px; }
+        .vengeance-kicker { align-self:flex-start; margin-bottom:18px; color:#B9D8D5; font-size:10px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
+        .vengeance-content h1 { margin:0; font-family:Georgia,'Times New Roman',serif; font-size:clamp(5rem,17vw,14rem); font-weight:400; line-height:.78; letter-spacing:-.1em; color:#F5F2EA; }
+        .vengeance-intro { display:grid; grid-template-columns:minmax(170px,.35fr) minmax(0,1fr); gap:clamp(28px,7vw,105px); max-width:820px; margin-top:clamp(58px,9vh,100px); padding-left:clamp(0px,8vw,125px); }
+        .vengeance-subtitle { display:flex; flex-direction:column; gap:2px; color:#D85A51; font-size:clamp(18px,2.7vw,31px); font-weight:700; line-height:1.03; letter-spacing:-.05em; }
+        .vengeance-copy { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(18px,4vw,58px); color:rgba(245,242,234,.7); font-size:11px; line-height:1.7; }
+        .vengeance-copy p { margin:0; }
+        .vengeance-cta { display:inline-flex; align-items:center; gap:8px; align-self:flex-start; margin-top:34px; padding:11px 15px; border:1px solid rgba(245,242,234,.24); border-radius:0; color:#090C10; background:#B9D8D5; font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:transform .18s var(--ease),background .18s var(--ease); }
+        .vengeance-cta:hover { transform:translateY(-2px); background:#F5F2EA; }
+        .vengeance-footer { position:absolute; right:clamp(22px,5vw,72px); bottom:22px; left:clamp(22px,5vw,72px); max-width:620px; margin:0 auto; color:rgba(245,242,234,.48); font-size:9px; line-height:1.65; text-align:center; }
+        @media (max-width:820px) { .vengeance-topline { align-items:flex-start; flex-direction:column; gap:10px; } .vengeance-toplinks { gap:12px; } .vengeance-content { padding-top:150px; } .vengeance-intro { grid-template-columns:1fr; gap:22px; padding-left:0; } .vengeance-subtitle { flex-direction:row; gap:10px; font-size:21px; } .vengeance-copy { grid-template-columns:1fr; gap:12px; } .vengeance-footer { position:relative; right:auto; bottom:auto; left:auto; padding:0 22px 24px; } }
+        @media (max-width:560px) { .vengeance-landing { min-height:calc(100vh - 64px); } .vengeance-content { min-height:calc(100vh - 64px); padding-top:142px; } .vengeance-content h1 { font-size:clamp(4.5rem,22vw,8rem); } .vengeance-marquee { height:33vh; } .vengeance-tile { width:118px; } .vengeance-topline { top:16px; font-size:8px; } .vengeance-kicker { font-size:8px; } }
         .welcome-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:24px; min-height:390px; padding:clamp(26px,5vw,62px); overflow:hidden; border-radius:32px; color:#FFF; background:linear-gradient(125deg,#6346F6 0%,#8C54F1 48%,#FF4D93 100%); box-shadow:0 30px 80px rgba(115,87,255,.28); }
         .welcome-copy { align-self:center; max-width:680px; }
         .eyebrow { color:var(--lime); font-size:10px; font-weight:900; letter-spacing:.17em; text-transform:uppercase; }
@@ -389,7 +463,7 @@ export default function App() {
         .resource-preview::after { content:""; position:absolute; inset:auto 0 0; height:22%; pointer-events:none; background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--ink) 10%,transparent)); opacity:.45; }
         .resource-preview img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .45s var(--ease), opacity .3s var(--ease); }
         .resource-card:hover .resource-preview img { transform:scale(1.025); }
-        .resource-preview-tools { position:absolute; top:11px; left:11px; z-index:4; }
+        .resource-preview-tools { position:absolute; top:11px; right:11px; z-index:4; }
         .resource-preview-tools .icon-button { width:30px; height:30px; border-radius:0; color:var(--ink); background:color-mix(in srgb,var(--surface) 88%,transparent); box-shadow:0 3px 12px rgba(14,41,49,.16); backdrop-filter:blur(8px); }
         .resource-preview-tools .icon-button:hover, .resource-preview-tools .icon-button.is-copied { color:var(--ink); border-color:var(--card-accent); background:var(--lime); }
         .preview-skeleton { position:absolute; inset:0; display:grid; align-content:end; gap:7px; padding:16px; overflow:hidden; background:linear-gradient(135deg,color-mix(in srgb,var(--card-accent) 14%,var(--surface)),var(--surface-soft)); }
@@ -439,10 +513,10 @@ export default function App() {
 
       <header className={`site-header ${isDirectory ? "directory-header" : ""}`}>
         <div className="header-inner">
-          <div className="brand-lockup">
+          <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to UI / FOLIO landing page">
             <span className="brand-symbol"><Icon name="spark" size={17} /></span>
-            <div><div className="brand-name">UI / FOLIO</div><div className="brand-caption">Curated interface intelligence</div></div>
-          </div>
+            <span><span className="brand-name">UI / FOLIO</span><span className="brand-caption">Curated interface intelligence</span></span>
+          </button>
           <nav className="header-nav" aria-label="Primary navigation">
             <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}>Explore</button>
             <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}>Inspiration</button>
@@ -456,44 +530,8 @@ export default function App() {
         </div>
       </header>
 
-      <main className={`app-main ${isDirectory ? "directory-main" : ""}`}>
-        {!isDirectory && <>
-        <section className="welcome-grid" aria-labelledby="welcome-title">
-          <div className="welcome-copy">
-            <div className="eyebrow">The independent design index · 2026 edition</div>
-            <h1 className="welcome-title" id="welcome-title">Find your next <em>favorite</em> interface.</h1>
-            <p>{LIBS.length} hand-picked UI libraries, design systems, inspiration galleries, and frontend resources for people who care about the details.</p>
-            <div className="hero-search">
-              <Icon name="search" size={17} />
-              <input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} aria-label="Search resources" placeholder="Search components, inspiration, tools..." />
-              <span className="hero-search-kbd">Press /</span>
-              <button type="button" className="button button-primary" onClick={() => navigateTo("/directory")}>Explore the index <Icon name="arrowRight" size={14} /></button>
-            </div>
-          </div>
-          <div className="hero-orbit" aria-hidden="true">
-            <div className="hero-orbit-card one"><span className="mini-avatar">UI</span><div><strong>{LIBS.length} resources</strong><span>one focused index</span></div></div>
-            <div className="hero-orbit-card two"><span className="mini-avatar">✦</span><div><strong>{NEW_IDS.size} fresh finds</strong><span>new in {VERIFIED_DATE}</span></div></div>
-            <div className="hero-orbit-card three"><span className="mini-avatar">↗</span><div><strong>7 ways to browse</strong><span>search, filter, sort, save</span></div></div>
-          </div>
-        </section>
-
-        <section className="metric-grid" aria-label="Directory overview">
-          <div className="metric-card"><span className="metric-card-label">Resources</span><strong>{LIBS.length}</strong><small>hand-picked entries</small></div>
-          <div className="metric-card"><span className="metric-card-label">Fresh finds</span><strong>{NEW_IDS.size}</strong><small>added this issue</small></div>
-          <div className="metric-card"><span className="metric-card-label">Browse lanes</span><strong>{CATEGORIES.length - 1}</strong><small>from motion to UX</small></div>
-          <div className="metric-card"><span className="metric-card-label">Open signal</span><strong>100%</strong><small>independent links</small></div>
-        </section>
-
-        <section aria-labelledby="spotlight-title">
-          <div className="section-header"><div><div className="eyebrow" style={{ color: "var(--pink)" }}>Trending now</div><h2 id="spotlight-title">Worth a closer look</h2></div><p>Fresh additions from the latest issue</p></div>
-          <div className="spotlight-grid">
-            {trendResources.map(resource => <a key={resource.id} className="spotlight-card" style={{ "--spotlight-color": CAT_COLOR[resource.cat] || "#7C5CFC" }} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => handleVisit(resource)}>
-              <div className="spotlight-card-top"><span>{CATEGORIES.find(item => item.id === CAT_RESOLVE(resource.cat))?.label || resource.cat}</span><Icon name="arrow" size={14} /></div>
-              <h3>{resource.name}</h3><p>{resource.desc}</p>
-            </a>)}
-          </div>
-        </section>
-        </>}
+      <main className={`app-main ${isDirectory ? "directory-main" : "vengeance-main"}`}>
+        {!isDirectory && <VengeanceLanding onNavigate={navigateTo} />}
 
         {isDirectory && <>
         <FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} categoryLabel={categoryLabel} recent={recent} onVisit={handleVisit} viewMode={viewMode} setViewMode={setViewMode} />
