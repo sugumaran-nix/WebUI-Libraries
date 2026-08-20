@@ -19,6 +19,10 @@ export default function Icon({ name, size = 16, strokeWidth = 1.8, className = "
     menu: <path d="M4 7h16M4 12h16M4 17h16"/>,
     history: <><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></>,
     trash: <><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/></>,
+    library: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5Z"/><path d="M4 5.5v16M8 7h8M8 11h8"/></>,
+    compass: <><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></>,
+    github: <><path d="M15 22v-3.5c0-1.1-.4-1.8-1-2.3 3.3-.4 6.8-1.6 6.8-7.2a5.6 5.6 0 0 0-1.5-3.9 5.2 5.2 0 0 0-.1-3.8s-1.2-.4-4 1.5a13.6 13.6 0 0 0-6.4 0c-2.8-1.9-4-1.5-4-1.5a5.2 5.2 0 0 0-.1 3.8 5.6 5.6 0 0 0-1.5 3.9c0 5.6 3.5 6.8 6.8 7.2-.6.5-1 1.2-1 2.3V22"/><path d="M9 19c-4 .9-4-2-5.5-2.5"/></>,
+    send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
   };
   return <svg {...common}>{paths[name] || paths.spark}</svg>;
 }

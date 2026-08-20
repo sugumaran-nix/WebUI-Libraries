@@ -31,7 +31,11 @@ export const SORT_OPTIONS = [
   { id:"featured", label:"Curated order" },
   { id:"popular", label:"Most popular" },
   { id:"newest", label:"Newest first" },
-  { id:"az", label:"A → Z" },
+  { id:"oldest", label:"Oldest first" },
+  { id:"az", label:"Name A → Z" },
+  { id:"za", label:"Name Z → A" },
+  { id:"short", label:"Shortest name" },
+  { id:"long", label:"Longest name" },
 ];
 
 // Category accent colors — muted ink tones, not neon
@@ -292,4 +296,3 @@ export const LIBS = [
 
 export const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
 export const VERIFIED_DATE = "August 2026";
-export const RECIPIENT = "sugumarankugan@gmail.com";

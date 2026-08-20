@@ -9,7 +9,6 @@ import {
   LIBS,
   LIB_STACKS,
   NEW_IDS,
-  RECIPIENT,
   SORT_OPTIONS,
   STACK_FILTERS,
   VERIFIED_DATE,
@@ -84,8 +83,7 @@ function ThemeToggle({ theme, onToggle }) {
   const nextTheme = theme === "light" ? "dark" : "light";
   return (
     <button type="button" className="theme-switch" onClick={onToggle} aria-label={`Switch to ${nextTheme} theme`} title={`Switch to ${nextTheme} theme`}>
-      <span className="theme-switch-icon"><Icon name={theme === "light" ? "moon" : "sun"} size={15} /></span>
-      <span className="theme-switch-label">{theme === "light" ? "Dark mode" : "Light mode"}</span>
+      <span className="theme-switch-icon"><Icon name={theme === "light" ? "moon" : "sun"} size={16} /></span>
     </button>
   );
 }
@@ -95,9 +93,11 @@ function VengeanceLanding({ onNavigate }) {
   const marqueeImages = [
     "https://image.thum.io/get/width/900/crop/560/noanimate/https://ui.shadcn.com",
     "https://image.thum.io/get/width/900/crop/560/noanimate/https://godly.design",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://refero.design",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://mobbin.com",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.saasframe.io",
     "https://image.thum.io/get/width/900/crop/560/noanimate/https://linear.app",
     "https://image.thum.io/get/width/900/crop/560/noanimate/https://tailwindcss.com",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://framer.com",
     "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.awwwards.com",
   ];
   const marqueeTiles = [...marqueeImages, ...marqueeImages];
@@ -120,8 +120,8 @@ function VengeanceLanding({ onNavigate }) {
     <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
-        <a href="mailto:sugumarankugan@gmail.com">sugumarankugan@gmail.com</a>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}>Directory</button><button type="button" onClick={() => onNavigate("/directory")}>Topics</button><button type="button" onClick={() => onNavigate("/directory")}>Submit a link</button></div>
+        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource desk</span>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
       <div className="vengeance-content">
@@ -149,7 +149,6 @@ export default function App() {
   const [sortBy, setSortBy] = useState(initial.sort);
   const [viewMode, setViewMode] = useState(initial.view);
   const [copiedId, setCopiedId] = useState(null);
-  const [copiedShare, setCopiedShare] = useState(false);
   const [recent, setRecent] = useState(getRecent);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [suggested, setSuggested] = useState(false);
@@ -172,7 +171,7 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem("ui-folio-theme", theme); } catch {}
     document.documentElement.style.colorScheme = theme;
-    document.body.style.background = theme === "dark" ? "#101126" : "#FFF8F0";
+    document.body.style.background = theme === "dark" ? "#101B1D" : "#F4F1EA";
   }, [theme]);
 
   useEffect(() => {
@@ -233,7 +232,11 @@ export default function App() {
     });
     return [...matches].sort((left, right) => {
       if (sortBy === "az") return left.name.localeCompare(right.name);
+      if (sortBy === "za") return right.name.localeCompare(left.name);
+      if (sortBy === "short") return left.name.length - right.name.length || left.name.localeCompare(right.name);
+      if (sortBy === "long") return right.name.length - left.name.length || left.name.localeCompare(right.name);
       if (sortBy === "newest") return (right.added || "").localeCompare(left.added || "") || left.name.localeCompare(right.name);
+      if (sortBy === "oldest") return (left.added || "").localeCompare(right.added || "") || left.name.localeCompare(right.name);
       if (sortBy === "popular") return (POPULAR_RANK.get(left.id) ?? 999) - (POPULAR_RANK.get(right.id) ?? 999) || left.name.localeCompare(right.name);
       return 0;
     });
@@ -253,12 +256,6 @@ export default function App() {
       setTimeout(() => setCopiedId(null), 1600);
     });
   };
-  const shareFilters = () => {
-    navigator.clipboard?.writeText(window.location.href).then(() => {
-      setCopiedShare(true);
-      setTimeout(() => setCopiedShare(false), 1800);
-    });
-  };
   const clearFilters = () => {
     setActiveCategory("all");
     setQuery("");
@@ -268,9 +265,9 @@ export default function App() {
   const sendSuggestion = () => {
     if (!suggestion.name.trim() || !suggestion.url.trim()) return;
     const cleanUrl = suggestion.url.trim().startsWith("http") ? suggestion.url.trim() : `https://${suggestion.url.trim()}`;
-    const subject = encodeURIComponent(`UI / FOLIO suggestion: ${suggestion.name.trim()}`);
+    const subject = encodeURIComponent(`Resource suggestion: ${suggestion.name.trim()}`);
     const body = encodeURIComponent(`Name: ${suggestion.name.trim()}\nURL: ${cleanUrl}\n${suggestion.note.trim() ? `\nWhy it belongs: ${suggestion.note.trim()}` : ""}`);
-    window.open(`mailto:${RECIPIENT}?subject=${subject}&body=${body}`, "_blank");
+    window.open(`https://github.com/sugumaran-nix/WebUI-Libraries/issues/new?title=${subject}&body=${body}`, "_blank");
     setSuggested(true);
     setSuggestion({ name: "", url: "", note: "" });
     setTimeout(() => setSuggested(false), 2800);
@@ -279,18 +276,18 @@ export default function App() {
   return (
     <div className={`app-shell theme-${theme}`}>
       <style>{`
-        :root { --paper:#E2E2E0; --surface:#F7F7F5; --surface-soft:#D7E5E3; --ink:#0E2931; --muted:#4E686B; --line:rgba(14,41,49,.16); --violet:#2B7574; --pink:#861211; --lime:#B9D8D5; --cyan:#12484C; --shadow:0 22px 55px rgba(14,41,49,.15); --radius:20px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
-        .theme-dark { --paper:#0E2931; --surface:#12484C; --surface-soft:#18575A; --ink:#E2E2E0; --muted:#AFC8C6; --line:rgba(226,226,224,.17); --violet:#2B7574; --pink:#D85A51; --lime:#E2E2E0; --cyan:#6AA8A5; --shadow:0 24px 70px rgba(0,0,0,.3); }
+        :root { --paper:#F4F1EA; --surface:#FFFDF8; --surface-soft:#E5EFEB; --ink:#142A2E; --muted:#667477; --line:rgba(20,42,46,.12); --violet:#2F6B67; --pink:#B54D47; --lime:#D6E7DF; --cyan:#1E4D51; --shadow:0 18px 45px rgba(20,42,46,.12); --radius:0px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
+        .theme-dark { --paper:#101B1D; --surface:#152A2D; --surface-soft:#1E3D3E; --ink:#F4F1EA; --muted:#B6C6C3; --line:rgba(244,241,234,.14); --violet:#72AAA3; --pink:#D16B62; --lime:#D6E7DF; --cyan:#8BC5BC; --shadow:0 24px 70px rgba(0,0,0,.32); }
         * { box-sizing:border-box; }
         body { margin:0; overflow-x:hidden; background:var(--paper); font-family:var(--font-sans); font-size:15px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
         button, input, select, textarea { font:inherit; }
         button, a { -webkit-tap-highlight-color:transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
         .app-shell { min-height:100vh; overflow:visible; color:var(--ink); background:var(--paper); transition:background .28s var(--ease), color .28s var(--ease); }
-        .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.2; background-image:linear-gradient(rgba(115,87,255,.04) 1px, transparent 1px),linear-gradient(90deg,rgba(115,87,255,.04) 1px,transparent 1px); background-size:36px 36px; }
+        .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.18; background-image:linear-gradient(color-mix(in srgb,var(--ink) 5%,transparent) 1px, transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ink) 5%,transparent) 1px,transparent 1px); background-size:36px 36px; }
         .theme-dark::before { opacity:.11; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); }
         .app-shell > * { position:relative; z-index:1; }
-        .site-header { position:relative; z-index:40; border-bottom:0; background:color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter:blur(18px); }
+        .site-header { position:fixed; inset:0 0 auto; z-index:80; border-bottom:0; background:color-mix(in srgb,var(--paper) 88%,transparent); box-shadow:0 10px 28px color-mix(in srgb,var(--ink) 8%,transparent); backdrop-filter:blur(18px); }
         .directory-header { position:fixed; inset:0 0 auto; z-index:80; }
         .header-inner { display:flex; align-items:center; gap:1rem; width:min(1440px,100%); min-height:72px; margin:0 auto; padding:0 28px; }
         .brand-lockup { display:flex; align-items:center; gap:.7rem; min-width:220px; padding:0; border:0; color:var(--ink); background:transparent; text-align:left; cursor:pointer; }
@@ -298,29 +295,29 @@ export default function App() {
         .brand-name { font-size:12px; font-weight:900; letter-spacing:.15em; line-height:1; }
         .brand-caption { display:block; margin-top:5px; color:var(--muted); font-size:10px; font-weight:600; } .brand-lockup:hover { transform:none; }
         .header-nav { display:flex; align-items:center; gap:.2rem; margin-left:auto; }
-        .header-nav button, .theme-switch { border:0; background:transparent; color:var(--muted); cursor:pointer; transition:all .18s var(--ease); }
+        .header-nav button, .theme-switch { border:0; background:transparent; color:var(--muted); cursor:pointer; transition:all .18s var(--ease); } .header-nav button, .github-link { display:inline-flex; align-items:center; gap:6px; }
         .header-nav button { padding:.55rem .7rem; border-radius:0; font-size:11px; font-weight:800; }
-        .header-nav button:hover { color:var(--ink); background:var(--surface-soft); }
-        .header-actions { display:flex; align-items:center; gap:.45rem; }
-        .theme-switch { display:inline-flex; align-items:center; gap:.45rem; padding:.48rem .65rem; border:0; border-radius:0; background:var(--surface); font-size:10px; font-weight:800; }
-        .theme-switch:hover { color:var(--ink); border-color:var(--violet); transform:translateY(-1px); }
+        .header-nav button:hover, .github-link:hover { color:var(--ink); background:var(--surface-soft); }
+        .header-actions { display:flex; align-items:center; gap:.35rem; }
+        .theme-switch { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; border:0; border-radius:0; background:var(--surface); font-size:10px; font-weight:800; }
+        .theme-switch:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-1px); }
         .theme-switch-icon { display:grid; place-items:center; width:22px; height:22px; border-radius:0; color:var(--ink); background:var(--lime); }
         .button { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:38px; border:0; border-radius:0; padding:0 .8rem; cursor:pointer; font-size:11px; font-weight:800; transition:all .18s var(--ease); }
         .button:hover { transform:translateY(-2px); }
-        .button-primary { color:#151126; background:var(--lime); box-shadow:0 9px 25px rgba(217,255,94,.18); }
+        .button-primary { color:var(--ink); background:var(--lime); box-shadow:0 9px 25px color-mix(in srgb,var(--ink) 10%,transparent); }
         .button-secondary { color:var(--ink); border-color:var(--line); background:var(--surface); }
         .button-ghost { color:var(--muted); background:transparent; }
         .icon-button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:0; color:var(--muted); background:var(--surface); cursor:pointer; transition:all .18s var(--ease); }
-        .icon-button:hover { color:var(--ink); border-color:var(--violet); transform:translateY(-2px); }
+        .icon-button:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-2px); }
         .icon-button.is-copied { color:#173B19; border-color:var(--lime); background:var(--lime); }
-        .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; }
-        .vengeance-main { width:100%; max-width:none; margin:0; padding:0; }
-        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#F0F1EE; --landing-fg:#0E2931; --landing-accent:#861211; --landing-cool:#2B7574; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#0E2931; --landing-fg:#E2E2E0; --landing-accent:#D85A51; --landing-cool:#6AA8A5; }
+        .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; } .github-link { padding:.48rem .62rem; color:var(--muted); text-decoration:none; font-size:10px; font-weight:800; } .github-link svg { flex:0 0 auto; }
+        .vengeance-main { width:100%; max-width:none; margin:0; padding:72px 0 0; }
+        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#F4F1EA; --landing-fg:#142A2E; --landing-accent:#B54D47; --landing-cool:#2F6B67; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#101B1D; --landing-fg:#F4F1EA; --landing-accent:#D16B62; --landing-cool:#72AAA3; }
         .vengeance-landing::before { content:""; position:absolute; inset:0; z-index:-2; opacity:.6; background-image:linear-gradient(color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%); }
         .vengeance-glow { position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(circle at var(--pointer-x) var(--pointer-y),color-mix(in srgb,var(--landing-cool) 22%,transparent),transparent 30%),radial-gradient(circle at 70% 20%,color-mix(in srgb,var(--landing-accent) 16%,transparent),transparent 32%); transition:background .25s var(--ease); }
         .vengeance-topline { position:absolute; top:24px; left:clamp(22px,5vw,72px); right:clamp(22px,5vw,72px); z-index:5; display:flex; align-items:center; justify-content:space-between; gap:18px; color:color-mix(in srgb,var(--landing-fg) 68%,transparent); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-        .vengeance-topline a, .vengeance-toplinks button { color:inherit; text-decoration:none; transition:color .18s var(--ease); }
-        .vengeance-topline a:hover, .vengeance-toplinks button:hover { color:var(--landing-fg); }
+        .vengeance-topline a, .vengeance-toplinks button, .vengeance-toplinks a { display:inline-flex; align-items:center; gap:6px; color:inherit; text-decoration:none; transition:color .18s var(--ease); } .landing-status { display:inline-flex; align-items:center; gap:6px; }
+        .vengeance-topline a:hover, .vengeance-toplinks button:hover, .vengeance-toplinks a:hover { color:var(--landing-fg); }
         .vengeance-toplinks { display:flex; align-items:center; gap:18px; }
         .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
         .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:1; height:min(48vh,420px); overflow:hidden; opacity:.42; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
@@ -401,9 +398,9 @@ export default function App() {
         .filter-option-button { display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; padding:8px 9px; border:0; border-radius:0; color:var(--muted); background:transparent; font-size:11px; font-weight:700; text-align:left; cursor:pointer; }
         .filter-option-button:hover, .filter-option-button.selected { color:var(--ink); background:var(--surface-soft); }
         .filter-option-button span { color:var(--muted); font-size:9px; }
-        .framework-menu { display:flex; flex-wrap:wrap; width:230px; min-width:230px; }
+        .framework-menu { display:grid; grid-template-columns:1fr; gap:2px; width:230px; min-width:230px; }
         .sort-menu { min-width:150px; }
-        .quick-access-chip { flex:0 0 auto; min-height:28px; padding:0 8px; border:0; border-radius:0; color:var(--ink); background:var(--surface); font-size:9px; font-weight:800; cursor:pointer; transition:all .18s var(--ease); }
+        .quick-access-chip { display:flex; align-items:center; width:100%; min-height:28px; padding:0 8px; border:0; border-radius:0; color:var(--ink); background:var(--surface); font-size:10px; font-weight:800; text-align:left; cursor:pointer; transition:all .18s var(--ease); }
         .quick-access-chip:hover, .quick-access-chip.selected { color:#181329; background:var(--lime); }
         .recent-trigger { color:var(--ink); }
         .recent-menu { width:270px; min-width:270px; }
@@ -507,25 +504,25 @@ export default function App() {
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
         @media (max-width:1060px) { .header-nav { display:none; } .directory-main { padding-top:calc(64px + 16px + 60px); } .quick-access-panel { top:80px; left:18px; width:calc(100% - 36px); } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .vengeance-main { padding-top:64px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
       <header className={`site-header ${isDirectory ? "directory-header" : ""}`}>
         <div className="header-inner">
           <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to UI / FOLIO landing page">
-            <span className="brand-symbol"><Icon name="spark" size={17} /></span>
+            <span className="brand-symbol"><Icon name="library" size={17} /></span>
             <span><span className="brand-name">UI / FOLIO</span><span className="brand-caption">Curated interface intelligence</span></span>
           </button>
           <nav className="header-nav" aria-label="Primary navigation">
-            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}>Explore</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}>Inspiration</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}>Libraries</button>
+            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Discover</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
           </nav>
           <div className="header-actions">
+            <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open sugumaran-nix on GitHub" title="github.com/sugumaran-nix"><Icon name="github" size={15} /><span>@sugumaran-nix</span></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
-            <button type="button" className="icon-button" onClick={shareFilters} aria-label="Copy shareable filter link" title={copiedShare ? "Link copied" : "Copy shareable link"}><Icon name={copiedShare ? "check" : "share"} size={15} /></button>
-            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="plus" size={13} /> Suggest</button>
+            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
           </div>
         </div>
       </header>
