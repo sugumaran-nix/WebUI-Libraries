@@ -24,7 +24,7 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 | **Design Tools** | Pattern Craft, Gradienty, Coolors, Blobmaker, CSS Clip-Path Maker |
 | **CSS / HTML** | Zero-JS components, pure CSS effects, Uiverse |
 | **Vue / Svelte** | Vuetify, PrimeVue, shadcn-svelte, Flowbite Svelte, Konsta UI |
-| **Headless** | Radix UI, Headless UI, Base UI, React Aria, Ark UI, Zag.js |
+| **Headless** | Radix UI, Headless UI, Base UI, Ark UI, Zag.js |
 | **Dev Tools** | Lucide, Iconify, Squoosh |
 | **Inspiration** | Godly, Recent Design, Unsection, Detail, BentoGrids, Mobbin, UI Movement, Appinspo |
 | **Icons** | Tabler Icons, Phosphor Icons, Iconoir, Lucide Icons |
@@ -43,7 +43,7 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 ## Features
 
 - **Search** — live search across all libraries by name or description
-- **Persistent filter panel** — one focused left-side filter card for categories, frameworks, and sort order
+- **Quick Access filters** — one sticky directory control for topics, frameworks, and sort order
 - **Expanded topics** — icons, illustrations, typography, color, mockups, templates, email, stock assets, UX research, portfolios, and AI tools
 - **URL state** — filters and search persist in the URL, shareable, and are remembered locally across reloads
 - **Recently visited** — last 5 opened libraries saved locally

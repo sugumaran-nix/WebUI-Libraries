@@ -227,8 +227,8 @@ export default function App() {
   return (
     <div className={`app-shell theme-${theme}`}>
       <style>{`
-        :root { --paper:#FFF8F0; --surface:#FFFFFF; --surface-soft:#FFF1EA; --ink:#1A1633; --muted:#716B86; --line:rgba(26,22,51,.12); --violet:#7357FF; --pink:#FF4D93; --lime:#D9FF5E; --cyan:#43D9E8; --shadow:0 22px 55px rgba(79,45,162,.13); --radius:20px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
-        .theme-dark { --paper:#101126; --surface:#19183A; --surface-soft:#231E4A; --ink:#F8F5FF; --muted:#AAA5C5; --line:rgba(255,255,255,.13); --violet:#9A82FF; --pink:#FF73AC; --lime:#D9FF5E; --cyan:#6AEAF0; --shadow:0 24px 70px rgba(0,0,0,.25); }
+        :root { --paper:#E2E2E0; --surface:#F7F7F5; --surface-soft:#D7E5E3; --ink:#0E2931; --muted:#4E686B; --line:rgba(14,41,49,.16); --violet:#2B7574; --pink:#861211; --lime:#B9D8D5; --cyan:#12484C; --shadow:0 22px 55px rgba(14,41,49,.15); --radius:20px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
+        .theme-dark { --paper:#0E2931; --surface:#12484C; --surface-soft:#18575A; --ink:#E2E2E0; --muted:#AFC8C6; --line:rgba(226,226,224,.17); --violet:#2B7574; --pink:#D85A51; --lime:#E2E2E0; --cyan:#6AA8A5; --shadow:0 24px 70px rgba(0,0,0,.3); }
         * { box-sizing:border-box; }
         body { margin:0; overflow-x:hidden; background:var(--paper); font-family:var(--font-sans); font-size:15px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
         button, input, select, textarea { font:inherit; }
@@ -239,7 +239,7 @@ export default function App() {
         .theme-dark::before { opacity:.11; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); }
         .app-shell > * { position:relative; z-index:1; }
         .site-header { position:relative; z-index:40; border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--paper) 84%, transparent); backdrop-filter:blur(18px); }
-        .directory-header { position:sticky; top:0; z-index:60; }
+        .directory-header { position:fixed; inset:0 0 auto; z-index:80; }
         .header-inner { display:flex; align-items:center; gap:1rem; width:min(1440px,100%); min-height:72px; margin:0 auto; padding:0 28px; }
         .brand-lockup { display:flex; align-items:center; gap:.7rem; min-width:220px; }
         .brand-symbol { display:grid; place-items:center; width:36px; height:36px; border-radius:12px; color:var(--ink); background:linear-gradient(135deg,var(--lime),var(--cyan)); box-shadow:0 8px 22px rgba(67,217,232,.2); }
@@ -301,7 +301,8 @@ export default function App() {
         .spotlight-card h3 { max-width:220px; margin:25px 0 7px; font-size:17px; letter-spacing:-.04em; }
         .spotlight-card p { max-width:270px; margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
         .workspace { display:block; }
-        .quick-access-panel { position:sticky; top:72px; z-index:50; margin:0 0 18px; padding:13px 15px; border:1px solid var(--line); border-radius:16px; background:color-mix(in srgb,var(--paper) 94%,transparent); box-shadow:0 10px 24px rgba(26,22,51,.08); backdrop-filter:blur(18px); }
+        .directory-main { padding-top:calc(72px + 14px + 112px); }
+        .quick-access-panel { position:fixed; top:86px; left:50%; z-index:70; width:min(1440px,calc(100% - 56px)); margin:0; padding:13px 15px; border:1px solid var(--line); border-radius:16px; background:color-mix(in srgb,var(--paper) 96%,transparent); box-shadow:0 12px 30px rgba(14,41,49,.14); backdrop-filter:blur(18px); transform:translateX(-50%); }
         .quick-access-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:10px; }
         .quick-access-heading h2 { margin:3px 0 0; color:var(--ink); font-family:var(--font-display); font-size:23px; font-weight:400; line-height:1; letter-spacing:-.05em; }
         .quick-access-status { display:inline-flex; align-items:center; gap:4px; color:var(--muted); font-size:9px; font-weight:800; }
@@ -397,9 +398,9 @@ export default function App() {
         .suggest-form-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
         .suggest-form-footer p { margin:0; color:var(--muted); font-size:10px; }
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
-        @media (max-width:1060px) { .header-nav { display:none; } .quick-access-controls { grid-template-columns:minmax(150px,.7fr) minmax(0,1.6fr) minmax(140px,.6fr); } .results-area { width:100%; } }
+        @media (max-width:1060px) { .header-nav { display:none; } .directory-main { padding-top:calc(64px + 14px + 128px); } .quick-access-panel { top:78px; width:calc(100% - 36px); } .quick-access-controls { grid-template-columns:minmax(150px,.7fr) minmax(0,1.6fr) minmax(140px,.6fr); } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:64px; } .quick-access-controls { grid-template-columns:1fr; gap:9px; } .quick-access-frameworks { padding-top:0; } .quick-access-sort svg, .quick-access-topic svg { bottom:10px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .directory-main { padding-top:calc(64px + 12px + 220px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; } .quick-access-controls { grid-template-columns:1fr; gap:9px; } .quick-access-frameworks { padding-top:0; } .quick-access-sort svg, .quick-access-topic svg { bottom:10px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
@@ -422,13 +423,13 @@ export default function App() {
         </div>
       </header>
 
-      <main className="app-main">
+      <main className={`app-main ${isDirectory ? "directory-main" : ""}`}>
         {!isDirectory && <>
         <section className="welcome-grid" aria-labelledby="welcome-title">
           <div className="welcome-copy">
             <div className="eyebrow">The independent design index · 2026 edition</div>
             <h1 className="welcome-title" id="welcome-title">Find your next <em>favorite</em> interface.</h1>
-            <p>175 hand-picked UI libraries, design systems, inspiration galleries, and frontend resources for people who care about the details.</p>
+            <p>{LIBS.length} hand-picked UI libraries, design systems, inspiration galleries, and frontend resources for people who care about the details.</p>
             <div className="hero-search">
               <Icon name="search" size={17} />
               <input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} aria-label="Search resources" placeholder="Search components, inspiration, tools..." />

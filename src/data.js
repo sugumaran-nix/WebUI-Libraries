@@ -174,7 +174,6 @@ export const LIBS = [
   { id:58, name:"Radix UI",             url:"radix-ui.com",                        cat:"headless",      desc:"Unstyled, fully accessible React components — the foundation of shadcn/ui", added:"2021-01" },
   { id:59, name:"Headless UI",          url:"headlessui.com",                      cat:"headless",      desc:"Completely unstyled, fully accessible UI components by the Tailwind CSS team", added:"2020-01" },
   { id:60, name:"Base UI",              url:"base-ui.com",                         cat:"headless",      desc:"Unstyled React components from the MUI team — the active Radix alternative", added:"2023-01" },
-  { id:61, name:"React Aria",           url:"react-spectrum.adobe.com/react-aria", cat:"headless",     desc:"Adobe's React Hooks for accessible UI primitives — rock-solid ARIA compliance", added:"2020-01" },
   { id:84, name:"Ark UI",               url:"ark-ui.com",                          cat:"headless",      desc:"45+ headless, zero-style, framework-agnostic accessible UI primitives", added:"2023-01" },
   { id:14, name:"Inspira UI",           url:"inspira-ui.com",                      cat:"multi",         desc:"Animated component library for Vue — the Vue equivalent of Magic UI", added:"2024-01" },
   { id:62, name:"shadcn-svelte",        url:"shadcn-svelte.com",                   cat:"multi",         desc:"shadcn/ui ported to Svelte — all the power, native Svelte syntax", added:"2023-01" },
