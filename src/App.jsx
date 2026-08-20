@@ -50,6 +50,11 @@ function getUrlParams() {
   };
 }
 
+function getRoute() {
+  if (typeof window === "undefined") return "/";
+  return window.location.pathname === "/directory" ? "/directory" : "/";
+}
+
 function syncUrl(cat, query, stack, sort, view) {
   const params = new URLSearchParams();
   if (cat !== "all") params.set("cat", cat);
@@ -84,6 +89,7 @@ function ThemeToggle({ theme, onToggle }) {
 
 export default function App() {
   const initial = getUrlParams();
+  const [route, setRoute] = useState(getRoute);
   const [theme, setTheme] = useState(getInitialTheme);
   const [activeCategory, setActiveCategory] = useState(initial.cat);
   const [query, setQuery] = useState(initial.q);
@@ -98,6 +104,19 @@ export default function App() {
   const [suggested, setSuggested] = useState(false);
   const [suggestion, setSuggestion] = useState({ name: "", url: "", note: "" });
   const searchRef = useRef(null);
+  const isDirectory = route === "/directory";
+
+  useEffect(() => {
+    const handlePopstate = () => setRoute(getRoute());
+    window.addEventListener("popstate", handlePopstate);
+    return () => window.removeEventListener("popstate", handlePopstate);
+  }, []);
+
+  const navigateTo = (path) => {
+    window.history.pushState(null, "", path);
+    setRoute(getRoute());
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     try { localStorage.setItem("ui-folio-theme", theme); } catch {}
@@ -111,17 +130,22 @@ export default function App() {
   }, [query]);
 
   useEffect(() => {
-    syncUrl(activeCategory, query, stackFilter, sortBy, viewMode);
+    if (isDirectory) syncUrl(activeCategory, query, stackFilter, sortBy, viewMode);
+    else window.history.replaceState(null, "", window.location.pathname);
     try { localStorage.setItem("ui-folio-filters", JSON.stringify({ cat: activeCategory, q: query, stack: stackFilter, sort: sortBy, view: viewMode })); } catch {}
-  }, [activeCategory, query, stackFilter, sortBy, viewMode]);
+  }, [isDirectory, activeCategory, query, stackFilter, sortBy, viewMode]);
 
   useEffect(() => {
+    if (!isDirectory) {
+      document.title = "UI / FOLIO — Curated Interface Intelligence";
+      return;
+    }
     const titleParts = [];
     if (activeCategory !== "all") titleParts.push(CATEGORIES.find(item => item.id === activeCategory)?.label || activeCategory);
     if (stackFilter !== "all") titleParts.push(stackFilter);
     if (query) titleParts.push(`“${query}”`);
-    document.title = titleParts.length ? `${titleParts.join(" · ")} — UI / FOLIO` : "UI / FOLIO — Curated Interface Intelligence";
-  }, [activeCategory, query, stackFilter]);
+    document.title = titleParts.length ? `${titleParts.join(" · ")} — UI / FOLIO` : "Directory — UI / FOLIO";
+  }, [isDirectory, activeCategory, query, stackFilter]);
 
   useEffect(() => {
     const handleKeydown = event => {
@@ -203,10 +227,10 @@ export default function App() {
   return (
     <div className={`app-shell theme-${theme}`}>
       <style>{`
-        :root { --paper:#FFF8F0; --surface:#FFFFFF; --surface-soft:#FFF1EA; --ink:#1A1633; --muted:#716B86; --line:rgba(26,22,51,.12); --violet:#7357FF; --pink:#FF4D93; --lime:#D9FF5E; --cyan:#43D9E8; --shadow:0 22px 55px rgba(79,45,162,.13); --radius:20px; --ease:cubic-bezier(.23,1,.32,1); }
+        :root { --paper:#FFF8F0; --surface:#FFFFFF; --surface-soft:#FFF1EA; --ink:#1A1633; --muted:#716B86; --line:rgba(26,22,51,.12); --violet:#7357FF; --pink:#FF4D93; --lime:#D9FF5E; --cyan:#43D9E8; --shadow:0 22px 55px rgba(79,45,162,.13); --radius:20px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
         .theme-dark { --paper:#101126; --surface:#19183A; --surface-soft:#231E4A; --ink:#F8F5FF; --muted:#AAA5C5; --line:rgba(255,255,255,.13); --violet:#9A82FF; --pink:#FF73AC; --lime:#D9FF5E; --cyan:#6AEAF0; --shadow:0 24px 70px rgba(0,0,0,.25); }
         * { box-sizing:border-box; }
-        body { margin:0; background:var(--paper); }
+        body { margin:0; background:var(--paper); font-family:var(--font-sans); font-size:15px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
         button, input, select, textarea { font:inherit; }
         button, a { -webkit-tap-highlight-color:transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
@@ -263,10 +287,10 @@ export default function App() {
         .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0 34px; }
         .metric-card { padding:16px; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:0 10px 25px rgba(65,41,130,.045); }
         .metric-card-label { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-        .metric-card strong { display:block; margin-top:8px; color:var(--ink); font-family:Georgia,serif; font-size:30px; font-weight:400; letter-spacing:-.05em; }
+        .metric-card strong { display:block; margin-top:8px; color:var(--ink); font-family:var(--font-display); font-size:30px; font-weight:400; letter-spacing:-.05em; }
         .metric-card small { display:block; margin-top:4px; color:var(--muted); font-size:10px; }
         .section-header { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:14px; }
-        .section-header h2 { margin:3px 0 0; color:var(--ink); font-family:Georgia,serif; font-size:28px; font-weight:400; letter-spacing:-.05em; }
+        .section-header h2 { margin:3px 0 0; color:var(--ink); font-family:var(--font-display); font-size:clamp(1.8rem,3vw,2.5rem); font-weight:400; line-height:1.03; letter-spacing:-.055em; }
         .section-header p { margin:0; color:var(--muted); font-size:11px; }
         .spotlight-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:38px; }
         .spotlight-card { position:relative; min-height:158px; padding:18px; overflow:hidden; border:1px solid var(--line); border-radius:18px; color:var(--ink); background:var(--surface); text-decoration:none; box-shadow:0 12px 30px rgba(65,41,130,.05); transition:transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease); }
@@ -277,9 +301,19 @@ export default function App() {
         .spotlight-card p { max-width:270px; margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
         .workspace { display:grid; grid-template-columns:230px minmax(0,1fr); gap:24px; align-items:start; }
         .desktop-filter { position:sticky; top:96px; }
-        .filter-panel { padding:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 14px 34px rgba(65,41,130,.06); }
+        .filter-panel { max-height:calc(100vh - 118px); overflow:auto; padding:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 14px 34px rgba(65,41,130,.06); scrollbar-width:thin; }
         .filter-panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding-bottom:16px; border-bottom:1px solid var(--line); }
-        .filter-panel-heading h2 { margin:3px 0 0; font-family:Georgia,serif; font-size:24px; font-weight:400; letter-spacing:-.05em; }
+        .quick-filter-bar { position:sticky; top:72px; z-index:28; display:flex; align-items:center; gap:10px; min-width:0; margin:0 0 18px; padding:9px; border:1px solid var(--line); border-radius:14px; background:color-mix(in srgb,var(--paper) 88%,transparent); box-shadow:0 10px 24px rgba(26,22,51,.06); backdrop-filter:blur(18px); }
+        .quick-filter-label { flex-shrink:0; color:var(--pink); font-size:9px; font-weight:900; letter-spacing:.11em; text-transform:uppercase; }
+        .quick-filter-options { display:flex; gap:5px; min-width:0; overflow:auto; scrollbar-width:none; }
+        .quick-filter-options::-webkit-scrollbar { display:none; }
+        .quick-filter-chip { flex-shrink:0; min-height:30px; padding:0 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:var(--surface); font-size:10px; font-weight:800; cursor:pointer; transition:all .18s var(--ease); }
+        .quick-filter-chip:hover, .quick-filter-chip.selected { color:#181329; border-color:var(--lime); background:var(--lime); }
+        .topic-jump { position:relative; display:flex; align-items:center; flex-shrink:0; color:var(--muted); }
+        .topic-jump select { min-height:30px; appearance:none; padding:0 25px 0 10px; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:var(--surface); font-size:10px; font-weight:800; cursor:pointer; }
+        .topic-jump svg { position:absolute; right:9px; pointer-events:none; }
+        .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+        .filter-panel-heading h2 { margin:3px 0 0; font-family:var(--font-display); font-size:24px; font-weight:400; line-height:1.05; letter-spacing:-.05em; }
         .panel-eyebrow, .filter-label { color:var(--pink); font-size:9px; font-weight:900; letter-spacing:.13em; text-transform:uppercase; }
         .filter-block { padding:17px 0; border-bottom:1px solid var(--line); }
         .filter-options { display:flex; flex-direction:column; gap:3px; margin-top:10px; }
@@ -296,7 +330,7 @@ export default function App() {
         .filter-done { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; width:100%; min-height:38px; margin-top:14px; border:0; border-radius:10px; color:#16112B; background:var(--lime); font-size:11px; font-weight:900; cursor:pointer; }
         .results-area { min-width:0; }
         .results-header { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; padding-bottom:14px; border-bottom:1px solid var(--line); }
-        .results-header h2 { margin:4px 0 0; font-family:Georgia,serif; font-size:30px; font-weight:400; letter-spacing:-.06em; }
+        .results-header h2 { margin:4px 0 0; font-family:var(--font-display); font-size:clamp(2rem,4vw,3rem); font-weight:400; line-height:1; letter-spacing:-.06em; }
         .results-subtitle { margin:6px 0 0; color:var(--muted); font-size:11px; }
         .results-actions { display:flex; align-items:center; gap:7px; }
         .filter-state-note { display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:10px; font-weight:800; }
@@ -322,6 +356,7 @@ export default function App() {
         .resource-card:hover .resource-preview img { transform:scale(1.045); }
         .preview-placeholder { position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:8px; color:var(--muted); background:linear-gradient(135deg,color-mix(in srgb,var(--card-accent) 15%,var(--surface)),var(--surface-soft)); }
         .preview-placeholder small { font-size:9px; font-weight:800; letter-spacing:.04em; }
+        .preview-fallback-link { color:var(--ink); font-size:9px; font-weight:900; text-decoration:underline; text-underline-offset:3px; }
         .preview-initials { display:grid; place-items:center; width:42px; height:42px; border:1px solid color-mix(in srgb,var(--card-accent) 45%,transparent); border-radius:14px; color:var(--card-accent); background:color-mix(in srgb,var(--card-accent) 12%,transparent); font-size:12px; font-weight:900; }
         .preview-overlay { position:absolute; inset:auto 10px 10px; display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border:1px solid rgba(255,255,255,.25); border-radius:9px; color:#FFF; background:rgba(12,9,35,.72); opacity:0; font-size:9px; font-weight:900; backdrop-filter:blur(8px); transform:translateY(5px); transition:opacity .22s var(--ease), transform .22s var(--ease); }
         .resource-card:hover .preview-overlay, .resource-card:focus-within .preview-overlay { opacity:1; transform:translateY(0); }
@@ -343,7 +378,7 @@ export default function App() {
         .new-badge { padding:4px 6px; border-radius:5px; color:#20162C; background:var(--lime); font-size:8px; font-weight:900; letter-spacing:.05em; text-transform:uppercase; }
         .empty-state { display:grid; place-items:center; min-height:300px; padding:30px; border:1px dashed var(--line); border-radius:18px; text-align:center; }
         .empty-symbol { display:grid; place-items:center; width:54px; height:54px; margin-bottom:13px; border-radius:18px; color:#181329; background:var(--lime); }
-        .empty-state h3 { margin:0; font-family:Georgia,serif; font-size:22px; font-weight:400; }
+        .empty-state h3 { margin:0; font-family:var(--font-display); font-size:22px; font-weight:400; line-height:1.05; }
         .empty-state p { max-width:300px; margin:7px 0 16px; color:var(--muted); font-size:11px; line-height:1.5; }
         .suggest-section { margin-top:42px; border:1px solid var(--line); border-radius:20px; overflow:hidden; background:linear-gradient(135deg,var(--surface),var(--surface-soft)); }
         .suggest-head { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:22px; cursor:pointer; }
@@ -359,10 +394,21 @@ export default function App() {
         .field textarea { min-height:80px; resize:vertical; }
         .suggest-form-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
         .suggest-form-footer p { margin:0; color:var(--muted); font-size:10px; }
+        .landing-topics { margin:42px 0 12px; padding:25px; border:1px solid var(--line); border-radius:22px; background:linear-gradient(135deg,var(--surface),var(--surface-soft)); }
+        .landing-topic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+        .landing-topic { display:flex; align-items:center; gap:9px; min-height:48px; padding:0 12px; border:1px solid var(--line); border-radius:12px; color:var(--ink); background:var(--surface); text-align:left; cursor:pointer; transition:transform .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease); }
+        .landing-topic:hover { transform:translateY(-2px); border-color:var(--violet); background:var(--surface-soft); }
+        .landing-topic-dot { width:9px; height:9px; flex-shrink:0; border-radius:50%; box-shadow:0 0 0 5px color-mix(in srgb,var(--violet) 9%,transparent); }
+        .landing-topic span:nth-child(2) { flex:1; font-size:11px; font-weight:800; }
+        .landing-topic strong { color:var(--muted); font-size:10px; }
+        .landing-topic svg { color:var(--muted); }
+        .directory-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; margin-bottom:22px; padding:22px 24px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(135deg,var(--surface),var(--surface-soft)); }
+        .directory-intro h1 { max-width:620px; margin:6px 0 0; color:var(--ink); font-family:var(--font-display); font-size:clamp(2.4rem,5vw,4.8rem); font-weight:400; line-height:.95; letter-spacing:-.065em; }
+        .directory-intro p { max-width:620px; margin:10px 0 0; color:var(--muted); font-size:13px; line-height:1.55; }
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
         @media (max-width:1060px) { .header-nav { display:none; } .workspace { grid-template-columns:1fr; } .desktop-filter { position:static; display:block; } .desktop-filter .filter-panel { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 18px; } .desktop-filter .filter-panel-heading, .desktop-filter .filter-panel-tip { grid-column:1 / -1; } .desktop-filter .filter-panel-heading { border-bottom:0; } .desktop-filter .filter-block { border-bottom:0; } .desktop-filter .filter-done { display:none; } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .desktop-filter .filter-panel { display:block; } .desktop-filter .filter-block { padding:12px 0; border-bottom:1px solid var(--line); } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .directory-intro { align-items:flex-start; flex-direction:column; padding:18px; } .directory-intro h1 { font-size:clamp(2.5rem,14vw,4rem); } .quick-filter-bar { top:64px; align-items:flex-start; flex-wrap:wrap; } .quick-filter-label { width:100%; } .quick-filter-options { order:2; width:100%; } .topic-jump { order:1; margin-left:auto; } .desktop-filter .filter-panel { display:block; } .desktop-filter .filter-block { padding:12px 0; border-bottom:1px solid var(--line); } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
@@ -373,9 +419,9 @@ export default function App() {
             <div><div className="brand-name">UI / FOLIO</div><div className="brand-caption">Curated interface intelligence</div></div>
           </div>
           <nav className="header-nav" aria-label="Primary navigation">
-            <button type="button" onClick={() => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" })}>Explore</button>
-            <button type="button" onClick={() => { setActiveCategory("inspiration"); document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }); }}>Inspiration</button>
-            <button type="button" onClick={() => { setActiveCategory("react"); document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }); }}>Libraries</button>
+            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}>Explore</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}>Inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}>Libraries</button>
           </nav>
           <div className="header-actions">
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
@@ -386,6 +432,7 @@ export default function App() {
       </header>
 
       <main className="app-main">
+        {!isDirectory && <>
         <section className="welcome-grid" aria-labelledby="welcome-title">
           <div className="welcome-copy">
             <div className="eyebrow">The independent design index · 2026 edition</div>
@@ -395,7 +442,7 @@ export default function App() {
               <Icon name="search" size={17} />
               <input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} aria-label="Search resources" placeholder="Search components, inspiration, tools..." />
               <span className="hero-search-kbd">Press /</span>
-              <button type="button" className="button button-primary" onClick={() => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" })}>Explore <Icon name="arrowRight" size={14} /></button>
+              <button type="button" className="button button-primary" onClick={() => navigateTo("/directory")}>Explore the index <Icon name="arrowRight" size={14} /></button>
             </div>
           </div>
           <div className="hero-orbit" aria-hidden="true">
@@ -421,14 +468,23 @@ export default function App() {
             </a>)}
           </div>
         </section>
+        <section className="landing-topics" aria-labelledby="landing-topics-title">
+          <div className="section-header"><div><div className="eyebrow" style={{ color: "var(--pink)" }}>Browse by topic</div><h2 id="landing-topics-title">Everything around the interface.</h2></div><button type="button" className="button button-secondary" onClick={() => navigateTo("/directory")}>Open all resources <Icon name="arrowRight" size={14} /></button></div>
+          <div className="landing-topic-grid">{CATEGORIES.filter(item => item.id !== "all" && counts[item.id]).map(item => <button type="button" key={item.id} className="landing-topic" onClick={() => { setActiveCategory(item.id); navigateTo("/directory"); }}><span className="landing-topic-dot" style={{ background: CAT_COLOR[item.id] || "var(--pink)" }} /><span>{item.label}</span><strong>{counts[item.id]}</strong><Icon name="arrow" size={13} /></button>)}</div>
+        </section>
+        </>}
 
+        {isDirectory && <>
+        <section className="directory-intro" aria-labelledby="directory-title"><div><div className="eyebrow">The resource index · 175 verified links</div><h1 id="directory-title">Find the right starting point.</h1><p>Browse libraries, inspiration, assets, research tools, and everything that helps an interface become a product.</p></div><button type="button" className="button button-secondary" onClick={() => navigateTo("/")}><Icon name="arrowLeft" size={14} /> Back to landing</button></section>
+        <div className="quick-filter-bar" aria-label="Quick filters"><span className="quick-filter-label">Quick access</span><div className="quick-filter-options">{STACK_FILTERS.map(stack => <button type="button" key={stack} className={`quick-filter-chip ${stackFilter === stack ? "selected" : ""}`} onClick={() => setStackFilter(stack)} aria-pressed={stackFilter === stack}>{stack === "all" ? "Everything" : stack}</button>)}</div><label className="topic-jump"><span className="sr-only">Jump to topic</span><select value={activeCategory} onChange={event => setActiveCategory(event.target.value)} aria-label="Jump to topic">{CATEGORIES.map(category => <option value={category.id} key={category.id}>{category.label}</option>)}</select><Icon name="chevron" size={13} /></label></div>
         <section className="workspace" id="results" aria-label="Resource discovery workspace">
           <aside className="desktop-filter"><FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} /></aside>
           <div className="results-area">
             <div className="results-header">
-              <div><div className="eyebrow" style={{ color: "var(--pink)" }}>The index</div><h2>{categoryLabel}</h2><p className="results-subtitle">{filteredResources.length} resources ready to explore{stackFilter !== "all" ? ` · built with ${stackFilter}` : ""}</p></div>
+              <div><div className="eyebrow" style={{ color: "var(--pink)" }}>The index</div><h2>{categoryLabel}</h2><p className="results-subtitle" aria-live="polite">{filteredResources.length} resources ready to explore{stackFilter !== "all" ? ` · built with ${stackFilter}` : ""}</p>
+</div>
               <div className="results-actions">
-                {activeFilterCount > 0 && <span className="filter-state-note"><Icon name="check" size={12} /> Filters saved</span>}
+                {activeFilterCount > 0 && <span className="filter-state-note" role="status"><Icon name="check" size={12} /> Filters saved</span>}
                 <div className="view-toggle" aria-label="Choose resource view"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
               </div>
             </div>
@@ -461,6 +517,7 @@ export default function App() {
         </section>
 
         <footer className="app-footer"><span>Hand-picked · Verified {VERIFIED_DATE}</span><span>{filteredResources.length} of {LIBS.length} resources shown</span></footer>
+        </>}
       </main>
 
     </div>
