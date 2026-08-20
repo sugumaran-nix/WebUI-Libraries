@@ -36,14 +36,17 @@ function addRecent(resource) {
 }
 
 function getUrlParams() {
-  if (typeof window === "undefined") return { cat: "all", q: "", stack: "all", sort: "featured", view: "grid" };
+  const defaults = { cat: "all", q: "", stack: "all", sort: "featured", view: "grid" };
+  if (typeof window === "undefined") return defaults;
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem("ui-folio-filters") || "{}"); } catch {}
   const params = new URLSearchParams(window.location.search);
   return {
-    cat: params.get("cat") || "all",
-    q: params.get("q") || "",
-    stack: params.get("stack") || "all",
-    sort: params.get("sort") || "featured",
-    view: params.get("view") || "grid",
+    cat: params.has("cat") ? params.get("cat") : saved.cat || defaults.cat,
+    q: params.has("q") ? params.get("q") : saved.q || defaults.q,
+    stack: params.has("stack") ? params.get("stack") : saved.stack || defaults.stack,
+    sort: params.has("sort") ? params.get("sort") : saved.sort || defaults.sort,
+    view: params.has("view") ? params.get("view") : saved.view || defaults.view,
   };
 }
 
@@ -88,7 +91,6 @@ export default function App() {
   const [stackFilter, setStackFilter] = useState(initial.stack);
   const [sortBy, setSortBy] = useState(initial.sort);
   const [viewMode, setViewMode] = useState(initial.view);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [copiedShare, setCopiedShare] = useState(false);
   const [recent, setRecent] = useState(getRecent);
@@ -110,6 +112,7 @@ export default function App() {
 
   useEffect(() => {
     syncUrl(activeCategory, query, stackFilter, sortBy, viewMode);
+    try { localStorage.setItem("ui-folio-filters", JSON.stringify({ cat: activeCategory, q: query, stack: stackFilter, sort: sortBy, view: viewMode })); } catch {}
   }, [activeCategory, query, stackFilter, sortBy, viewMode]);
 
   useEffect(() => {
@@ -124,9 +127,8 @@ export default function App() {
     const handleKeydown = event => {
       const inputActive = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
       if (event.key === "/" && !inputActive) { event.preventDefault(); searchRef.current?.focus(); }
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setMobileFiltersOpen(true); }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); document.querySelector(".desktop-filter")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
       if (event.key === "Escape") {
-        setMobileFiltersOpen(false);
         if (query) setQuery("");
         searchRef.current?.blur();
       }
@@ -186,7 +188,6 @@ export default function App() {
     setQuery("");
     setStackFilter("all");
     setSortBy("featured");
-    setMobileFiltersOpen(false);
   };
   const sendSuggestion = () => {
     if (!suggestion.name.trim() || !suggestion.url.trim()) return;
@@ -298,6 +299,8 @@ export default function App() {
         .results-header h2 { margin:4px 0 0; font-family:Georgia,serif; font-size:30px; font-weight:400; letter-spacing:-.06em; }
         .results-subtitle { margin:6px 0 0; color:var(--muted); font-size:11px; }
         .results-actions { display:flex; align-items:center; gap:7px; }
+        .filter-state-note { display:inline-flex; align-items:center; gap:5px; color:var(--muted); font-size:10px; font-weight:800; }
+        .filter-state-note svg { color:#2E9D91; }
         .view-toggle { display:flex; gap:2px; padding:3px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
         .view-toggle button { display:grid; place-items:center; width:30px; height:30px; border:0; border-radius:7px; color:var(--muted); background:transparent; cursor:pointer; }
         .view-toggle button.active { color:#181329; background:var(--lime); }
@@ -357,12 +360,9 @@ export default function App() {
         .suggest-form-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
         .suggest-form-footer p { margin:0; color:var(--muted); font-size:10px; }
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
-        .mobile-filter-backdrop { position:fixed; inset:0; z-index:80; display:flex; align-items:flex-end; background:rgba(9,7,26,.54); backdrop-filter:blur(8px); }
-        .mobile-filter-sheet { width:100%; max-height:90vh; overflow:auto; padding:16px; border-radius:22px 22px 0 0; background:var(--paper); box-shadow:0 -20px 60px rgba(0,0,0,.22); }
-        .mobile-filter-sheet .filter-panel { box-shadow:none; border:0; padding:4px; background:transparent; }
-        @media (max-width:1060px) { .header-nav { display:none; } .workspace { grid-template-columns:1fr; } .desktop-filter { display:none; } .results-area { width:100%; } }
+        @media (max-width:1060px) { .header-nav { display:none; } .workspace { grid-template-columns:1fr; } .desktop-filter { position:static; display:block; } .desktop-filter .filter-panel { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 18px; } .desktop-filter .filter-panel-heading, .desktop-filter .filter-panel-tip { grid-column:1 / -1; } .desktop-filter .filter-panel-heading { border-bottom:0; } .desktop-filter .filter-block { border-bottom:0; } .desktop-filter .filter-done { display:none; } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .desktop-filter .filter-panel { display:block; } .desktop-filter .filter-block { padding:12px 0; border-bottom:1px solid var(--line); } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
@@ -390,7 +390,7 @@ export default function App() {
           <div className="welcome-copy">
             <div className="eyebrow">The independent design index · 2026 edition</div>
             <h1 className="welcome-title" id="welcome-title">Find your next <em>favorite</em> interface.</h1>
-            <p>149 hand-picked UI libraries, design systems, motion references, UX tools, and frontend resources for people who care about the details.</p>
+            <p>175 hand-picked UI libraries, design systems, inspiration galleries, and frontend resources for people who care about the details.</p>
             <div className="hero-search">
               <Icon name="search" size={17} />
               <input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} aria-label="Search resources" placeholder="Search components, inspiration, tools..." />
@@ -428,7 +428,7 @@ export default function App() {
             <div className="results-header">
               <div><div className="eyebrow" style={{ color: "var(--pink)" }}>The index</div><h2>{categoryLabel}</h2><p className="results-subtitle">{filteredResources.length} resources ready to explore{stackFilter !== "all" ? ` · built with ${stackFilter}` : ""}</p></div>
               <div className="results-actions">
-                <button type="button" className="button button-secondary" onClick={() => setMobileFiltersOpen(true)}><Icon name="filter" size={14} /> Filters{activeFilterCount ? ` · ${activeFilterCount}` : ""}</button>
+                {activeFilterCount > 0 && <span className="filter-state-note"><Icon name="check" size={12} /> Filters saved</span>}
                 <div className="view-toggle" aria-label="Choose resource view"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
               </div>
             </div>
@@ -463,7 +463,6 @@ export default function App() {
         <footer className="app-footer"><span>Hand-picked · Verified {VERIFIED_DATE}</span><span>{filteredResources.length} of {LIBS.length} resources shown</span></footer>
       </main>
 
-      {mobileFiltersOpen && <div className="mobile-filter-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setMobileFiltersOpen(false); }}><div className="mobile-filter-sheet"><FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} onClose={() => setMobileFiltersOpen(false)} compact /></div></div>}
     </div>
   );
 }

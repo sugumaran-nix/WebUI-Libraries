@@ -13,7 +13,7 @@
 
 ## What's Inside
 
-Every animated kit, shadcn extension, Tailwind block, headless primitive, design inspiration gallery, and design tool worth knowing.
+Every animated kit, shadcn extension, Tailwind block, headless primitive, design inspiration gallery, and design tool worth knowing — plus the visual assets and workflows around them.
 
 | Category | Examples |
 |---|---|
@@ -26,8 +26,16 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 | **Vue / Svelte** | Vuetify, PrimeVue, shadcn-svelte, Flowbite Svelte, Konsta UI |
 | **Headless** | Radix UI, Headless UI, Base UI, React Aria, Ark UI, Zag.js |
 | **Dev Tools** | Lucide, Iconify, Squoosh |
-| **Collections** | SiteInspire, Httpster, Awwwards, The FWA, TOOOLS.design |
-| **Inspiration** | Godly, Recent Design, Unsection, Detail, BentoGrids, Mobbin |
+| **Inspiration** | Godly, Recent Design, Unsection, Detail, BentoGrids, Mobbin, UI Movement, Appinspo |
+| **Icons** | Tabler Icons, Phosphor Icons, Iconoir, Lucide Icons |
+| **Illustrations** | unDraw, Blush, Open Peeps, Open Doodles, DrawKit |
+| **Typography** | Google Fonts, Fontshare, Fontpair |
+| **Color** | Coolors, Superdesigner, WebGradients, fffuel |
+| **Mockups** | Shots, Hano, Squoosh |
+| **Templates** | Whimsical, Lapa Ninja, Untitled UI |
+| **Email** | Really Good Emails |
+| **Stock Assets** | Unsplash, Pexels |
+| **Collections** | UI Goodies, Design Resources, SiteInspire, Httpster, Awwwards, The FWA, TOOOLS.design |
 | **Angular** | Angular Material, PrimeNG, NG-ZORRO |
 
 ---
@@ -35,8 +43,9 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 ## Features
 
 - **Search** — live search across all libraries by name or description
-- **Category filters** — one-click filter by framework or type
-- **URL state** — filters and search persist in the URL, shareable
+- **Persistent filter panel** — one focused left-side filter card for categories, frameworks, and sort order
+- **Expanded topics** — icons, illustrations, typography, color, mockups, templates, email, stock assets, UX research, portfolios, and AI tools
+- **URL state** — filters and search persist in the URL, shareable, and are remembered locally across reloads
 - **Recently visited** — last 5 opened libraries saved locally
 - **Suggest a library** — built-in form at the bottom of the page
 - **No ads, no gates** — no newsletter, no affiliate links
@@ -45,7 +54,7 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 
 ## Why This Exists
 
-Finding good UI resources is scattered. Awesome lists go stale. Reddit threads disappear. Social posts often show a preview without leaving a usable link.
+Finding good UI resources is scattered. Awesome lists go stale. Reddit threads disappear. Social posts often show a preview without leaving a usable link. The best product work also needs the surrounding system: type, color, icons, imagery, motion, research, and production assets.
 
 UI / FOLIO is a single, maintained, verified page for UI libraries, design systems, inspiration galleries, UX-flow references, and frontend tools.
 
@@ -81,7 +90,9 @@ Open [http://localhost:5173](http://localhost:5173)
 ```
 WebUI-Libraries/
 ├── src/
-│   ├── App.jsx       # Library data, filtering, and UI
+│   ├── App.jsx       # Product shell, filtering, persistence, and layout
+│   ├── data.js       # Shared catalog, taxonomy, and stack metadata
+│   ├── components/   # Icon, FilterPanel, and ResourceCard primitives
 │   └── main.jsx      # React entry point
 ├── public/
 │   ├── favicon.svg

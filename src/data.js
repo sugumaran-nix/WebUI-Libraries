@@ -12,6 +12,17 @@ export const CATEGORIES = [
   { id: "design-tools",  label: "Design Tools" },
   { id: "dev-tools",     label: "Dev Tools" },
   { id: "inspiration",   label: "Inspiration" },
+  { id: "icons",         label: "Icons" },
+  { id: "illustrations", label: "Illustrations" },
+  { id: "typography",    label: "Typography" },
+  { id: "color",         label: "Color" },
+  { id: "mockups",       label: "Mockups" },
+  { id: "templates",     label: "Templates" },
+  { id: "ux-research",   label: "UX Research" },
+  { id: "email",         label: "Email" },
+  { id: "stock",         label: "Stock Assets" },
+  { id: "portfolios",    label: "Portfolios" },
+  { id: "ai-tools",      label: "AI Tools" },
 ];
 
 export const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
@@ -37,6 +48,17 @@ export const CAT_COLOR = {
   "design-tools":"#6A3A8A",
   "dev-tools":   "#2A6A6A",
   inspiration:     "#8A5A2A",
+  icons:            "#E44D9A",
+  illustrations:    "#E77D42",
+  typography:       "#4F73D8",
+  color:            "#D7A928",
+  mockups:          "#6F55C7",
+  templates:        "#2E9D91",
+  "ux-research":   "#CA5D75",
+  email:            "#3F8EC4",
+  stock:            "#7D8F42",
+  portfolios:       "#A654B9",
+  "ai-tools":      "#3B72C4",
 };
 
 export const LIB_STACKS = {
@@ -76,6 +98,8 @@ export const LIB_STACKS = {
   104:["Tailwind"], 105:["Design","CSS"],
   137:["Design"], 138:["Design"], 139:["Design"], 140:["Design"], 141:["Design"], 142:["Design"], 143:["Design"], 144:["Design"],
   145:["Design"], 146:["Design"], 147:["Design"], 148:["CSS"], 149:["Design"], 150:["React"], 151:["Vue"], 152:["React","Tailwind"],
+  153:["React","Vue","Svelte"], 154:["React","Vue","Svelte"], 155:["React","Vue","Svelte"], 156:["Design"], 157:["Design"], 158:["Design"], 159:["Design"], 160:["Design"], 161:["Design"], 162:["Design"], 163:["Design"], 164:["Design"], 165:["Design"], 166:["Design"], 167:["Design"], 168:["Design"], 169:["Design"], 170:["Design"], 171:["Design"], 172:["Design"], 173:["Design"], 174:["Design"],   178:["Design"], 179:["Design"], 180:["Design"], 181:["Design"],
+
 };
 
 export const LIBS = [
@@ -222,20 +246,48 @@ export const LIBS = [
   // Trending discoveries — surfaced by Reddit and public Instagram/Reels signals
   { id:137,name:"60fps",                  url:"60fps.design",                        cat:"inspiration",   desc:"Curated library of 2,000+ UI animation and interaction details from best-in-class mobile and web apps", added:"2026-08" },
   { id:138,name:"Godly Websites",         url:"godly.website",                       cat:"inspiration",   desc:"Daily curation of exceptional design, websites, tools, typography, motion, and visual references", added:"2026-08" },
-  { id:139,name:"UXArchive",              url:"uxarchive.com",                       cat:"inspiration",   desc:"Searchable archive of real mobile app flows and interaction patterns with thousands of steps to study", added:"2026-08" },
+  { id:139,name:"UXArchive",              url:"uxarchive.com",                       cat:"ux-research",   desc:"Searchable archive of real mobile app flows and interaction patterns with thousands of steps to study", added:"2026-08" },
   { id:140,name:"Refero",                 url:"refero.design",                       cat:"inspiration",   desc:"Design research library of real product screens, flows, UI patterns, and searchable interface references", added:"2026-08" },
   { id:141,name:"Stark",                  url:"getstark.co",                         cat:"design-tools",  desc:"Accessibility platform for design, code, and live-product workflows with Figma, Sketch, browser, and GitHub integrations", added:"2026-08" },
   { id:142,name:"Contrast Grid",          url:"contrast-grid.eightshapes.com",       cat:"design-tools",  desc:"Fast WCAG contrast checker for testing many foreground and background color combinations at once", added:"2026-08" },
   { id:143,name:"Laws of UX",             url:"lawsofux.com",                        cat:"inspiration",   desc:"Collection of UX best practices and behavioral principles for building clearer, more usable interfaces", added:"2026-08" },
   { id:144,name:"Growth.Design",          url:"growth.design",                       cat:"inspiration",   desc:"Short, visual UX case studies and product psychology lessons delivered through interactive comics", added:"2026-08" },
   { id:145,name:"Nielsen Norman Group",   url:"nngroup.com",                          cat:"inspiration",   desc:"Research-backed UX articles, videos, courses, and usability guidance from the Nielsen Norman Group", added:"2026-08" },
-  { id:146,name:"UXtweak",                url:"uxtweak.com",                         cat:"design-tools",  desc:"End-to-end UX research platform for card sorting, tree testing, prototype testing, interviews, and surveys", added:"2026-08" },
-  { id:147,name:"Maze Guides",            url:"maze.co/guides",                       cat:"design-tools",  desc:"Practical guides and reports for UX research, prototype testing, interviews, and AI-moderated research", added:"2026-08" },
+  { id:146,name:"UXtweak",                url:"uxtweak.com",                         cat:"ux-research",   desc:"End-to-end UX research platform for card sorting, tree testing, prototype testing, interviews, and surveys", added:"2026-08" },
+  { id:147,name:"Maze Guides",            url:"maze.co/guides",                       cat:"ux-research",   desc:"Practical guides and reports for UX research, prototype testing, interviews, and AI-moderated research", added:"2026-08" },
   { id:148,name:"Axe DevTools",           url:"deque.com/axe/devtools",               cat:"dev-tools",     desc:"Automated web and mobile accessibility testing tools for browser, IDE, CI/CD, and reporting workflows", added:"2026-08" },
   { id:149,name:"UXfolio",                url:"uxfolio.com",                          cat:"design-tools",  desc:"No-code UX portfolio builder with recruiter-friendly templates, case-study guidance, mockups, and hosting", added:"2026-08" },
   { id:150,name:"Once UI",                url:"once-ui.com",                          cat:"react",         desc:"Open-source React and Next.js design system with 100+ components, semantic layout primitives, and MIT-licensed core", added:"2026-08" },
   { id:151,name:"Naive UI",               url:"naiveui.com",                          cat:"multi",         desc:"Themeable Vue 3 component library with TypeScript support, dark mode, and a broad set of polished primitives", added:"2026-08" },
   { id:152,name:"v0",                     url:"v0.dev",                               cat:"dev-tools",     desc:"AI-powered interface builder that generates editable React and shadcn components from natural-language prompts", added:"2026-08" },
+
+  // Expanded design-resource topics: assets, systems, research, and inspiration
+  { id:153,name:"Tabler Icons",            url:"tabler.io/icons",                     cat:"icons",         desc:"Free and open-source SVG icon library with a consistent outline style and thousands of customizable icons", added:"2026-08" },
+  { id:154,name:"Phosphor Icons",          url:"phosphoricons.com",                   cat:"icons",         desc:"Flexible icon family with multiple weights, expressive styles, and packages for modern frontend frameworks", added:"2026-08" },
+  { id:155,name:"Iconoir",                 url:"iconoir.com",                         cat:"icons",         desc:"Open-source SVG icon library with a clean visual language and easy copy, download, and framework usage", added:"2026-08" },
+  { id:156,name:"Fontshare",               url:"fontshare.com",                       cat:"typography",    desc:"Free fonts service from Indian Type Foundry with high-quality typefaces for branding, products, and editorial work", added:"2026-08" },
+  { id:157,name:"Fontpair",                url:"fontpair.co",                         cat:"typography",    desc:"Curated Google Font pairings that make it easier to build balanced type systems for web and product design", added:"2026-08" },
+  { id:158,name:"unDraw",                  url:"undraw.co/illustrations",             cat:"illustrations",  desc:"Open-source illustrations with on-the-fly color customization for websites, apps, and product communication", added:"2026-08" },
+  { id:159,name:"Blush",                   url:"blush.design",                        cat:"illustrations",  desc:"Customizable illustration collections with mix-and-match scenes, characters, and a Figma workflow", added:"2026-08" },
+  { id:160,name:"Open Peeps",              url:"openpeeps.com",                       cat:"illustrations",  desc:"Hand-drawn people illustration library with modular characters and scenes for product storytelling", added:"2026-08" },
+  { id:161,name:"Open Doodles",            url:"opendoodles.com",                     cat:"illustrations",  desc:"Free sketchy illustration set for playful product surfaces, landing pages, and editorial graphics", added:"2026-08" },
+  { id:162,name:"Unsplash",                url:"unsplash.com",                        cat:"stock",         desc:"Large library of freely usable photography for product pages, moodboards, campaigns, and editorial layouts", added:"2026-08" },
+  { id:163,name:"Pexels",                  url:"pexels.com",                          cat:"stock",         desc:"Free stock photos and videos shared by a global creator community for design and content projects", added:"2026-08" },
+  { id:164,name:"UI Goodies",              url:"uigoodies.com",                       cat:"collections",   desc:"Curated design-resource directory spanning icons, illustrations, inspiration, AI tools, color, typography, mockups, and UI kits", added:"2026-08" },
+  { id:165,name:"Really Good Emails",      url:"reallygoodemails.com",                cat:"email",         desc:"Curated email inspiration organized by welcome, newsletter, abandoned-cart, launch, promotional, event, and review flows", added:"2026-08" },
+  { id:166,name:"Whimsical",               url:"whimsical.com",                       cat:"templates",     desc:"Fast visual workspace for wireframes, flowcharts, mind maps, docs, and collaborative product planning", added:"2026-08" },
+  { id:167,name:"Lapa Ninja",              url:"lapa.ninja",                          cat:"templates",     desc:"Curated landing-page gallery with real examples for hero sections, SaaS pages, portfolios, and marketing sites", added:"2026-08" },
+  { id:168,name:"Design Resources",        url:"designresourc.es",                   cat:"collections",   desc:"Free directory of design tools, inspiration, icons, typography, color, prototyping, research, and learning resources", added:"2026-08" },
+  { id:169,name:"Shots",                   url:"shots.so",                            cat:"mockups",       desc:"Browser-based screenshot tool for creating polished device frames and shareable product mockups", added:"2026-08" },
+  { id:170,name:"Hano",                    url:"hano.so",                             cat:"mockups",       desc:"Device mockup tool for turning product screenshots into polished animated and 3D presentation scenes", added:"2026-08" },
+  { id:171,name:"Superdesigner",           url:"superdesigner.co",                    cat:"color",         desc:"Design tool suite for generating backgrounds, shapes, patterns, gradients, and visual assets for web projects", added:"2026-08" },
+  { id:172,name:"UI Movement",             url:"uimovement.com",                      cat:"inspiration",   desc:"Daily UI animation and interaction inspiration for product designers and frontend developers", added:"2026-08" },
+  { id:173,name:"Appinspo",                url:"appinspo.com",                        cat:"inspiration",   desc:"Mobile app UI trends and product-design references for studying patterns across real interfaces", added:"2026-08" },
+  { id:174,name:"DrawKit",                 url:"drawkit.com",                         cat:"illustrations",  desc:"Illustration library with free and premium artwork for websites, apps, startups, and marketing pages", added:"2026-08" },
+  { id:178,name:"Bestfolios",              url:"bestfolios.com/portfolios",           cat:"portfolios",     desc:"Curated portfolio, resume, and case-study gallery for UX, graphic, motion, and product designers", added:"2026-08" },
+  { id:179,name:"Pafolios",                url:"pafolios.com",                        cat:"portfolios",     desc:"Curated showcase of designer, developer, studio, and case-study portfolios with role-based discovery", added:"2026-08" },
+  { id:180,name:"Relume",                  url:"relume.ai",                           cat:"ai-tools",      desc:"AI website workflow for generating sitemaps, wireframes, style guides, and responsive components for Figma, Webflow, and React", added:"2026-08" },
+  { id:181,name:"Superdesign",              url:"app.superdesign.dev",                 cat:"ai-tools",      desc:"AI-powered interface workspace for generating modern UI concepts and editable product screens", added:"2026-08" },
 ];
 
 export const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
