@@ -314,10 +314,19 @@ export default function App() {
         .resource-card::before { content:""; position:absolute; inset:0 0 auto; height:4px; background:linear-gradient(90deg,var(--card-accent),var(--lime)); }
         .resource-card:hover { transform:translateY(-5px); border-color:var(--card-accent); box-shadow:var(--shadow); }
         .resource-card-top { display:flex; align-items:center; justify-content:space-between; min-height:35px; }
+        .resource-preview { position:relative; aspect-ratio:16/9; margin:0 -17px 16px; overflow:hidden; border-bottom:1px solid var(--line); background:linear-gradient(135deg,var(--surface-soft),color-mix(in srgb,var(--card-accent) 18%,var(--surface))); }
+        .resource-preview img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease), opacity .35s var(--ease); }
+        .resource-card:hover .resource-preview img { transform:scale(1.045); }
+        .preview-placeholder { position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:8px; color:var(--muted); background:linear-gradient(135deg,color-mix(in srgb,var(--card-accent) 15%,var(--surface)),var(--surface-soft)); }
+        .preview-placeholder small { font-size:9px; font-weight:800; letter-spacing:.04em; }
+        .preview-initials { display:grid; place-items:center; width:42px; height:42px; border:1px solid color-mix(in srgb,var(--card-accent) 45%,transparent); border-radius:14px; color:var(--card-accent); background:color-mix(in srgb,var(--card-accent) 12%,transparent); font-size:12px; font-weight:900; }
+        .preview-overlay { position:absolute; inset:auto 10px 10px; display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border:1px solid rgba(255,255,255,.25); border-radius:9px; color:#FFF; background:rgba(12,9,35,.72); opacity:0; font-size:9px; font-weight:900; backdrop-filter:blur(8px); transform:translateY(5px); transition:opacity .22s var(--ease), transform .22s var(--ease); }
+        .resource-card:hover .preview-overlay, .resource-card:focus-within .preview-overlay { opacity:1; transform:translateY(0); }
         .resource-orbit { display:grid; place-items:center; width:31px; height:31px; border:1px solid var(--card-accent); border-radius:50%; }
         .resource-orbit span { width:10px; height:10px; border-radius:50%; background:var(--card-accent); box-shadow:0 0 0 5px color-mix(in srgb,var(--card-accent) 15%,transparent); }
         .resource-card-actions { display:flex; align-items:center; gap:6px; }
         .resource-card-link { display:block; margin-top:18px; color:var(--ink); text-decoration:none; }
+        .resource-card-link:has(.resource-preview) { margin-top:0; }
         .resource-category { color:var(--card-accent); font-size:9px; font-weight:900; letter-spacing:.13em; text-transform:uppercase; }
         .resource-card h3 { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 8px; font-size:18px; letter-spacing:-.05em; }
         .resource-card h3 svg { flex-shrink:0; opacity:.5; transition:transform .18s var(--ease); }

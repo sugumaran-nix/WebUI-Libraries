@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Icon from "./Icon";
 
 function Highlight({ text, query }) {
@@ -8,6 +9,10 @@ function Highlight({ text, query }) {
 }
 
 export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopied, query, onCopy, onVisit }) {
+  const [previewState, setPreviewState] = useState("loading");
+  const previewUrl = `https://image.thum.io/get/width/1200/crop/760/noanimate/https://${lib.url}`;
+  const initials = lib.name.replace(/[^a-z0-9 ]/gi, "").split(" ").filter(Boolean).slice(0, 2).map(word => word[0]).join("").toUpperCase() || "UI";
+
   return (
     <article className="resource-card" style={{ "--card-accent": lib.accent || "#7C5CFC" }}>
       <div className="resource-card-top">
@@ -20,6 +25,11 @@ export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopi
         </div>
       </div>
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
+        <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
+          {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={() => setPreviewState("loaded")} onError={() => setPreviewState("error")} />}
+          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : "Preview unavailable"}</small></div>}
+          {previewState === "loaded" && <div className="preview-overlay"><span>Open live site</span><Icon name="arrow" size={13} /></div>}
+        </div>
         <div className="resource-category">{categoryLabel}</div>
         <h3><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></h3>
         <p><Highlight text={lib.desc} query={query} /></p>
