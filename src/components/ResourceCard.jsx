@@ -49,7 +49,8 @@ export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopi
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
         <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={retryPreview} onError={handlePreviewError} />}
-          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : previewState === "retrying" ? "Retrying capture" : "Preview unavailable · card opens site"}</small></div>}
+          {(previewState === "loading" || previewState === "retrying") && <div className="preview-skeleton" aria-label={`${lib.name} preview loading`}><span className="preview-skeleton-line" /><span className="preview-skeleton-line short" /></div>}
+          {previewState === "error" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>Preview unavailable · card opens site</small></div>}
         </div>
         <div className="resource-category">{categoryLabel}</div>
         <h3><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></h3>

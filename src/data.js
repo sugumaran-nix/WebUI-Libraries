@@ -29,6 +29,7 @@ export const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
 export const STACK_FILTERS = ["all", "React", "Tailwind", "Vue", "Svelte", "CSS", "Design"];
 export const SORT_OPTIONS = [
   { id:"featured", label:"Curated order" },
+  { id:"popular", label:"Most popular" },
   { id:"newest", label:"Newest first" },
   { id:"az", label:"A → Z" },
 ];
