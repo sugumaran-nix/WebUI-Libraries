@@ -1,13 +1,13 @@
-# UI Libraries
+# UI / FOLIO
 
-> Free, open-source UI libraries and design resources in one place. Hand-picked, verified August 2026.
+> A premium, independent index of UI libraries, design systems, inspiration galleries, and frontend tools. Hand-picked, verified August 2026.
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111827)
 ![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-**[Visit the Directory](https://components-lib-web-theta.vercel.app)**
+**[Visit UI / FOLIO](https://components-lib-web-theta.vercel.app)**
 
 ---
 
@@ -47,7 +47,7 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, design
 
 Finding good UI resources is scattered. Awesome lists go stale. Reddit threads disappear. Social posts often show a preview without leaving a usable link.
 
-This is a single, maintained, verified page for UI libraries, design systems, inspiration galleries, UX-flow references, and frontend tools.
+UI / FOLIO is a single, maintained, verified page for UI libraries, design systems, inspiration galleries, UX-flow references, and frontend tools.
 
 ---
 

@@ -330,7 +330,7 @@ export default function App() {
     if (active !== "all") parts.push(CATEGORIES.find(c => c.id === active)?.label || active);
     if (stackFilter !== "all") parts.push(stackFilter);
     if (query) parts.push(`"${query}"`);
-    document.title = parts.length ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
+    document.title = parts.length ? `${parts.join(" · ")} — UI / FOLIO` : "UI / FOLIO — Curated Interface Intelligence";
   }, [active, query, stackFilter, sortBy]);
 
   // Scroll listener
@@ -806,7 +806,7 @@ export default function App() {
           <div className="hero-index" aria-label="Directory statistics">
             <div className="hero-stat"><strong>{LIBS.length}</strong><span>Resources</span></div>
             <div className="hero-stat"><strong>{CATEGORIES.length - 1}</strong><span>Curated lanes</span></div>
-            <div className="hero-stat"><strong>08</strong><span>New this issue</span></div>
+            <div className="hero-stat"><strong>{NEW_IDS.size}</strong><span>New this issue</span></div>
             <div className="hero-stat"><strong>100%</strong><span>Independent</span></div>
           </div>
         </section>
