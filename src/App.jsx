@@ -345,6 +345,7 @@ export default function App() {
     const fn = (e) => {
       const inInput = ["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName);
       if (e.key === "/" && !inInput) { e.preventDefault(); searchRef.current?.focus(); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setFilterOpen(true); }
       if (e.key === "Escape") {
         if (query) setQuery("");
         else closeDrawer();
@@ -649,10 +650,14 @@ export default function App() {
         .stack-chip:hover { border-color:rgba(24,23,20,.25); color:var(--ink); transform:translateY(-1px); }
         .stack-chip.active { border-color:var(--ink); background:var(--ink); color:var(--accent); }
         .results-grid { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem !important; }
-        .results-grid .lib-card { min-height:220px; align-items:flex-start; }
+        .results-grid .lib-card { min-height:220px; align-items:flex-start; flex-direction:column; }
         .results-grid .lib-card > a { align-self:stretch; }
         .results-grid .lib-card > div:last-child { align-self:flex-end; }
         .results-grid .lib-card .cat-pill { font-size:9px; }
+        .lib-card:active, .featured-card:active { transform:scale(.995); }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+        .ctrl-btn:active, .stack-chip:active, .hero-secondary:active, .drawer-stack-chip:active { transform:scale(.97); }
+        .search-input { box-shadow:0 6px 18px rgba(24,23,20,.035); }
         .filter-section-label { margin:1rem 0 .5rem; color:#9C9589; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
         .stack-filter-grid { display:flex; flex-wrap:wrap; gap:.35rem; }
         .drawer-stack-chip { border:1px solid #E8E3DC; border-radius:999px; padding:.45rem .7rem; background:#FFF; color:#6B5F4B; font:500 12px inherit; cursor:pointer; }
@@ -687,7 +692,7 @@ export default function App() {
               <svg style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:"#B0A898", pointerEvents:"none" }} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              <input ref={searchRef} className="search-input" type="text" placeholder="Search ( / )"
+              <input ref={searchRef} className="search-input" type="text" aria-label="Search UI libraries and design resources" placeholder="Search ( / )"
                 value={query} onChange={e => setQuery(e.target.value)} />
               {query && (
                 <button onClick={() => setQuery("")} style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#9B8E80", padding:2, fontSize:11, lineHeight:1 }}>✕</button>
@@ -746,7 +751,7 @@ export default function App() {
                       Clear all
                     </button>
                   )}
-                  <button onClick={closeDrawer} className="ctrl-btn" style={{ fontSize:12, fontWeight:600, padding:"0.3rem 0.75rem", height:34, background:"#1C1A17", color:"#F7F5F0", border:"none" }}
+                  <button onClick={closeDrawer} className="ctrl-btn" aria-label="Close filters" style={{ fontSize:12, fontWeight:600, padding:"0.3rem 0.75rem", height:34, background:"#1C1A17", color:"#F7F5F0", border:"none" }}
                     onMouseEnter={e=>{e.currentTarget.style.background="#3A3632"}}
                     onMouseLeave={e=>{e.currentTarget.style.background="#1C1A17"}}>
                     Done
@@ -795,7 +800,7 @@ export default function App() {
             <p className="hero-copy">A refined index of the UI libraries, design systems, inspiration galleries, and frontend tools that make digital work feel considered.</p>
             <div className="hero-actions">
               <button type="button" className="hero-primary" onClick={jumpToResults}>Start exploring <span aria-hidden="true">↗</span></button>
-              <button type="button" className="hero-secondary" onClick={() => setFilterOpen(true)}>Open filters <span aria-hidden="true">⌘K</span></button>
+              <button type="button" className="hero-secondary" onClick={() => setFilterOpen(true)}>Open filters <span aria-hidden="true">⌘ K</span></button>
             </div>
           </div>
           <div className="hero-index" aria-label="Directory statistics">
@@ -868,7 +873,7 @@ export default function App() {
 
         <div className="discovery-toolbar" id="results">
           <div className="result-meta">
-            <span className="result-count">{filtered.length} resources</span>
+            <span className="result-count" aria-live="polite">{filtered.length} resources</span>
             <span className="result-context">{active === "all" ? "Everything worth bookmarking" : CATEGORIES.find(c => c.id === active)?.label}{stackFilter !== "all" ? ` · ${stackFilter}` : ""}</span>
           </div>
           <div className="toolbar-actions">
