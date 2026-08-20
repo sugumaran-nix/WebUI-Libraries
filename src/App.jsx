@@ -127,6 +127,8 @@ const LIB_STACKS = {
   98:["Tailwind"],  99:["React"],  100:["React"],
   101:["Design"],   102:["Design"], 103:["Design","CSS"],
   104:["Tailwind"], 105:["Design","CSS"],
+  137:["Design"], 138:["Design"], 139:["Design"], 140:["Design"], 141:["Design"], 142:["Design"], 143:["Design"], 144:["Design"],
+  145:["Design"], 146:["Design"], 147:["Design"], 148:["CSS"], 149:["Design"], 150:["React"], 151:["Vue"], 152:["React","Tailwind"],
 };
 
 const LIBS = [
@@ -269,6 +271,24 @@ const LIBS = [
   { id:134,name:"Park UI",               url:"park-ui.com",                          cat:"react",         desc:"Beautiful components built with Ark UI and Panda CSS for React and Solid design systems", added:"2026-08" },
   { id:135,name:"Konsta UI",             url:"konstaui.com",                         cat:"multi",         desc:"MIT-licensed mobile UI components with pixel-perfect iOS and Material themes for React, Vue, and Svelte", added:"2026-08" },
   { id:136,name:"Zag.js",                url:"zagjs.com",                            cat:"headless",      desc:"Framework-agnostic state machines for accessible, interactive UI components and design systems", added:"2026-08" },
+
+  // Trending discoveries — surfaced by Reddit and public Instagram/Reels signals
+  { id:137,name:"60fps",                  url:"60fps.design",                        cat:"inspiration",   desc:"Curated library of 2,000+ UI animation and interaction details from best-in-class mobile and web apps", added:"2026-08" },
+  { id:138,name:"Godly Websites",         url:"godly.website",                       cat:"inspiration",   desc:"Daily curation of exceptional design, websites, tools, typography, motion, and visual references", added:"2026-08" },
+  { id:139,name:"UXArchive",              url:"uxarchive.com",                       cat:"inspiration",   desc:"Searchable archive of real mobile app flows and interaction patterns with thousands of steps to study", added:"2026-08" },
+  { id:140,name:"Refero",                 url:"refero.design",                       cat:"inspiration",   desc:"Design research library of real product screens, flows, UI patterns, and searchable interface references", added:"2026-08" },
+  { id:141,name:"Stark",                  url:"getstark.co",                         cat:"design-tools",  desc:"Accessibility platform for design, code, and live-product workflows with Figma, Sketch, browser, and GitHub integrations", added:"2026-08" },
+  { id:142,name:"Contrast Grid",          url:"contrast-grid.eightshapes.com",       cat:"design-tools",  desc:"Fast WCAG contrast checker for testing many foreground and background color combinations at once", added:"2026-08" },
+  { id:143,name:"Laws of UX",             url:"lawsofux.com",                        cat:"inspiration",   desc:"Collection of UX best practices and behavioral principles for building clearer, more usable interfaces", added:"2026-08" },
+  { id:144,name:"Growth.Design",          url:"growth.design",                       cat:"inspiration",   desc:"Short, visual UX case studies and product psychology lessons delivered through interactive comics", added:"2026-08" },
+  { id:145,name:"Nielsen Norman Group",   url:"nngroup.com",                          cat:"inspiration",   desc:"Research-backed UX articles, videos, courses, and usability guidance from the Nielsen Norman Group", added:"2026-08" },
+  { id:146,name:"UXtweak",                url:"uxtweak.com",                         cat:"design-tools",  desc:"End-to-end UX research platform for card sorting, tree testing, prototype testing, interviews, and surveys", added:"2026-08" },
+  { id:147,name:"Maze Guides",            url:"maze.co/guides",                       cat:"design-tools",  desc:"Practical guides and reports for UX research, prototype testing, interviews, and AI-moderated research", added:"2026-08" },
+  { id:148,name:"Axe DevTools",           url:"deque.com/axe/devtools",               cat:"dev-tools",     desc:"Automated web and mobile accessibility testing tools for browser, IDE, CI/CD, and reporting workflows", added:"2026-08" },
+  { id:149,name:"UXfolio",                url:"uxfolio.com",                          cat:"design-tools",  desc:"No-code UX portfolio builder with recruiter-friendly templates, case-study guidance, mockups, and hosting", added:"2026-08" },
+  { id:150,name:"Once UI",                url:"once-ui.com",                          cat:"react",         desc:"Open-source React and Next.js design system with 100+ components, semantic layout primitives, and MIT-licensed core", added:"2026-08" },
+  { id:151,name:"Naive UI",               url:"naiveui.com",                          cat:"multi",         desc:"Themeable Vue 3 component library with TypeScript support, dark mode, and a broad set of polished primitives", added:"2026-08" },
+  { id:152,name:"v0",                     url:"v0.dev",                               cat:"dev-tools",     desc:"AI-powered interface builder that generates editable React and shadcn components from natural-language prompts", added:"2026-08" },
 ];
 
 const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));
