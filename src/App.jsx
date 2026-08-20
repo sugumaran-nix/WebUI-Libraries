@@ -677,6 +677,14 @@ export default function App() {
         .theme-toggle:active { transform:scale(.97); }
         .app-shell[data-theme="dark"] .theme-toggle:hover { background:var(--accent-2); border-color:var(--accent-2); color:#FFF; }
         .main-canvas { transition:color .24s var(--ease-out); }
+        .app-shell, .app-shell * { transition:background-color .24s var(--ease-out), border-color .24s var(--ease-out), color .24s var(--ease-out); }
+        .app-shell button, .app-shell a, .app-shell input, .app-shell select, .app-shell textarea { transition:background-color .18s var(--ease-out), border-color .18s var(--ease-out), color .18s var(--ease-out), transform .18s var(--ease-out); }
+        .app-shell[data-theme="light"]::before { opacity:.12; mix-blend-mode:multiply; }
+        .app-shell[data-theme="dark"]::before { opacity:.07; mix-blend-mode:screen; }
+        .app-shell[data-theme="light"] ::selection { background:#D8FF73; color:#181329; }
+        .app-shell[data-theme="dark"] ::selection { background:#FF6FA9; color:#111126; }
+        .app-shell[data-theme="dark"] ::-webkit-scrollbar-track { background:#111126; }
+        .app-shell[data-theme="dark"] ::-webkit-scrollbar-thumb { background:#49436C; }
         @media (max-width:1020px) { .page-layout { grid-template-columns:1fr; gap:.25rem; } .browse-rail { position:static; padding:.5rem 0 .8rem; } .rail-heading { flex-direction:row; align-items:baseline; justify-content:space-between; margin-bottom:.55rem; } .rail-category-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.3rem; } .rail-category { background:rgba(255,255,255,.48); } .app-shell[data-theme="dark"] .rail-category { background:rgba(255,255,255,.04); } .rail-note { display:none; } }
         @media (max-width:599px) { .rail-heading { padding:0 .1rem; } .rail-category-list { display:flex; overflow-x:auto; gap:.35rem; padding:.15rem .1rem .5rem; scrollbar-width:none; } .rail-category-list::-webkit-scrollbar { display:none; } .rail-category { width:auto; min-width:max-content; padding:.5rem .65rem; border-radius:999px; } .rail-category > span:last-child { display:none; } .theme-toggle { width:34px; padding:0; justify-content:center; } .theme-toggle span { display:none; } }
         .app-shell { position:relative; overflow:hidden; background-image:radial-gradient(circle at 10% 0%, rgba(255,255,255,.85), transparent 26rem), linear-gradient(rgba(24,23,20,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(24,23,20,.025) 1px, transparent 1px); background-size:auto, 32px 32px, 32px 32px; }
