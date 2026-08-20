@@ -171,7 +171,7 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem("ui-folio-theme", theme); } catch {}
     document.documentElement.style.colorScheme = theme;
-    document.body.style.background = theme === "dark" ? "#0C0D18" : "#F7F5FF";
+    document.body.style.background = theme === "dark" ? "#0B1220" : "#F6F8FB";
   }, [theme]);
 
   useEffect(() => {
@@ -276,8 +276,8 @@ export default function App() {
   return (
     <div className={`app-shell theme-${theme}`}>
       <style>{`
-        :root { --paper:#F7F5FF; --surface:rgba(255,255,255,.78); --surface-soft:rgba(255,255,255,.56); --surface-elevated:rgba(255,255,255,.9); --ink:#151423; --muted:#6A6878; --line:rgba(21,20,35,.14); --accent:#5B4BFF; --violet:#9B6BFF; --pink:#FF4F87; --lime:#E5FF7A; --cyan:#48D9D0; --on-accent:#FFFFFF; --on-soft:#151423; --shadow:0 20px 55px rgba(45,34,115,.16); --radius:12px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
-        .theme-dark { --paper:#0C0D18; --surface:rgba(24,25,45,.84); --surface-soft:rgba(244,243,255,.08); --surface-elevated:rgba(31,32,57,.92); --ink:#F4F3FF; --muted:#AAA9BC; --line:rgba(244,243,255,.17); --accent:#7C6CFF; --violet:#B89CFF; --pink:#FF719F; --lime:#2D3B36; --cyan:#5FE6DC; --on-accent:#101022; --on-soft:#F4F3FF; --shadow:0 24px 70px rgba(0,0,0,.44); }
+        :root { --paper:#F6F8FB; --surface:rgba(255,255,255,.8); --surface-soft:rgba(255,255,255,.58); --surface-elevated:rgba(255,255,255,.92); --ink:#101B33; --muted:#657087; --line:rgba(16,27,51,.14); --accent:#2563EB; --violet:#4F76D9; --pink:#F05A52; --lime:#DCEBFF; --cyan:#55B9E8; --on-accent:#FFFFFF; --on-soft:#10234A; --shadow:0 20px 55px rgba(28,57,111,.15); --radius:12px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
+        .theme-dark { --paper:#0B1220; --surface:rgba(21,31,51,.86); --surface-soft:rgba(237,244,255,.08); --surface-elevated:rgba(27,40,65,.94); --ink:#F2F6FF; --muted:#AAB6CA; --line:rgba(242,246,255,.17); --accent:#6EA3FF; --violet:#8AAFFF; --pink:#FF837B; --lime:#1C385E; --cyan:#72D2FF; --on-accent:#08162F; --on-soft:#F2F6FF; --shadow:0 24px 70px rgba(0,0,0,.46); }
         * { box-sizing:border-box; }
         body { margin:0; overflow-x:hidden; background:var(--paper); font-family:var(--font-sans); font-size:15px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
         button, input, select, textarea { font:inherit; }
@@ -285,7 +285,7 @@ export default function App() {
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
         .app-shell { min-height:100vh; overflow:visible; color:var(--ink); background:var(--paper); transition:background .28s var(--ease), color .28s var(--ease); }
         .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.16; background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--cyan) 18%,transparent),transparent 25%),radial-gradient(circle at 88% 15%,color-mix(in srgb,var(--pink) 12%,transparent),transparent 24%),linear-gradient(color-mix(in srgb,var(--ink) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ink) 4%,transparent) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
-        .theme-dark::before { opacity:.2; background-image:radial-gradient(circle at 15% 10%,rgba(124,108,255,.18),transparent 28%),radial-gradient(circle at 86% 15%,rgba(255,113,159,.13),transparent 26%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
+        .theme-dark::before { opacity:.2; background-image:radial-gradient(circle at 15% 10%,rgba(110,163,255,.18),transparent 28%),radial-gradient(circle at 86% 15%,rgba(255,131,123,.13),transparent 26%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
         .app-shell > * { position:relative; z-index:1; }
         .site-header { position:fixed; inset:0 0 auto; z-index:80; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--surface-elevated) 82%,transparent); box-shadow:0 10px 30px color-mix(in srgb,var(--ink) 7%,transparent); backdrop-filter:saturate(150%) blur(22px); -webkit-backdrop-filter:saturate(150%) blur(22px); }
         .directory-header { position:fixed; inset:0 0 auto; z-index:80; }
@@ -312,7 +312,7 @@ export default function App() {
         .icon-button.is-copied { color:var(--on-soft); border-color:var(--lime); background:var(--lime); }
         .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; } .github-link { display:grid; place-items:center; width:34px; height:34px; padding:0; color:var(--muted); text-decoration:none; } .github-link svg { flex:0 0 auto; } .github-link:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-1px); }
         .vengeance-main { width:100%; max-width:none; margin:0; padding:72px 0 0; }
-        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#F7F5FF; --landing-fg:#151423; --landing-accent:#FF4F87; --landing-cool:#5B4BFF; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#0C0D18; --landing-fg:#F4F3FF; --landing-accent:#FF719F; --landing-cool:#7C6CFF; }
+        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#F6F8FB; --landing-fg:#101B33; --landing-accent:#F05A52; --landing-cool:#2563EB; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#0B1220; --landing-fg:#F2F6FF; --landing-accent:#FF837B; --landing-cool:#6EA3FF; }
         .vengeance-landing::before { content:""; position:absolute; inset:0; z-index:-2; opacity:.6; background-image:linear-gradient(color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%); }
         .vengeance-glow { position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(circle at var(--pointer-x) var(--pointer-y),color-mix(in srgb,var(--landing-cool) 25%,transparent),transparent 29%),radial-gradient(circle at 72% 18%,color-mix(in srgb,var(--landing-accent) 18%,transparent),transparent 34%),linear-gradient(120deg,transparent 45%,color-mix(in srgb,var(--landing-cool) 5%,transparent)); transition:background .25s var(--ease); }
         .vengeance-topline { position:absolute; top:24px; left:clamp(22px,5vw,72px); right:clamp(22px,5vw,72px); z-index:5; display:flex; align-items:center; justify-content:space-between; gap:18px; color:color-mix(in srgb,var(--landing-fg) 68%,transparent); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
