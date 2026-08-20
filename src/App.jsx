@@ -55,6 +55,7 @@ const CATEGORIES = [
   { id: "collections",   label: "Collections" },
   { id: "design-tools",  label: "Design Tools" },
   { id: "dev-tools",     label: "Dev Tools" },
+  { id: "inspiration",   label: "Inspiration" },
 ];
 
 const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
@@ -73,6 +74,7 @@ const CAT_COLOR = {
   collections:   "#8A3A6A",
   "design-tools":"#6A3A8A",
   "dev-tools":   "#2A6A6A",
+  inspiration:     "#8A5A2A",
 };
 
 const LIB_STACKS = {
@@ -213,8 +215,45 @@ const LIBS = [
   { id:101,name:"fffuel",               url:"fffuel.co",                           cat:"design-tools",  desc:"Collection of free SVG generators for gradients, patterns, textures, blob shapes, and cool backgrounds", added:"2026-02" },
   { id:102,name:"WebGradients",         url:"webgradients.com",                    cat:"design-tools",  desc:"180 free linear gradients as CSS code, Sketch swatches, and PNG — copy-paste or download instantly", added:"2026-02" },
   { id:103,name:"CSS Gradient",         url:"cssgradient.io",                      cat:"design-tools",  desc:"Free CSS gradient generator with live preview — create linear, radial, and conic gradients visually", added:"2026-02" },
-  { id:104,name:"Pinemix",              url:"pinemix.dev",                         cat:"tailwind",      desc:"Free open-source Alpine.js components styled with Tailwind CSS — accessible, interactive, copy-paste ready", added:"2026-02" },
+    { id:104,name:"Pinemix",              url:"pinemix.dev",                         cat:"tailwind",     desc:"Free open-source Alpine.js components styled with Tailwind CSS — accessible, interactive, copy-paste ready", added:"2026-02" },
   { id:105,name:"FrontendBaba",         url:"frontendbaba.dev",                    cat:"dev-tools",     desc:"Free browser-based frontend tools — CSS gradient, clip-path, blob, glassmorphism, shadow generators", added:"2026-02" },
+
+  // Inspiration — curated galleries, UI references, and real-world flows
+  { id:106,name:"Godly",                 url:"godly.design",                        cat:"inspiration",   desc:"Curated gallery of interesting web, app, UI, and visual design work, with sections for websites, heroes, CTAs, logos, and app screens", added:"2026-08" },
+  { id:107,name:"Recent Design",         url:"recent.design",                       cat:"inspiration",   desc:"Daily curation of exceptional design, websites, interfaces, tools, typography, motion, and more", added:"2026-08" },
+  { id:108,name:"Unsection",             url:"unsection.com",                       cat:"inspiration",   desc:"Curated library of 4,000+ website sections, hover effects, style filters, and a growing SVG library", added:"2026-08" },
+  { id:109,name:"Detail",                url:"detail.design",                       cat:"inspiration",   desc:"Small interface details and interaction patterns covering accessibility, motion, optimization, and copywriting", added:"2026-08" },
+  { id:110,name:"BentoGrids",            url:"bentogrids.com",                      cat:"inspiration",   desc:"Curated gallery of bento layouts, cards, templates, and real product examples with source links", added:"2026-08" },
+  { id:111,name:"UIBits.co",             url:"uibits.co",                            cat:"inspiration",   desc:"Daily-curated UI inspiration library for discovering interface ideas and visual references", added:"2026-08" },
+  { id:112,name:"Design Spells",         url:"designspells.com",                    cat:"inspiration",   desc:"Curated design details and small interactions that add polish and character to interfaces", added:"2026-08" },
+  { id:113,name:"Viewport UI",            url:"viewport-ui.design",                  cat:"inspiration",   desc:"Curated UI experiences and interface references for product and web designers", added:"2026-08" },
+  { id:114,name:"Lookup.design",          url:"lookup.design",                       cat:"inspiration",   desc:"Searchable collection of realistic design examples for product and interface research", added:"2026-08" },
+  { id:115,name:"Design Vault",           url:"designvault.io",                      cat:"inspiration",   desc:"UI patterns and design inspiration collected from real products", added:"2026-08" },
+  { id:116,name:"Interface Index",        url:"interface-index.com",                 cat:"inspiration",   desc:"Interface elements from B2B, SaaS, desktop apps, and digital services", added:"2026-08" },
+  { id:117,name:"UI.live",                url:"ui.live",                              cat:"inspiration",   desc:"Community gallery for sharing and discovering notable design work", added:"2026-08" },
+  { id:118,name:"Mobbin",                url:"mobbin.com",                           cat:"inspiration",   desc:"Searchable library of real mobile and web product screenshots for UI research", added:"2026-08" },
+  { id:119,name:"Page Flows",            url:"pageflows.com",                       cat:"inspiration",   desc:"Real-world user-flow recordings, screens, annotations, and UX patterns from leading apps and websites", added:"2026-08" },
+  { id:120,name:"SaaSFrame",             url:"saasframe.io",                        cat:"inspiration",   desc:"Large UI and UX library focused on SaaS product interfaces and website patterns", added:"2026-08" },
+
+  // Web galleries — community showcases and award collections
+  { id:121,name:"SiteInspire",           url:"siteinspire.com",                     cat:"collections",   desc:"Showcase of the web's finest design and talent, searchable by style, type, subject, and platform", added:"2026-08" },
+  { id:122,name:"Httpster",              url:"httpster.net",                        cat:"collections",   desc:"Website design inspiration gallery featuring thousands of sites from designers around the world", added:"2026-08" },
+  { id:123,name:"Awwwards",              url:"awwwards.com",                        cat:"collections",   desc:"Award platform and inspiration gallery for innovative websites, creative studios, and digital experiences", added:"2026-08" },
+  { id:124,name:"The FWA",               url:"thefwa.com",                          cat:"collections",   desc:"Long-running awards and showcase platform for cutting-edge web design and development", added:"2026-08" },
+  { id:125,name:"Hoverstates",           url:"hoverstat.es",                        cat:"collections",   desc:"Alternative design, code, and content from the wider web, curated for creative inspiration", added:"2026-08" },
+  { id:126,name:"Site of Sites",         url:"siteofsites.co",                      cat:"collections",   desc:"Growing collection of go-to web design inspiration and standout website references", added:"2026-08" },
+  { id:127,name:"Websitevice",           url:"websitevice.com",                     cat:"collections",   desc:"Casual website examples for practical, real-world web design inspiration", added:"2026-08" },
+  { id:128,name:"Dark Mode Design",      url:"darkmodedesign.com",                  cat:"collections",   desc:"Showcase of thoughtfully designed dark-mode websites and interfaces", added:"2026-08" },
+  { id:129,name:"Siiimple",              url:"siiimple.com",                        cat:"collections",   desc:"Hand-picked collection of simple, polished, and visually focused websites", added:"2026-08" },
+  { id:130,name:"SiteSee",               url:"sitesee.co",                          cat:"collections",   desc:"Curated gallery of beautiful, modern websites and landing pages", added:"2026-08" },
+  { id:131,name:"TOOOLS.design",          url:"toools.design",                       cat:"collections",   desc:"Curated directory of design inspiration for UI, web, mobile, SaaS, branding, illustration, motion, and more", added:"2026-08" },
+
+  // Additional component and accessibility systems
+  { id:132,name:"AlignUI",               url:"alignui.com",                         cat:"react",         desc:"React and Tailwind design system with open-source base components, Figma support, responsive layouts, and accessible patterns", added:"2026-08" },
+  { id:133,name:"React Spectrum",        url:"react-spectrum.adobe.com",             cat:"react",         desc:"Adobe's React implementation and accessibility-focused design system for building robust interfaces", added:"2026-08" },
+  { id:134,name:"Park UI",               url:"park-ui.com",                          cat:"react",         desc:"Beautiful components built with Ark UI and Panda CSS for React and Solid design systems", added:"2026-08" },
+  { id:135,name:"Konsta UI",             url:"konstaui.com",                         cat:"multi",         desc:"MIT-licensed mobile UI components with pixel-perfect iOS and Material themes for React, Vue, and Svelte", added:"2026-08" },
+  { id:136,name:"Zag.js",                url:"zagjs.com",                            cat:"headless",      desc:"Framework-agnostic state machines for accessible, interactive UI components and design systems", added:"2026-08" },
 ];
 
 const NEW_IDS       = new Set(LIBS.filter(l => l.added?.startsWith("2026")).map(l => l.id));

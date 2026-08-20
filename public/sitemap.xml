@@ -1,63 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://your-site.vercel.app/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=animated</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=animated</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=shadcn</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=shadcn</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=tailwind</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=tailwind</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=react</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=react</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=headless</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=headless</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=css</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=css</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=multi</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=multi</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=design-tools</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=design-tools</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://your-site.vercel.app/?cat=dev-tools</loc>
-    <lastmod>2026-08-05</lastmod>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=dev-tools</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://components-lib-web-theta.vercel.app/?cat=inspiration</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

@@ -1,32 +1,33 @@
-# WebUI Libraries — UI Component Directory
+# UI Libraries
 
-> Free, open-source UI libraries in one place. Hand-picked, verified August 2026.
+> Free, open-source UI libraries and design resources in one place. Hand-picked, verified August 2026.
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111827)
 ![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-**[🚀 Visit the Directory](https://components-lib-web-theta.vercel.app)**
+**[Visit the Directory](https://components-lib-web-theta.vercel.app)**
 
 ---
 
 ## What's Inside
 
-Every animated kit, shadcn extension, Tailwind block, headless primitive, and design tool worth knowing.
+Every animated kit, shadcn extension, Tailwind block, headless primitive, design inspiration gallery, and design tool worth knowing.
 
 | Category | Examples |
 |---|---|
-| **React** | HeroUI, Mantine, Chakra UI, MUI, PrimeReact |
+| **React** | HeroUI, Mantine, Chakra UI, MUI, PrimeReact, AlignUI, Park UI |
 | **Tailwind** | DaisyUI, Flowbite, HyperUI, Preline, Meraki UI |
 | **shadcn** | shadcn/ui, 21st.dev, Origin UI, Shadcnblocks, HextaUI |
 | **Animated** | Aceternity UI, Magic UI, Motion Primitives, Eldora UI, Cult UI |
 | **Design Tools** | Pattern Craft, Gradienty, Coolors, Blobmaker, CSS Clip-Path Maker |
 | **CSS / HTML** | Zero-JS components, pure CSS effects, Uiverse |
-| **Vue / Svelte** | Vuetify, PrimeVue, shadcn-svelte, Flowbite Svelte |
-| **Headless** | Radix UI, Headless UI, Base UI, React Aria, Ark UI |
+| **Vue / Svelte** | Vuetify, PrimeVue, shadcn-svelte, Flowbite Svelte, Konsta UI |
+| **Headless** | Radix UI, Headless UI, Base UI, React Aria, Ark UI, Zag.js |
 | **Dev Tools** | Lucide, Iconify, Squoosh |
-| **Collections** | Curated multi-framework sets |
+| **Collections** | SiteInspire, Httpster, Awwwards, The FWA, TOOOLS.design |
+| **Inspiration** | Godly, Recent Design, Unsection, Detail, BentoGrids, Mobbin |
 | **Angular** | Angular Material, PrimeNG, NG-ZORRO |
 
 ---
@@ -44,13 +45,13 @@ Every animated kit, shadcn extension, Tailwind block, headless primitive, and de
 
 ## Why This Exists
 
-Finding good UI resources is scattered. Awesome lists go stale. Reddit threads disappear. Twitter threads vanish behind paywalls.
+Finding good UI resources is scattered. Awesome lists go stale. Reddit threads disappear. Social posts often show a preview without leaving a usable link.
 
-This is a single, maintained, verified page — always up to date.
+This is a single, maintained, verified page for UI libraries, design systems, inspiration galleries, UX-flow references, and frontend tools.
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -62,7 +63,7 @@ This is a single, maintained, verified page — always up to date.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 git clone https://github.com/sugumaran-nix/WebUI-Libraries.git
@@ -75,12 +76,12 @@ Open [http://localhost:5173](http://localhost:5173)
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 WebUI-Libraries/
 ├── src/
-│   ├── App.jsx       # All library data + UI — single component
+│   ├── App.jsx       # Library data, filtering, and UI
 │   └── main.jsx      # React entry point
 ├── public/
 │   ├── favicon.svg
@@ -94,10 +95,10 @@ WebUI-Libraries/
 
 ## Contributing
 
-Know a library that belongs here? Open the site, scroll to the bottom, and use the suggest form — it takes 30 seconds.
+Know a library or design resource that belongs here? Open the site, scroll to the bottom, and use the suggestion form — it takes 30 seconds.
 
 ---
 
-## 📄 License
+## License
 
 MIT
