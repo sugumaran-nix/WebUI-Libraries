@@ -301,20 +301,9 @@ export default function App() {
         .spotlight-card h3 { max-width:220px; margin:25px 0 7px; font-size:17px; letter-spacing:-.04em; }
         .spotlight-card p { max-width:270px; margin:0; color:var(--muted); font-size:11px; line-height:1.45; }
         .workspace { display:grid; grid-template-columns:230px minmax(0,1fr); gap:24px; align-items:start; }
-        .app-main > .quick-filter-bar { margin-top:4px; }
         .desktop-filter { position:sticky; top:136px; z-index:20; align-self:start; height:calc(100vh - 152px); }
         .filter-panel { height:100%; overflow:auto; padding:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface); box-shadow:0 14px 34px rgba(65,41,130,.06); scrollbar-width:thin; }
         .filter-panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding-bottom:16px; border-bottom:1px solid var(--line); }
-        .quick-filter-bar { position:sticky; top:72px; z-index:50; display:flex; align-items:center; gap:10px; min-width:0; margin:0 0 18px; padding:9px; border:1px solid var(--line); border-radius:14px; background:color-mix(in srgb,var(--paper) 92%,transparent); box-shadow:0 10px 24px rgba(26,22,51,.08); backdrop-filter:blur(18px); }
-        .quick-filter-label { flex-shrink:0; color:var(--pink); font-size:9px; font-weight:900; letter-spacing:.11em; text-transform:uppercase; }
-        .quick-filter-options { display:flex; gap:5px; min-width:0; overflow:auto; scrollbar-width:none; }
-        .quick-filter-options::-webkit-scrollbar { display:none; }
-        .quick-filter-chip { flex-shrink:0; min-height:30px; padding:0 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:var(--surface); font-size:10px; font-weight:800; cursor:pointer; transition:all .18s var(--ease); }
-        .quick-filter-chip:hover, .quick-filter-chip.selected { color:#181329; border-color:var(--lime); background:var(--lime); }
-        .topic-jump { position:relative; display:flex; align-items:center; flex-shrink:0; color:var(--muted); }
-        .topic-jump select { min-height:30px; appearance:none; padding:0 25px 0 10px; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:var(--surface); font-size:10px; font-weight:800; cursor:pointer; }
-        .topic-jump svg { position:absolute; right:9px; pointer-events:none; }
-        .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
         .filter-panel-heading h2 { margin:3px 0 0; font-family:var(--font-display); font-size:24px; font-weight:400; line-height:1.05; letter-spacing:-.05em; }
         .panel-eyebrow, .filter-label { color:var(--pink); font-size:9px; font-weight:900; letter-spacing:.13em; text-transform:uppercase; }
         .filter-block { padding:17px 0; border-bottom:1px solid var(--line); }
@@ -396,21 +385,10 @@ export default function App() {
         .field textarea { min-height:80px; resize:vertical; }
         .suggest-form-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
         .suggest-form-footer p { margin:0; color:var(--muted); font-size:10px; }
-        .landing-topics { margin:42px 0 12px; padding:25px; border:1px solid var(--line); border-radius:22px; background:linear-gradient(135deg,var(--surface),var(--surface-soft)); }
-        .landing-topic-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-        .landing-topic { display:flex; align-items:center; gap:9px; min-height:48px; padding:0 12px; border:1px solid var(--line); border-radius:12px; color:var(--ink); background:var(--surface); text-align:left; cursor:pointer; transition:transform .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease); }
-        .landing-topic:hover { transform:translateY(-2px); border-color:var(--violet); background:var(--surface-soft); }
-        .landing-topic-dot { width:9px; height:9px; flex-shrink:0; border-radius:50%; box-shadow:0 0 0 5px color-mix(in srgb,var(--violet) 9%,transparent); }
-        .landing-topic span:nth-child(2) { flex:1; font-size:11px; font-weight:800; }
-        .landing-topic strong { color:var(--muted); font-size:10px; }
-        .landing-topic svg { color:var(--muted); }
-        .directory-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; margin-bottom:22px; padding:22px 24px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(135deg,var(--surface),var(--surface-soft)); }
-        .directory-intro h1 { max-width:620px; margin:6px 0 0; color:var(--ink); font-family:var(--font-display); font-size:clamp(2.4rem,5vw,4.8rem); font-weight:400; line-height:.95; letter-spacing:-.065em; }
-        .directory-intro p { max-width:620px; margin:10px 0 0; color:var(--muted); font-size:13px; line-height:1.55; }
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
         @media (max-width:1060px) { .header-nav { display:none; } .workspace { grid-template-columns:1fr; } .desktop-filter { position:sticky; top:136px; display:block; height:calc(100vh - 152px); } .desktop-filter .filter-panel { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 18px; } .desktop-filter .filter-panel-heading, .desktop-filter .filter-panel-tip { grid-column:1 / -1; } .desktop-filter .filter-panel-heading { border-bottom:0; } .desktop-filter .filter-block { border-bottom:0; } .desktop-filter .filter-done { display:none; } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .directory-intro { align-items:flex-start; flex-direction:column; padding:18px; } .directory-intro h1 { font-size:clamp(2.5rem,14vw,4rem); } .quick-filter-bar { top:64px; align-items:flex-start; flex-wrap:wrap; } .quick-filter-label { width:100%; } .quick-filter-options { order:2; width:100%; } .topic-jump { order:1; margin-left:auto; } .desktop-filter { top:145px; height:auto; } .desktop-filter .filter-panel { display:block; height:auto; max-height:calc(100vh - 170px); } .desktop-filter .filter-block { padding:12px 0; border-bottom:1px solid var(--line); } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .desktop-filter { top:145px; height:auto; } .desktop-filter .filter-panel { display:block; height:auto; max-height:calc(100vh - 170px); } .desktop-filter .filter-block { padding:12px 0; border-bottom:1px solid var(--line); } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
@@ -470,14 +448,9 @@ export default function App() {
             </a>)}
           </div>
         </section>
-        <section className="landing-topics" aria-labelledby="landing-topics-title">
-          <div className="section-header"><div><div className="eyebrow" style={{ color: "var(--pink)" }}>Browse by topic</div><h2 id="landing-topics-title">Everything around the interface.</h2></div><button type="button" className="button button-secondary" onClick={() => navigateTo("/directory")}>Open all resources <Icon name="arrowRight" size={14} /></button></div>
-          <div className="landing-topic-grid">{CATEGORIES.filter(item => item.id !== "all" && counts[item.id]).map(item => <button type="button" key={item.id} className="landing-topic" onClick={() => { setActiveCategory(item.id); navigateTo("/directory"); }}><span className="landing-topic-dot" style={{ background: CAT_COLOR[item.id] || "var(--pink)" }} /><span>{item.label}</span><strong>{counts[item.id]}</strong><Icon name="arrow" size={13} /></button>)}</div>
-        </section>
         </>}
 
         {isDirectory && <>
-        <div className="quick-filter-bar" aria-label="Quick filters"><span className="quick-filter-label">Quick access</span><div className="quick-filter-options">{STACK_FILTERS.map(stack => <button type="button" key={stack} className={`quick-filter-chip ${stackFilter === stack ? "selected" : ""}`} onClick={() => setStackFilter(stack)} aria-pressed={stackFilter === stack}>{stack === "all" ? "Everything" : stack}</button>)}</div><label className="topic-jump"><span className="sr-only">Jump to topic</span><select value={activeCategory} onChange={event => setActiveCategory(event.target.value)} aria-label="Jump to topic">{CATEGORIES.map(category => <option value={category.id} key={category.id}>{category.label}</option>)}</select><Icon name="chevron" size={13} /></label></div>
         <section className="workspace" id="results" aria-label="Resource discovery workspace">
           <aside className="desktop-filter"><FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} /></aside>
           <div className="results-area">
