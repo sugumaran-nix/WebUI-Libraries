@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Icon from "./Icon";
 
-export default function FilterPanel({ categories, counts, activeCategory, setActiveCategory, stacks, stackFilter, setStackFilter, sortBy, setSortBy, sortOptions, clearFilters, hasActiveFilters, activeFilterCount, resultCount, recent, onVisit }) {
+export default function FilterPanel({ categories, counts, activeCategory, setActiveCategory, stacks, stackFilter, setStackFilter, sortBy, setSortBy, sortOptions, clearFilters, hasActiveFilters, activeFilterCount, resultCount, categoryLabel, recent, onVisit, viewMode, setViewMode }) {
   const [openMenu, setOpenMenu] = useState(null);
   const totalCount = Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0);
+  const activeTopic = categoryLabel === "All resources" ? "All" : categoryLabel;
   const toggleMenu = menu => setOpenMenu(current => current === menu ? null : menu);
   const closeMenu = () => setOpenMenu(null);
   const triggerIcon = menu => <Icon name={openMenu === menu ? "close" : "chevron"} size={12} />;
@@ -40,10 +41,11 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
 
         <div className="filter-row-summary" aria-live="polite">
           <span className="filter-summary-rule" aria-hidden="true" />
-          <span className="filter-summary-copy"><strong>{resultCount || totalCount}</strong> resources <small>{hasActiveFilters ? `${activeFilterCount} active` : "ready to browse"}</small></span>
+          <span className="filter-summary-copy"><strong>{activeTopic}</strong><small>{resultCount} resources {hasActiveFilters ? `· ${activeFilterCount} active` : "· ready to browse"}</small></span>
         </div>
 
         <div className="filter-actions">
+          <div className="view-toggle" aria-label="Choose resource view"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
           <span className="quick-access-status"><Icon name="check" size={11} /> Saved</span>
           <div className={`filter-popover recent-popover ${openMenu === "recent" ? "is-open" : ""}`}>
             <button type="button" className="filter-trigger recent-trigger" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"} aria-haspopup="dialog"><Icon name="plus" size={11} /><span>Recent</span>{triggerIcon("recent")}</button>

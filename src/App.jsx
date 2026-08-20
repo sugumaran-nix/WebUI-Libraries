@@ -499,18 +499,9 @@ export default function App() {
         </>}
 
         {isDirectory && <>
-        <FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} recent={recent} onVisit={handleVisit} />
+        <FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} categoryLabel={categoryLabel} recent={recent} onVisit={handleVisit} viewMode={viewMode} setViewMode={setViewMode} />
         <section className="workspace" id="results" aria-label="Resource discovery workspace">
           <div className="results-area">
-            <div className="results-header">
-              <div><div className="eyebrow" style={{ color: "var(--pink)" }}>The index</div><h2>{categoryLabel}</h2><p className="results-subtitle" aria-live="polite">{filteredResources.length} resources ready to explore{stackFilter !== "all" ? ` · built with ${stackFilter}` : ""}</p>
-</div>
-              <div className="results-actions">
-                {activeFilterCount > 0 && <span className="filter-state-note" role="status"><Icon name="check" size={12} /> Filters saved</span>}
-                <div className="view-toggle" aria-label="Choose resource view"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
-              </div>
-            </div>
-
             {activeFilterCount > 0 && <div className="active-filters" aria-label="Active filters">
               {query && <span className="active-filter">“{query}” <button type="button" onClick={() => setQuery("")} aria-label="Remove search filter"><Icon name="close" size={11} /></button></span>}
               {activeCategory !== "all" && <span className="active-filter">{categoryLabel} <button type="button" onClick={() => setActiveCategory("all")} aria-label="Remove category filter"><Icon name="close" size={11} /></button></span>}
