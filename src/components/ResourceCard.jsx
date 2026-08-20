@@ -49,8 +49,7 @@ export default function ResourceCard({ lib, categoryLabel, stacks, isNew, isCopi
       <a className="resource-card-link" href={`https://${lib.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>
         <div className="resource-preview" aria-label={`${lib.name} live website preview`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} loading="lazy" onLoad={retryPreview} onError={handlePreviewError} />}
-          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : previewState === "retrying" ? "Retrying capture" : "Live preview unavailable"}</small>{previewState === "error" && <span className="preview-fallback-link">Open the site directly ↗</span>}</div>}
-          {previewState === "loaded" && <div className="preview-overlay"><span>Open live site</span><Icon name="arrow" size={13} /></div>}
+          {previewState !== "loaded" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>{previewState === "loading" ? "Loading live preview" : previewState === "retrying" ? "Retrying capture" : "Preview unavailable · card opens site"}</small></div>}
         </div>
         <div className="resource-category">{categoryLabel}</div>
         <h3><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></h3>
