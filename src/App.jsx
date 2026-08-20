@@ -13,14 +13,23 @@ function addRecent(lib) {
 
 // ── URL state ─────────────────────────────────────────────────────
 function getUrlParams() {
-  if (typeof window === "undefined") return { cat: "all", q: "" };
+  if (typeof window === "undefined") return { cat: "all", q: "", stack: "all", sort: "featured", view: "list" };
   const p = new URLSearchParams(window.location.search);
-  return { cat: p.get("cat") || "all", q: p.get("q") || "" };
+  return {
+    cat: p.get("cat") || "all",
+    q: p.get("q") || "",
+    stack: p.get("stack") || "all",
+    sort: p.get("sort") || "featured",
+    view: p.get("view") || "list",
+  };
 }
-function setUrlParams(cat, q) {
+function setUrlParams(cat, q, stack, sort, view) {
   const p = new URLSearchParams();
   if (cat !== "all") p.set("cat", cat);
   if (q) p.set("q", q);
+  if (stack !== "all") p.set("stack", stack);
+  if (sort !== "featured") p.set("sort", sort);
+  if (view !== "list") p.set("view", view);
   const str = p.toString();
   window.history.replaceState(null, "", str ? `?${str}` : window.location.pathname);
 }
@@ -59,6 +68,12 @@ const CATEGORIES = [
 ];
 
 const CAT_RESOLVE = (cat) => cat === "multi" ? "vue-svelte" : cat;
+const STACK_FILTERS = ["all", "React", "Tailwind", "Vue", "Svelte", "CSS", "Design"];
+const SORT_OPTIONS = [
+  { id:"featured", label:"Curated order" },
+  { id:"newest", label:"Newest first" },
+  { id:"az", label:"A → Z" },
+];
 
 // Category accent colors — muted ink tones, not neon
 const CAT_COLOR = {
@@ -282,6 +297,9 @@ export default function App() {
   const [active,      setActive]      = useState(init.cat);
   const [query,       setQuery]       = useState(init.q);
   const [debouncedQ,  setDebouncedQ]  = useState(init.q);
+  const [stackFilter, setStackFilter] = useState(init.stack);
+  const [sortBy,      setSortBy]      = useState(init.sort);
+  const [viewMode,    setViewMode]    = useState(init.view);
   const [filterOpen,  setFilterOpen]  = useState(false);
   const [filterClosing,setFilterClosing]=useState(false);
   const [copiedId,    setCopiedId]    = useState(null);
@@ -304,15 +322,16 @@ export default function App() {
   }, [query]);
 
   // URL sync
-  useEffect(() => { setUrlParams(active, query); }, [active, query]);
+  useEffect(() => { setUrlParams(active, query, stackFilter, sortBy, viewMode); }, [active, query, stackFilter, sortBy, viewMode]);
 
   // Page title
   useEffect(() => {
     const parts = [];
     if (active !== "all") parts.push(CATEGORIES.find(c => c.id === active)?.label || active);
+    if (stackFilter !== "all") parts.push(stackFilter);
     if (query) parts.push(`"${query}"`);
     document.title = parts.length ? `${parts.join(" · ")} — UI Libraries` : "UI Libraries — Free & Open Source";
-  }, [active, query]);
+  }, [active, query, stackFilter, sortBy]);
 
   // Scroll listener
   useEffect(() => {
@@ -349,13 +368,20 @@ export default function App() {
   // Filtered results
   const filtered = useMemo(() => {
     const q = debouncedQ.toLowerCase();
-    return LIBS.filter(l => {
+    const matches = LIBS.filter(l => {
       const resolved = CAT_RESOLVE(l.cat);
+      const stacks = LIB_STACKS[l.id] || [];
       const matchCat = active === "all" || resolved === active || l.cat === active;
-      const matchQ   = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q);
-      return matchCat && matchQ;
+      const matchStack = stackFilter === "all" || stacks.includes(stackFilter);
+      const matchQ = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q) || stacks.some(s => s.toLowerCase().includes(q));
+      return matchCat && matchStack && matchQ;
     });
-  }, [active, debouncedQ]);
+    return [...matches].sort((a, b) => {
+      if (sortBy === "az") return a.name.localeCompare(b.name);
+      if (sortBy === "newest") return (b.added || "").localeCompare(a.added || "") || a.name.localeCompare(b.name);
+      return 0;
+    });
+  }, [active, debouncedQ, sortBy, stackFilter]);
 
   // Category counts
   const counts = useMemo(() => {
@@ -367,14 +393,14 @@ export default function App() {
     return c;
   }, []);
 
-  const activeFilters = (active !== "all" ? 1 : 0) + (query ? 1 : 0);
+  const activeFilters = (active !== "all" ? 1 : 0) + (query ? 1 : 0) + (stackFilter !== "all" ? 1 : 0) + (sortBy !== "featured" ? 1 : 0);
   const featured = useMemo(() => LIBS.filter(l => NEW_IDS.has(l.id)).slice(0, 4), []);
 
   function closeDrawer() {
     setFilterClosing(true);
     setTimeout(() => { setFilterOpen(false); setFilterClosing(false); }, 200);
   }
-  function clearAll() { setQuery(""); setActive("all"); closeDrawer(); }
+  function clearAll() { setQuery(""); setActive("all"); setStackFilter("all"); setSortBy("featured"); closeDrawer(); }
   function jumpToResults() { document.getElementById("results")?.scrollIntoView({ behavior:"smooth", block:"start" }); }
 
   function copyUrl(url, id, e) {
@@ -607,10 +633,34 @@ export default function App() {
         .featured-card .eyebrow { display:flex; align-items:center; justify-content:space-between; color:#9C9589; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
         .featured-card h3 { margin:.8rem 0 .35rem; color:var(--ink); font-size:14px; letter-spacing:-.02em; }
         .featured-card p { margin:0; color:#817B70; font-size:11px; line-height:1.45; }
+        .discovery-toolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin:0 0 .75rem; padding:.7rem .85rem; border:1px solid var(--line); border-radius:12px; background:rgba(255,254,251,.7); backdrop-filter:blur(10px); }
+        .result-meta { display:flex; align-items:baseline; gap:.55rem; min-width:0; }
+        .result-count { color:var(--ink); font-size:13px; font-weight:800; letter-spacing:-.02em; }
+        .result-context { color:#9C9589; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .toolbar-actions { display:flex; align-items:center; gap:.45rem; flex-shrink:0; }
+        .sort-select { min-height:32px; padding:0 .65rem; border:1px solid var(--line); border-radius:7px; background:#FFFEFB; color:#625D53; font:500 11px inherit; outline:none; }
+        .view-toggle { display:flex; gap:2px; padding:2px; border:1px solid var(--line); border-radius:8px; background:#F0EEE8; }
+        .view-toggle button { width:28px; height:27px; display:grid; place-items:center; border:0; border-radius:6px; background:transparent; color:#9C9589; cursor:pointer; }
+        .view-toggle button.active { background:var(--ink); color:var(--accent); box-shadow:0 2px 6px rgba(24,23,20,.14); }
+        .stack-row { display:flex; align-items:center; gap:.35rem; margin:0 0 1.2rem; overflow-x:auto; scrollbar-width:none; }
+        .stack-row::-webkit-scrollbar { display:none; }
+        .stack-label { flex-shrink:0; margin-right:.2rem; color:#9C9589; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        .stack-chip { flex-shrink:0; min-height:29px; padding:0 .65rem; border:1px solid var(--line); border-radius:999px; background:rgba(255,254,251,.68); color:#817B70; font:600 11px inherit; cursor:pointer; transition:all .18s var(--ease-out); }
+        .stack-chip:hover { border-color:rgba(24,23,20,.25); color:var(--ink); transform:translateY(-1px); }
+        .stack-chip.active { border-color:var(--ink); background:var(--ink); color:var(--accent); }
+        .results-grid { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem !important; }
+        .results-grid .lib-card { min-height:220px; align-items:flex-start; }
+        .results-grid .lib-card > a { align-self:stretch; }
+        .results-grid .lib-card > div:last-child { align-self:flex-end; }
+        .results-grid .lib-card .cat-pill { font-size:9px; }
+        .filter-section-label { margin:1rem 0 .5rem; color:#9C9589; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        .stack-filter-grid { display:flex; flex-wrap:wrap; gap:.35rem; }
+        .drawer-stack-chip { border:1px solid #E8E3DC; border-radius:999px; padding:.45rem .7rem; background:#FFF; color:#6B5F4B; font:500 12px inherit; cursor:pointer; }
+        .drawer-stack-chip.active { border-color:#1C1A17; background:#1C1A17; color:#C8F169; }
         header { padding-top:env(safe-area-inset-top); }
         .filter-drawer { padding-bottom:env(safe-area-inset-bottom); }
         @media (max-width:899px) { .topnav { display:none; } .hero-panel { grid-template-columns:1fr; min-height:auto; } .hero-index { align-self:auto; max-width:none; } .featured-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-        @media (max-width:599px) { .hero-panel { margin-top:.75rem; border-radius:18px; padding:1.25rem; } .hero-title { font-size:clamp(2.8rem,16vw,4.8rem); } .featured-strip { grid-template-columns:1fr 1fr; overflow-x:auto; } .featured-card { min-width:160px; } }
+        @media (max-width:599px) { .hero-panel { margin-top:.75rem; border-radius:18px; padding:1.25rem; } .hero-title { font-size:clamp(2.8rem,16vw,4.8rem); } .featured-strip { grid-template-columns:1fr 1fr; overflow-x:auto; } .featured-card { min-width:160px; } .discovery-toolbar { align-items:flex-start; flex-direction:column; gap:.65rem; } .toolbar-actions { width:100%; justify-content:space-between; } .sort-select { flex:1; } .results-grid { grid-template-columns:1fr; } }
       `}</style>
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
@@ -720,6 +770,11 @@ export default function App() {
                 })}
               </div>
 
+              <div className="filter-section-label">Built with</div>
+              <div className="stack-filter-grid">
+                {STACK_FILTERS.map(stack => <button type="button" key={stack} className={`drawer-stack-chip${stackFilter === stack ? " active" : ""}`} aria-pressed={stackFilter === stack} onClick={() => setStackFilter(stack)}>{stack === "all" ? "Everything" : stack}</button>)}
+              </div>
+
               <button onClick={closeDrawer} style={{ width:"100%", marginTop:"1rem", padding:"0.75rem", borderRadius:8, border:"none", background:"#1C1A17", color:"#F7F5F0", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}
                 onMouseEnter={e=>{e.currentTarget.style.background="#3A3632"}}
                 onMouseLeave={e=>{e.currentTarget.style.background="#1C1A17"}}>
@@ -778,6 +833,18 @@ export default function App() {
                 <button onClick={() => setActive("all")} style={{ background:"none", border:"none", cursor:"pointer", color:"#C17D3C", padding:0, fontSize:10 }}>✕</button>
               </span>
             )}
+            {stackFilter !== "all" && (
+              <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:999, background:"#EEF7D6", color:"#40551B", border:"1px solid #D6E7A8" }}>
+                {stackFilter}
+                <button onClick={() => setStackFilter("all")} style={{ background:"none", border:"none", cursor:"pointer", color:"#40551B", padding:0, fontSize:10 }}>✕</button>
+              </span>
+            )}
+            {sortBy !== "featured" && (
+              <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:11.5, padding:"0.18rem 0.55rem", borderRadius:999, background:"#F1EEE8", color:"#625D53", border:"1px solid #DDD8CF" }}>
+                {SORT_OPTIONS.find(option => option.id === sortBy)?.label}
+                <button onClick={() => setSortBy("featured")} style={{ background:"none", border:"none", cursor:"pointer", color:"#625D53", padding:0, fontSize:10 }}>✕</button>
+              </span>
+            )}
           </div>
         )}
 
@@ -799,11 +866,35 @@ export default function App() {
           </div>
         )}
 
+        <div className="discovery-toolbar" id="results">
+          <div className="result-meta">
+            <span className="result-count">{filtered.length} resources</span>
+            <span className="result-context">{active === "all" ? "Everything worth bookmarking" : CATEGORIES.find(c => c.id === active)?.label}{stackFilter !== "all" ? ` · ${stackFilter}` : ""}</span>
+          </div>
+          <div className="toolbar-actions">
+            <select className="sort-select" aria-label="Sort resources" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+              {SORT_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+            </select>
+            <div className="view-toggle" aria-label="Choose result view">
+              <button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+              </button>
+              <button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="stack-row" aria-label="Filter by stack">
+          <span className="stack-label">Built with</span>
+          {STACK_FILTERS.map(stack => <button type="button" key={stack} className={`stack-chip${stackFilter === stack ? " active" : ""}`} aria-pressed={stackFilter === stack} onClick={() => setStackFilter(stack)}>{stack === "all" ? "Everything" : stack}</button>)}
+        </div>
+
         {/* Results */}
         {filtered.length === 0 ? (
           <EmptyState onClear={clearAll} />
         ) : (
-          <div id="results" ref={listRef} key={active} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.2s ease" }}>
+          <div ref={listRef} key={`${active}-${stackFilter}-${sortBy}-${viewMode}`} className={`results-list${viewMode === "grid" ? " results-grid" : ""}`} style={{ display:"flex", flexDirection:"column", gap:"0.4rem", animation:"fadeIn 0.2s ease" }}>
             {filtered.map(lib => {
               const catColor = CAT_COLOR[lib.cat] || CAT_COLOR["dev-tools"];
               const isCopy   = copiedId === lib.id;
