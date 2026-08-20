@@ -37,6 +37,14 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
               {sortOptions.map(option => <button type="button" role="option" aria-selected={sortBy === option.id} className={`filter-option-button ${sortBy === option.id ? "selected" : ""}`} key={option.id} onClick={() => { setSortBy(option.id); closeMenu(); }}>{option.label}</button>)}
             </div>}
           </div>
+
+          <div className={`filter-popover recent-popover ${openMenu === "recent" ? "is-open" : ""}`}>
+            <button type="button" className="filter-trigger recent-trigger" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"} aria-haspopup="dialog"><Icon name="history" size={14} /><span>Recent</span></button>
+            {openMenu === "recent" && <div className="filter-popover-menu recent-menu" role="dialog" aria-label="Recent visits">
+              <div className="recent-menu-heading"><strong>Recent visits</strong><span>{recent.length ? `${recent.length} saved` : "Nothing yet"}</span></div>
+              {recent.length ? recent.map(resource => <a className="recent-popover-card" key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => { onVisit(resource); closeMenu(); }}><span className="recent-popover-orbit">{resource.name.slice(0, 1)}</span><span><strong>{resource.name}</strong><small>{resource.url}</small></span><Icon name="arrow" size={11} /></a>) : <p className="recent-empty">Open a resource and it will appear here.</p>}
+            </div>}
+          </div>
         </div>
 
         <div className="filter-row-summary" aria-live="polite">
@@ -46,15 +54,7 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
 
         <div className="filter-actions">
           <div className="view-toggle" aria-label="Choose resource view"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
-          <span className="quick-access-status"><Icon name="check" size={11} /> Saved</span>
-          <div className={`filter-popover recent-popover ${openMenu === "recent" ? "is-open" : ""}`}>
-            <button type="button" className="filter-trigger recent-trigger" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"} aria-haspopup="dialog"><Icon name="plus" size={11} /><span>Recent</span>{triggerIcon("recent")}</button>
-            {openMenu === "recent" && <div className="filter-popover-menu recent-menu" role="dialog" aria-label="Recent visits">
-              <div className="recent-menu-heading"><strong>Recent visits</strong><span>{recent.length ? `${recent.length} saved` : "Nothing yet"}</span></div>
-              {recent.length ? recent.map(resource => <a className="recent-popover-card" key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => { onVisit(resource); closeMenu(); }}><span className="recent-popover-orbit">{resource.name.slice(0, 1)}</span><span><strong>{resource.name}</strong><small>{resource.url}</small></span><Icon name="arrow" size={11} /></a>) : <p className="recent-empty">Open a resource and it will appear here.</p>}
-            </div>}
-          </div>
-          <button type="button" className="quick-access-clear" onClick={() => { clearFilters(); closeMenu(); }} disabled={!hasActiveFilters}>Clear all</button>
+          <button type="button" className="quick-access-clear" onClick={() => { clearFilters(); closeMenu(); }} disabled={!hasActiveFilters}><Icon name="trash" size={13} /><span>Clear all</span></button>
         </div>
       </div>
     </section>

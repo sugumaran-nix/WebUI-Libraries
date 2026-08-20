@@ -16,7 +16,9 @@ export default function Icon({ name, size = 16, strokeWidth = 1.8, className = "
     close: <><path d="m6 6 12 12M18 6 6 18"/></>,
     chevron: <path d="m6 9 6 6 6-6"/>,
     plus: <><path d="M12 5v14M5 12h14"/></>,
-    menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
+    menu: <path d="M4 7h16M4 12h16M4 17h16"/>,
+    history: <><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></>,
+    trash: <><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/></>,
   };
   return <svg {...common}>{paths[name] || paths.spark}</svg>;
 }
