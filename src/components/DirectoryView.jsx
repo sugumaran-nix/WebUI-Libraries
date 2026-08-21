@@ -64,24 +64,13 @@ export default function DirectoryView({
 }) {
   return (
     <div className="directory-experience">
-      <section className="directory-masthead" aria-labelledby="directory-title">
-        <div className="directory-masthead-copy">
-          <p className="directory-eyebrow">RESOURCE DIRECTORY / PRECISION INDEX</p>
-          <h1 id="directory-title">Find the right foundation.</h1>
-          <p className="directory-lede">Compare reliable interface resources by category, technology, and fit. Every entry opens the source website directly.</p>
-        </div>
-        <div className="directory-masthead-stat" aria-label={`${resultCount} matching resources`}>
-          <strong>{resultCount}</strong>
-          <span>matching resources</span>
-        </div>
-        <div className="directory-search-panel">
-          <label htmlFor="directory-search">Search the resource directory</label>
-          <div className="directory-search-field">
-            <Icon name="search" size={17} />
-            <input id="directory-search" ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Search by name, description, or technology" autoComplete="off" />
-            {query && <button type="button" className="directory-search-clear" onClick={() => setQuery("")} aria-label="Clear search"><Icon name="close" size={14} /></button>}
-            <kbd>/</kbd>
-          </div>
+      <section className="directory-search-strip" aria-labelledby="directory-search-label">
+        <div className="directory-search-strip-copy"><p className="directory-eyebrow">SEARCH THE DIRECTORY</p><label id="directory-search-label" htmlFor="directory-search">Find a resource by name, description, or technology.</label></div>
+        <div className="directory-search-field">
+          <Icon name="search" size={17} />
+          <input id="directory-search" ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Search resources" autoComplete="off" />
+          {query && <button type="button" className="directory-search-clear" onClick={() => setQuery("")} aria-label="Clear search"><Icon name="close" size={14} /></button>}
+          <kbd>/</kbd>
         </div>
       </section>
 

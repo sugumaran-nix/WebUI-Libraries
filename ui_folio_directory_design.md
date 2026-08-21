@@ -38,3 +38,8 @@ At 375 px, the landing route shows the original UI / FOLIO marquee, UI / FOLIO w
 ## Marquee and density correction
 
 The landing marquee was changed from square 1:1 tiles to explicit `16/10` desktop preview frames. The track now aligns items at the start and uses auto height so flexbox cannot stretch the tiles vertically. On phones, each tile uses a wide `clamp(210px,72vw,280px)` width; on larger screens it scales between 190 px and 320 px. The landing headline and content hierarchy remain unchanged. Directory spacing, card gaps, masthead padding, and search height were reduced to make the browsing experience more compact without shrinking touch targets.
+
+
+## Search placement adjustment
+
+The oversized directory masthead card was removed. The browsing page now begins with a compact search strip, followed immediately by the filter controls and catalog results. On mobile, the search strip is full-width above the stacked filter controls; on desktop, it spans the workspace above the filter rail and results grid. The landing route was not changed by this adjustment.
