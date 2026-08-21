@@ -292,22 +292,22 @@ export default function App() {
   return (
     <div className={`app-shell theme-${theme}`}>
       <style>{`
-        :root { --paper:#F5F6F7; --surface:rgba(255,255,255,.96); --surface-soft:rgba(235,239,244,.82); --surface-elevated:#FFFFFF; --ink:#1A1A1A; --muted:#4A4A4A; --line:rgba(26,26,26,.15); --accent:#1C69D4; --violet:#0E55B7; --pink:#1C69D4; --lime:#DDEBFA; --cyan:#8FB6E6; --on-accent:#FFFFFF; --on-soft:#1A1A1A; --shadow:0 20px 55px rgba(26,26,26,.14); --radius:12px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
-        .theme-dark { --paper:#0A0B0D; --surface:rgba(20,22,25,.94); --surface-soft:rgba(255,255,255,.08); --surface-elevated:rgba(25,28,33,.98); --ink:#FFFFFF; --muted:#B8BEC7; --line:rgba(255,255,255,.18); --accent:#4C91E8; --violet:#1C69D4; --pink:#4C91E8; --lime:#16304F; --cyan:#9BC7F5; --on-accent:#FFFFFF; --on-soft:#FFFFFF; --shadow:0 24px 70px rgba(0,0,0,.5); }
+        :root { --paper:#F7F7F1; --surface:#FFFFFF; --surface-soft:#FFF4A8; --surface-elevated:#FFFFFF; --ink:#050505; --muted:#171717; --line:rgba(5,5,5,.22); --accent:#FFD400; --action:#145DFF; --violet:#7547FF; --pink:#FF4D78; --lime:#00D9FF; --cyan:#00D9FF; --on-accent:#050505; --on-soft:#050505; --shadow:5px 5px 0 rgba(5,5,5,.9); --radius:12px; --ease:cubic-bezier(.23,1,.32,1); --font-display:"DM Serif Display", Georgia, serif; --font-sans:"DM Sans", Inter, ui-sans-serif, system-ui, sans-serif; }
+        .theme-dark { --paper:#050505; --surface:#0D0D0D; --surface-soft:#262000; --surface-elevated:#111111; --ink:#FFFFFF; --muted:#F0F0E8; --line:rgba(255,255,255,.28); --accent:#FFD400; --action:#2E7BFF; --violet:#9A7BFF; --pink:#FF5C8A; --lime:#00D9FF; --cyan:#00D9FF; --on-accent:#050505; --on-soft:#050505; --shadow:5px 5px 0 rgba(0,0,0,.95); }
         * { box-sizing:border-box; }
         body { margin:0; overflow-x:hidden; background:var(--paper); font-family:var(--font-sans); font-size:15px; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
         button, input, select, textarea { font:inherit; }
         button, a { -webkit-tap-highlight-color:transparent; }
         button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
         .app-shell { min-height:100vh; overflow:visible; color:var(--ink); background:var(--paper); transition:background .28s var(--ease), color .28s var(--ease); }
-        .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.16; background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--cyan) 18%,transparent),transparent 25%),radial-gradient(circle at 88% 15%,color-mix(in srgb,var(--pink) 12%,transparent),transparent 24%),linear-gradient(color-mix(in srgb,var(--ink) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ink) 4%,transparent) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
-        .theme-dark::before { opacity:.2; background-image:radial-gradient(circle at 15% 10%,rgba(61,139,255,.18),transparent 28%),radial-gradient(circle at 86% 15%,rgba(255,59,48,.13),transparent 26%),linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
+        .app-shell::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.16; background-image:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 25%),radial-gradient(circle at 88% 15%,color-mix(in srgb,var(--cyan) 20%,transparent),transparent 24%),linear-gradient(color-mix(in srgb,var(--ink) 10%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ink) 10%,transparent) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
+        .theme-dark::before { opacity:.22; background-image:radial-gradient(circle at 15% 10%,rgba(255,212,0,.2),transparent 28%),radial-gradient(circle at 86% 15%,rgba(0,217,255,.16),transparent 26%),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px); background-size:auto,auto,44px 44px,44px 44px; }
         .app-shell > * { position:relative; z-index:1; }
         .site-header { position:fixed; inset:0 0 auto; z-index:80; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--surface-elevated) 82%,transparent); box-shadow:0 10px 30px color-mix(in srgb,var(--ink) 7%,transparent); backdrop-filter:saturate(150%) blur(22px); -webkit-backdrop-filter:saturate(150%) blur(22px); }
         .directory-header { position:fixed; inset:0 0 auto; z-index:80; }
         .header-inner { display:flex; align-items:center; gap:1rem; width:min(1440px,100%); min-height:72px; margin:0 auto; padding:0 28px; }
         .brand-lockup { display:flex; align-items:center; gap:.7rem; min-width:220px; padding:0; border:0; color:var(--ink); background:transparent; text-align:left; cursor:pointer; }
-        .brand-symbol { display:grid; place-items:center; width:36px; height:36px; border:1px solid color-mix(in srgb,var(--accent) 22%,transparent); border-radius:11px; color:var(--ink); background:linear-gradient(135deg,var(--lime),color-mix(in srgb,var(--cyan) 40%,var(--surface))); box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 14%,transparent); }
+        .brand-symbol { display:grid; place-items:center; width:38px; height:38px; border:2px solid var(--ink); border-radius:12px; color:var(--ink); background:var(--accent); box-shadow:3px 3px 0 var(--ink); }
         .brand-name { font-size:12px; font-weight:900; letter-spacing:.15em; line-height:1; }
         .brand-caption { display:block; margin-top:5px; color:var(--muted); font-size:10px; font-weight:600; } .brand-lockup:hover { transform:none; }
         .header-nav { display:flex; align-items:center; gap:.2rem; margin-left:auto; }
@@ -317,12 +317,12 @@ export default function App() {
         .header-nav button { padding:.55rem .7rem; border-radius:9px; font-size:11px; font-weight:800; }
         .header-nav button:hover, .github-link:hover { color:var(--ink); background:var(--surface-soft); }
         .header-actions { display:flex; align-items:center; gap:.35rem; }
-        .theme-switch { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:1px solid var(--line); border-radius:10px; background:var(--surface); font-size:10px; font-weight:800; backdrop-filter:blur(14px); }
-        .theme-switch:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-1px); }
-        .theme-switch-icon { display:grid; place-items:center; width:22px; height:22px; border-radius:7px; color:var(--accent); background:var(--lime); }
+        .theme-switch { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:10px; color:var(--ink); background:transparent; box-shadow:none; font-size:10px; font-weight:800; }
+        .theme-switch:hover { color:var(--accent); background:transparent; transform:none; }
+        .theme-switch-icon { display:grid; place-items:center; width:22px; height:22px; border-radius:0; color:currentColor; background:transparent; }
         .button { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:44px; border:1px solid transparent; border-radius:10px; padding:0 .8rem; cursor:pointer; font-size:11px; font-weight:800; transition:all .18s var(--ease); }
         .button:hover { transform:translateY(-2px); }
-        .button-primary { color:var(--on-accent); background:var(--accent); box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 24%,transparent); }
+        .button-primary { color:#FFFFFF; background:var(--action); box-shadow:3px 3px 0 var(--ink); }
         .button-secondary { color:var(--ink); border-color:var(--line); background:var(--surface); backdrop-filter:blur(14px); }
         .button-ghost { color:var(--muted); background:transparent; }
         .icon-button { display:grid; place-items:center; width:40px; height:40px; padding:0; border:1px solid var(--line); border-radius:10px; color:var(--muted); background:var(--surface); cursor:pointer; transition:all .18s var(--ease); backdrop-filter:blur(14px); }
@@ -330,7 +330,7 @@ export default function App() {
         .icon-button.is-copied { color:var(--on-soft); border-color:var(--lime); background:var(--lime); }
         .app-main { width:min(1440px,100%); margin:0 auto; padding:30px 28px 80px; } .github-link { display:grid; place-items:center; width:34px; height:34px; padding:0; color:var(--muted); text-decoration:none; } .github-link svg { flex:0 0 auto; } .github-link:hover { color:var(--ink); background:var(--surface-soft); transform:translateY(-1px); }
         .vengeance-main { width:100%; max-width:none; margin:0; padding:72px 0 0; }
-        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#FFFFFF; --landing-fg:#1A1A1A; --landing-accent:#1C69D4; --landing-cool:#1C69D4; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#0A0B0D; --landing-fg:#FFFFFF; --landing-accent:#4C91E8; --landing-cool:#4C91E8; }
+        .vengeance-landing { position:relative; min-height:calc(100vh - 72px); overflow:hidden; isolation:isolate; color:var(--landing-fg); background:var(--landing-bg); --landing-bg:#FFFBE6; --landing-fg:#050505; --landing-accent:#FFD400; --landing-cool:#145DFF; --pointer-x:50%; --pointer-y:50%; } .theme-dark .vengeance-landing { --landing-bg:#050505; --landing-fg:#FFFFFF; --landing-accent:#FFD400; --landing-cool:#00D9FF; }
         .vengeance-landing::before { content:""; position:absolute; inset:0; z-index:-2; opacity:.6; background-image:linear-gradient(color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--landing-fg) 8%,transparent) 1px,transparent 1px); background-size:44px 44px; mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%); }
         .vengeance-glow { position:absolute; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(circle at var(--pointer-x) var(--pointer-y),color-mix(in srgb,var(--landing-cool) 25%,transparent),transparent 29%),radial-gradient(circle at 72% 18%,color-mix(in srgb,var(--landing-accent) 18%,transparent),transparent 34%),linear-gradient(120deg,transparent 45%,color-mix(in srgb,var(--landing-cool) 5%,transparent)); transition:background .25s var(--ease); }
         .vengeance-topline { position:absolute; top:24px; left:clamp(22px,5vw,72px); right:clamp(22px,5vw,72px); z-index:5; display:flex; align-items:center; justify-content:space-between; gap:18px; color:color-mix(in srgb,var(--landing-fg) 68%,transparent); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
@@ -677,7 +677,7 @@ export default function App() {
       <header className={`site-header ${isDirectory ? "directory-header" : ""}`}>
         <div className="header-inner">
           <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to the Design Garage home page">
-            <span className="brand-symbol"><Icon name="library" size={17} /></span>
+            <span className="brand-symbol"><Icon name="garage" size={18} strokeWidth={2.1} /></span>
             <span><span className="brand-name">DESIGN GARAGE</span><span className="brand-caption">Interface resources and frontend tools</span></span>
           </button>
           <nav className="header-nav" aria-label="Main navigation">
