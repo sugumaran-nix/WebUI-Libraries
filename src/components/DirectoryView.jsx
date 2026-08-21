@@ -95,12 +95,12 @@ export default function DirectoryView({
       </div>
 
       <section className="directory-recent-strip" aria-label="Recently visited resources">
-        <div><p className="directory-eyebrow">RECENTLY VISITED</p><strong>Continue evaluating</strong></div>
+        <div className="directory-recent-head"><p className="directory-eyebrow">RECENTLY VISITED</p><strong>Return to recent picks</strong></div>
         {recent.length ? <div className="directory-recent-links">{recent.slice(0, 4).map(resource => <a key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(resource)}>{resource.name}<Icon name="arrow" size={12} /></a>)}</div> : <p className="directory-recent-empty">Visited resources will appear here for quick return.</p>}
       </section>
 
       <section className="directory-suggestion" aria-labelledby="suggest-title">
-        <button type="button" id="suggest-resource-trigger" className="directory-suggestion-trigger" onClick={() => setSuggestOpen(open => !open)} aria-expanded={suggestOpen} aria-controls="suggest-resource-form"><span><span className="directory-suggestion-icon"><Icon name="spark" size={17} /></span><span><strong id="suggest-title">Know a strong resource?</strong><small>Send it for review and help improve the directory.</small></span></span><Icon name={suggestOpen ? "close" : "plus"} size={17} /></button>
+        <button type="button" id="suggest-resource-trigger" className="directory-suggestion-trigger" onClick={() => setSuggestOpen(open => !open)} aria-expanded={suggestOpen} aria-controls="suggest-resource-form"><span><span className="directory-suggestion-icon"><Icon name="share" size={17} /></span><span><strong id="suggest-title">Know a strong resource?</strong><small>Send it for review and help improve the directory.</small></span></span><Icon name={suggestOpen ? "close" : "plus"} size={17} /></button>
         {suggestOpen && <div className="directory-suggestion-form" id="suggest-resource-form">
           {suggested ? <div className="directory-success" role="status"><Icon name="check" size={18} /><span>Your suggestion is ready to review in GitHub.</span></div> : <>
             <div className="directory-form-grid"><label>Resource name<input value={suggestion.name} onChange={event => setSuggestion({ ...suggestion, name: event.target.value })} placeholder="e.g. Acme UI" /></label><label>Website URL<input value={suggestion.url} onChange={event => setSuggestion({ ...suggestion, url: event.target.value })} placeholder="acme-ui.com" /></label></div>
