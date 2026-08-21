@@ -66,7 +66,7 @@ export default function DirectoryView({
     <div className="directory-experience">
       <h1 className="directory-sr-only">Design Garage resource directory</h1>
       <section className="directory-search-strip" aria-labelledby="directory-search-label">
-        <div className="directory-search-strip-copy"><p className="directory-eyebrow">SEARCH THE DIRECTORY</p><label id="directory-search-label" htmlFor="directory-search">Find a resource by name, description, or technology.</label></div>
+        <div className="directory-search-strip-copy"><p className="directory-eyebrow">SEARCH</p><label id="directory-search-label" htmlFor="directory-search">Find by name, description, or technology.</label></div>
         <div className="directory-search-field">
           <Icon name="search" size={17} />
           <input id="directory-search" ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Search resources" autoComplete="off" />
@@ -75,22 +75,15 @@ export default function DirectoryView({
         </div>
       </section>
 
-      <nav className="directory-gallery-nav" aria-label="Browse resource collections">
-        <p className="directory-eyebrow">BROWSE BY FORMAT</p>
-        <div className="directory-gallery-nav-list">
-          {[{ id: "all", label: "All resources", icon: "grid" }, { id: "inspiration", label: "Design references", icon: "spark" }, { id: "collections", label: "Resource collections", icon: "library" }, { id: "dev-tools", label: "Developer tools", icon: "code" }].map(item => <button type="button" key={item.id} className={activeCategory === item.id ? "is-active" : ""} aria-pressed={activeCategory === item.id} onClick={() => setActiveCategory(item.id)}><Icon name={item.icon} size={14} /><span>{item.label}</span><Icon name="arrow" size={12} /></button>)}
-        </div>
-      </nav>
 
       <div className="directory-layout">
         <aside className="directory-filter-rail" aria-label="Resource filters">
-          <div className="directory-rail-intro"><p className="directory-eyebrow">REFINE</p><h2>Choose your criteria.</h2><p>Use the visible resource details to narrow the collection.</p></div>
           <FilterPanel categories={categories} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={stacks} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={sortOptions} clearFilters={clearFilters} hasActiveFilters={hasActiveFilters} activeFilterCount={activeFilterCount} resultCount={resultCount} categoryLabel={categoryLabel} recent={recent} onVisit={onVisit} />
         </aside>
 
         <section className="directory-results" id="results" aria-labelledby="directory-results-heading">
           <div className="directory-results-head">
-            <div><p className="directory-eyebrow">CATALOG VIEW</p><h2 id="directory-results-heading">{activeCategory === "all" ? "All resources" : categoryLabel}</h2><p>{resultCount} {resultCount === 1 ? "resource" : "resources"} ready to review{hasActiveFilters ? " with your current criteria" : ""}.</p></div>
+            <div><p className="directory-eyebrow">CATALOG VIEW</p><h2 id="directory-results-heading">{activeCategory === "all" ? "All resources" : categoryLabel}</h2><p>{hasActiveFilters ? "Showing resources ready to review with your criteria." : "Curated resources ready to review."}</p></div>
             <div className="directory-results-actions">
               <span className="directory-result-count">{resultCount} / {categories.find(category => category.id === "all")?.label === "All categories" ? "" : ""}{Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0)}</span>
               <div className="directory-view-toggle" aria-label="Change resource layout"><button type="button" className={viewMode === "grid" ? "is-active" : ""} aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={15} /><span>Grid</span></button><button type="button" className={viewMode === "list" ? "is-active" : ""} aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={15} /><span>List</span></button></div>
@@ -117,7 +110,7 @@ export default function DirectoryView({
         </div>}
       </section>
 
-      <footer className="directory-footer"><span>Last reviewed {verifiedDate}</span><span>{resultCount} of {Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0)} resources displayed</span></footer>
+      <footer className="directory-footer"><span>Last reviewed {verifiedDate}</span></footer>
     </div>
   );
 }

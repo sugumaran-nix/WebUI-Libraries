@@ -32,7 +32,6 @@ export default function FilterPanel({ categories, counts, activeCategory, setAct
           {sortOptions.map(option => <button type="button" role="option" aria-selected={sortBy === option.id} className={sortBy === option.id ? "is-selected" : ""} key={option.id} onClick={() => { setSortBy(option.id); closeMenu(); }}><span>{option.label}</span></button>)}
         </FilterMenu>
       </div>
-      <div className="directory-filter-summary" aria-live="polite"><strong>{resultCount}</strong><span>resources match your current view.</span></div>
       <div className="directory-filter-actions"><button type="button" className="directory-reset-button" onClick={() => { clearFilters(); closeMenu(); }} disabled={!hasActiveFilters}><Icon name="close" size={13} /> Reset filters</button><button type="button" className="directory-recent-button" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"}><Icon name="history" size={13} /> Recent</button></div>
       {openMenu === "recent" && <div className="directory-recent-menu" role="dialog" aria-label="Recently visited resources">{recent.length ? recent.map(resource => <a key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => { onVisit(resource); closeMenu(); }}><span>{resource.name}</span><Icon name="arrow" size={11} /></a>) : <p>No recently visited resources.</p>}</div>}
     </div>
