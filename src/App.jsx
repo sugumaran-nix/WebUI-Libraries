@@ -736,6 +736,7 @@ export default function App() {
         /* Reference-inspired finish: editorial labels, framed artifacts, tactile actions, and visible keyboard states. */
         .site-header { border-bottom:2px solid var(--ink); }
         .header-inner { min-height:68px; }
+        .header-actions { margin-left:auto; }
         .header-nav button, .github-link, .theme-switch { min-height:40px; }
         .header-nav button:focus-visible, .github-link:focus-visible, .theme-switch:focus-visible, .button:focus-visible, .directory-primary-button:focus-visible, .directory-secondary-button:focus-visible, .directory-reset-button:focus-visible, .directory-recent-button:focus-visible, .directory-copy-button:focus-visible, .directory-suggestion-trigger:focus-visible, .directory-view-toggle button:focus-visible, .directory-filter-trigger:focus-visible, .directory-filter-menu button:focus-visible, .directory-recent-menu a:focus-visible, .directory-search-clear:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
         .vengeance-kicker, .directory-eyebrow { display:inline-flex; align-items:center; width:max-content; min-height:22px; margin-bottom:12px; padding:3px 8px; border:2px solid var(--ink); border-radius:5px; color:var(--accent-ink); background:var(--accent-fill); box-shadow:3px 3px 0 var(--neo-shadow-color); }
@@ -770,11 +771,6 @@ export default function App() {
             <span className="brand-symbol"><Icon name="garage" size={18} strokeWidth={2.1} /></span>
             <span><span className="brand-name">DESIGN GARAGE</span><span className="brand-caption">Interface resources and frontend tools</span></span>
           </button>
-          <nav className="header-nav" aria-label="Main navigation">
-            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Discover</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
-          </nav>
           <div className="header-actions">
             <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
