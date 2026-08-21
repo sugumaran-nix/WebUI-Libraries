@@ -132,20 +132,20 @@ function VengeanceLanding({ onNavigate }) {
     <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
-        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource directory</span>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
+        <span className="landing-status"><Icon name="compass" size={12} /> Open-source design resource directory</span>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design references</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee"><div className="vengeance-marquee-track">{marqueeTiles.map((tile, index) => <a className="vengeance-tile" key={`${tile.url}-${index}`} href={tile.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${tile.name} website`}><img src={tile.image} alt={`${tile.name} website preview`} loading="lazy" /></a>)}</div></div>
       <div className="vengeance-content">
-        <div className="vengeance-kicker">WEB DESIGN AND DEVELOPMENT RESOURCES</div>
+        <div className="vengeance-kicker">DESIGN SYSTEMS · INTERFACE PATTERNS · UI TOOLS</div>
         <h1 id="vengeance-title">UI Resource Library</h1>
         <div className="vengeance-intro">
-          <div className="vengeance-subtitle"><span>FIND THE RIGHT TOOLS</span><span>BUILD BETTER PRODUCTS</span></div>
-          <div className="vengeance-copy"><p>Browse a practical collection of UI libraries, design systems, inspiration galleries, and frontend tools.</p><p>Explore {LIBS.length} resources, preview each website, filter by category or technology, and choose the right tool for your next project.</p></div>
+          <div className="vengeance-subtitle"><span>RESEARCH WITH PRECISION</span><span>BUILD WITH CONFIDENCE</span></div>
+          <div className="vengeance-copy"><p>A practical reference for design systems, interface patterns, and frontend tools.</p><p>Compare {LIBS.length} live resources, filter by category or technology, and select the right tools for your next project.</p></div>
         </div>
-        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse all resources <Icon name="arrowRight" size={15} /></button>
+        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Open the resource directory <Icon name="arrowRight" size={15} /></button>
       </div>
-      <p className="vengeance-footer">A practical directory for finding reliable UI resources, design references, and development tools.</p>
+      <p className="vengeance-footer">A clear reference for selecting reliable UI resources, design references, and development tools.</p>
     </section>
   );
 }
@@ -333,8 +333,8 @@ export default function App() {
         .vengeance-toplinks { display:flex; align-items:center; gap:18px; }
         .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
         .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:2; height:min(48vh,420px); overflow:hidden; opacity:.42; pointer-events:none; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
-        .vengeance-marquee-track { display:flex; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
-        .vengeance-tile { width:clamp(280px,34vw,520px); aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; pointer-events:auto; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
+        .vengeance-marquee-track { display:flex; align-items:flex-start; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
+        .vengeance-tile { display:block; width:clamp(280px,34vw,520px); height:auto; align-self:flex-start; aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; pointer-events:auto; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
         .vengeance-tile img { display:block; width:100%; height:100%; object-fit:cover; }
         @keyframes vengeance-marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
         @media (prefers-reduced-motion: reduce) { .vengeance-marquee-track { animation:none; } .app-shell, .app-shell * { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; } .button:hover, .icon-button:hover, .theme-switch:hover { transform:none; } }
@@ -535,7 +535,7 @@ export default function App() {
           </button>
           <nav className="header-nav" aria-label="Main navigation">
             <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Resource directory</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Design inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Design references</button>
             <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> UI libraries</button>
           </nav>
           <div className="header-actions">
@@ -572,7 +572,7 @@ export default function App() {
           {suggestOpen && <div className="suggest-form">
             {suggested ? <div className="empty-state" style={{ minHeight: 150 }}><div className="empty-symbol"><Icon name="check" size={22} /></div><h3>Opening your email app.</h3><p>Thanks for helping improve the directory.</p></div> : <>
               <div className="suggest-form-grid"><div className="field"><label htmlFor="suggest-name">Resource name</label><input id="suggest-name" value={suggestion.name} onChange={event => setSuggestion({ ...suggestion, name: event.target.value })} placeholder="e.g. Acme UI" /></div><div className="field"><label htmlFor="suggest-url">URL</label><input id="suggest-url" value={suggestion.url} onChange={event => setSuggestion({ ...suggestion, url: event.target.value })} placeholder="acme-ui.com" /></div></div>
-              <div className="field"><label htmlFor="suggest-note">Why should we include it?</label><textarea id="suggest-note" value={suggestion.note} onChange={event => setSuggestion({ ...suggestion, note: event.target.value })} placeholder="What makes this resource useful or distinctive?" /></div>
+              <div className="field"><label htmlFor="suggest-note">Why is this resource useful?</label><textarea id="suggest-note" value={suggestion.note} onChange={event => setSuggestion({ ...suggestion, note: event.target.value })} placeholder="What makes this resource useful or distinctive?" /></div>
               <div className="suggest-form-footer"><p>Opens an email with your resource details pre-filled.</p><button type="button" className="button button-primary" disabled={!suggestion.name.trim() || !suggestion.url.trim()} onClick={sendSuggestion}>Submit resource <Icon name="arrowRight" size={14} /></button></div>
             </>}
           </div>}
