@@ -133,13 +133,13 @@ function VengeanceLanding({ onNavigate }) {
     <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
-        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource desk</span>
+        <span className="landing-status"><Icon name="compass" size={12} /> Open-source design garage</span>
         <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
       <div className="vengeance-content">
-        <div className="vengeance-kicker">UI / FOLIO · CURATED INTERFACE INTELLIGENCE</div>
-        <h1 id="vengeance-title">UI / FOLIO</h1>
+        <div className="vengeance-kicker">DESIGN GARAGE · CURATED INTERFACE RESOURCES</div>
+        <h1 id="vengeance-title">DESIGN GARAGE</h1>
         <div className="vengeance-intro">
           <div className="vengeance-subtitle"><span>FIND BETTER</span><span>BUILD FASTER</span></div>
           <div className="vengeance-copy"><p>A focused index of libraries, design systems, inspiration galleries, and frontend tools for people who care about the details.</p><p>Explore {LIBS.length} hand-picked resources, compare real previews, filter by topic or stack, and move from a spark of inspiration to a shipped interface.</p></div>
@@ -202,14 +202,14 @@ export default function App() {
 
   useEffect(() => {
     if (!isDirectory) {
-      document.title = "UI Resource Library — Web Design and Development Resources";
+      document.title = "Design Garage — Interface Resources and Frontend Tools";
       return;
     }
     const titleParts = [];
     if (activeCategory !== "all") titleParts.push(CATEGORIES.find(item => item.id === activeCategory)?.label || activeCategory);
     if (stackFilter !== "all") titleParts.push(stackFilter);
     if (query) titleParts.push(`“${query}”`);
-    document.title = titleParts.length ? `${titleParts.join(" · ")} — UI Resource Library` : "Resource Directory — UI Resource Library";
+    document.title = titleParts.length ? `${titleParts.join(" · ")} — Design Garage` : "Resource Directory — Design Garage";
   }, [isDirectory, activeCategory, query, stackFilter]);
 
   useEffect(() => {
@@ -676,9 +676,9 @@ export default function App() {
 
       <header className={`site-header ${isDirectory ? "directory-header" : ""}`}>
         <div className="header-inner">
-          <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to the UI Resource Library home page">
+          <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to the Design Garage home page">
             <span className="brand-symbol"><Icon name="library" size={17} /></span>
-            <span><span className="brand-name">UI / FOLIO</span><span className="brand-caption">Web design and development resources</span></span>
+            <span><span className="brand-name">DESIGN GARAGE</span><span className="brand-caption">Interface resources and frontend tools</span></span>
           </button>
           <nav className="header-nav" aria-label="Main navigation">
             <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Discover</button>
