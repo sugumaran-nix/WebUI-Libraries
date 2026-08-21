@@ -64,6 +64,7 @@ export default function DirectoryView({
 }) {
   return (
     <div className="directory-experience">
+      <h1 className="directory-sr-only">Design Garage resource directory</h1>
       <section className="directory-search-strip" aria-labelledby="directory-search-label">
         <div className="directory-search-strip-copy"><p className="directory-eyebrow">SEARCH THE DIRECTORY</p><label id="directory-search-label" htmlFor="directory-search">Find a resource by name, description, or technology.</label></div>
         <div className="directory-search-field">
@@ -80,17 +81,17 @@ export default function DirectoryView({
           <FilterPanel categories={categories} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={stacks} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={sortOptions} clearFilters={clearFilters} hasActiveFilters={hasActiveFilters} activeFilterCount={activeFilterCount} resultCount={resultCount} categoryLabel={categoryLabel} recent={recent} onVisit={onVisit} />
         </aside>
 
-        <main className="directory-results" id="results" aria-label="Resource directory results">
+        <section className="directory-results" id="results" aria-labelledby="directory-results-heading">
           <div className="directory-results-head">
-            <div><p className="directory-eyebrow">CATALOG VIEW</p><h2>{activeCategory === "all" ? "All resources" : categoryLabel}</h2><p>{resultCount} {resultCount === 1 ? "resource" : "resources"} ready to review{hasActiveFilters ? " with your current criteria" : ""}.</p></div>
+            <div><p className="directory-eyebrow">CATALOG VIEW</p><h2 id="directory-results-heading">{activeCategory === "all" ? "All resources" : categoryLabel}</h2><p>{resultCount} {resultCount === 1 ? "resource" : "resources"} ready to review{hasActiveFilters ? " with your current criteria" : ""}.</p></div>
             <div className="directory-results-actions">
               <span className="directory-result-count">{resultCount} / {categories.find(category => category.id === "all")?.label === "All categories" ? "" : ""}{Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0)}</span>
               <div className="directory-view-toggle" aria-label="Change resource layout"><button type="button" className={viewMode === "grid" ? "is-active" : ""} aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={15} /><span>Grid</span></button><button type="button" className={viewMode === "list" ? "is-active" : ""} aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={15} /><span>List</span></button></div>
             </div>
           </div>
           <ActiveFilters query={query} activeCategory={activeCategory} categoryLabel={categoryLabel} stackFilter={stackFilter} sortBy={sortBy} sortOptions={sortOptions} setQuery={setQuery} setActiveCategory={setActiveCategory} setStackFilter={setStackFilter} setSortBy={setSortBy} />
-          {filteredResources.length === 0 ? <EmptyDirectory onClear={clearFilters} /> : <div className={`directory-card-grid ${viewMode === "list" ? "is-list" : ""}`}>{filteredResources.map(resource => <ResourceCard key={resource.id} lib={resource} categoryLabel={categories.find(item => item.id === categoryResolver(resource.cat))?.label || resource.cat} stacks={libStacks[resource.id] || []} accent={categoryColors[categoryResolver(resource.cat)] || "#0057B8"} isNew={newIds.has(resource.id)} isCopied={copiedId === resource.id} query={query} onCopy={onCopy} onVisit={onVisit} />)}</div>}
-        </main>
+          {filteredResources.length === 0 ? <EmptyDirectory onClear={clearFilters} /> : <div className={`directory-card-grid ${viewMode === "list" ? "is-list" : ""}`}>{filteredResources.map(resource => <ResourceCard key={resource.id} lib={resource} categoryLabel={categories.find(item => item.id === categoryResolver(resource.cat))?.label || resource.cat} stacks={libStacks[resource.id] || []} accent={categoryColors[categoryResolver(resource.cat)] || "#004FA8"} isNew={newIds.has(resource.id)} isCopied={copiedId === resource.id} query={query} onCopy={onCopy} onVisit={onVisit} />)}</div>}
+        </section>
       </div>
 
       <section className="directory-recent-strip" aria-label="Recently visited resources">
