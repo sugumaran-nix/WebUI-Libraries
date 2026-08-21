@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Icon from "./components/Icon";
 import ResourceCard from "./components/ResourceCard";
-import FilterPanel from "./components/FilterPanel";
+import DirectoryView from "./components/DirectoryView";
 import {
   CATEGORIES,
   CAT_COLOR,
@@ -51,7 +51,8 @@ function getUrlParams() {
 
 function getRoute() {
   if (typeof window === "undefined") return "/";
-  return window.location.pathname === "/directory" ? "/directory" : "/";
+  const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
+  return pathname === "/directory" ? "/directory" : "/";
 }
 
 const POPULAR_ORDER = [16, 30, 29, 53, 54, 50, 51, 49, 58, 59, 1, 2, 9, 73, 88, 86, 87, 162, 163, 158, 123, 118, 64, 65];
@@ -132,20 +133,20 @@ function VengeanceLanding({ onNavigate }) {
     <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
-        <span className="landing-status"><Icon name="compass" size={12} /> Open-source design resource directory</span>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
+        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource desk</span>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee"><div className="vengeance-marquee-track">{marqueeTiles.map((tile, index) => <a className="vengeance-tile" key={`${tile.url}-${index}`} href={tile.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${tile.name} website`}><img src={tile.image} alt={`${tile.name} website preview`} loading="lazy" /></a>)}</div></div>
       <div className="vengeance-content">
-        <div className="vengeance-kicker">DESIGN SYSTEMS · INTERFACE PATTERNS · UI TOOLS</div>
+        <div className="vengeance-kicker">UI / FOLIO · CURATED INTERFACE INTELLIGENCE</div>
         <h1 id="vengeance-title">UI Resource Library</h1>
         <div className="vengeance-intro">
-          <div className="vengeance-subtitle"><span>RESEARCH WITH PRECISION</span><span>BUILD WITH CONFIDENCE</span></div>
-          <div className="vengeance-copy"><p>A practical reference for design systems, interface patterns, and frontend tools.</p><p>Compare {LIBS.length} live resources, filter by category or technology, and select the right tools for your next project.</p></div>
+          <div className="vengeance-subtitle"><span>FIND BETTER</span><span>BUILD FASTER</span></div>
+          <div className="vengeance-copy"><p>Browse a focused collection of UI libraries, design systems, inspiration galleries, and frontend tools.</p><p>Explore {LIBS.length} resources, preview each website, filter by topic or stack, and move from a spark of inspiration to a shipped interface.</p></div>
         </div>
         <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse the directory <Icon name="arrowRight" size={15} /></button>
       </div>
-      <p className="vengeance-footer">A clear reference for selecting reliable UI resources, design references, and development tools.</p>
+      <p className="vengeance-footer">A practical directory for finding reliable UI resources, design references, and development tools.</p>
     </section>
   );
 }
@@ -163,6 +164,7 @@ export default function App() {
   const [copiedId, setCopiedId] = useState(null);
   const [recent, setRecent] = useState(getRecent);
   const [suggestOpen, setSuggestOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [suggested, setSuggested] = useState(false);
   const [suggestion, setSuggestion] = useState({ name: "", url: "", note: "" });
   const searchRef = useRef(null);
@@ -177,6 +179,7 @@ export default function App() {
   const navigateTo = (path) => {
     window.history.pushState(null, "", path);
     setRoute(getRoute());
+    setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -216,6 +219,7 @@ export default function App() {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); document.querySelector(".desktop-filter")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
       if (event.key === "Escape") {
         if (query) setQuery("");
+        setMobileMenuOpen(false);
         searchRef.current?.blur();
       }
     };
@@ -307,6 +311,8 @@ export default function App() {
         .brand-name { font-size:12px; font-weight:900; letter-spacing:.15em; line-height:1; }
         .brand-caption { display:block; margin-top:5px; color:var(--muted); font-size:10px; font-weight:600; } .brand-lockup:hover { transform:none; }
         .header-nav { display:flex; align-items:center; gap:.2rem; margin-left:auto; }
+        .mobile-menu-toggle { display:none; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:1px solid var(--line); border-radius:10px; color:var(--ink); background:var(--surface); cursor:pointer; }
+        .mobile-nav { display:none; }
         .header-nav button, .theme-switch { border:0; background:transparent; color:var(--muted); cursor:pointer; transition:all .18s var(--ease); } .header-nav button, .github-link { display:inline-flex; align-items:center; gap:6px; }
         .header-nav button { padding:.55rem .7rem; border-radius:9px; font-size:11px; font-weight:800; }
         .header-nav button:hover, .github-link:hover { color:var(--ink); background:var(--surface-soft); }
@@ -517,13 +523,150 @@ export default function App() {
         .suggest-form-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
         .suggest-form-footer p { margin:0; color:var(--muted); font-size:10px; }
         .app-footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:24px 0 0; color:var(--muted); font-size:10px; }
-        @media (max-width:1060px) { .header-nav { display:none; } .directory-main { padding-top:calc(64px + 16px + 60px); } .quick-access-panel { top:80px; left:18px; width:calc(100% - 36px); } .results-area { width:100%; } }
+        @media (max-width:1060px) { .header-nav { display:none; } .mobile-menu-toggle { display:inline-flex; } .directory-main { padding-top:calc(64px + 16px + 60px); } .quick-access-panel { top:80px; left:18px; width:calc(100% - 36px); } .results-area { width:100%; } .mobile-nav { position:absolute; top:calc(100% + 8px); left:18px; right:18px; z-index:90; display:grid; gap:4px; padding:8px; border:1px solid var(--line); border-radius:12px; background:color-mix(in srgb,var(--surface-elevated) 96%,transparent); box-shadow:0 18px 42px color-mix(in srgb,var(--ink) 18%,transparent); backdrop-filter:saturate(150%) blur(20px); } .mobile-nav button, .mobile-nav a { display:flex; align-items:center; gap:10px; min-height:44px; padding:0 12px; border:0; border-radius:8px; color:var(--ink); background:transparent; font-size:12px; font-weight:800; text-decoration:none; text-align:left; } .mobile-nav button:hover, .mobile-nav a:hover, .mobile-nav button[aria-current="page"] { background:var(--surface-soft); } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } .resource-grid, .resource-grid.list-view { grid-template-columns:1fr; gap:16px; } }
         @media (max-width:700px) { .view-toggle { display:none; } .resource-grid, .resource-grid.list-view { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .header-nav button, .github-link { min-height:44px; min-width:44px; } .resource-card p { font-size:12px; line-height:1.55; } .resource-card-copy { padding:14px 16px 16px; } .vengeance-main { padding-top:64px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; overflow-x:auto; overflow-y:visible; scrollbar-width:none; } .quick-access-panel::-webkit-scrollbar { display:none; } .quick-access-row { width:max-content; min-width:100%; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .github-link span { display:none; } .brand-name { font-size:10px; letter-spacing:.09em; } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .header-nav button, .github-link { min-height:44px; min-width:44px; } .header-actions .github-link { display:none; } .resource-card p { font-size:12px; line-height:1.55; } .resource-card-copy { padding:14px 16px 16px; } .vengeance-main { padding-top:64px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; overflow-x:auto; overflow-y:visible; scrollbar-width:none; } .quick-access-panel::-webkit-scrollbar { display:none; } .quick-access-row { width:max-content; min-width:100%; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .github-link span { display:none; } .brand-name { font-size:10px; letter-spacing:.09em; } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (min-width:821px) { .resource-grid:not(.list-view) { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); } }
         @media (max-width:700px) { .resource-grid, .resource-grid.list-view { gap:12px; } .resource-card { border-radius:14px; } .resource-preview { aspect-ratio:16/10; } .resource-card-copy { padding:12px; } .resource-card h3 { font-size:16px; line-height:1.12; } .resource-card p { min-height:0; font-size:11px; line-height:1.5; } .resource-preview-tools .icon-button { width:40px; height:40px; } .filter-trigger { min-height:40px; } }
         @media (max-width:560px) { .quick-access-panel { left:12px; width:calc(100% - 24px); padding:8px; } .quick-access-row { gap:8px; } .filter-control-group { gap:6px; } .filter-popover-menu { max-height:min(60vh,340px); } .filter-option-button, .quick-access-chip { min-height:40px; } .active-filter button { min-width:32px; min-height:32px; } }
+        @media (max-width:820px) { .quick-access-panel { overflow:visible; } .quick-access-row { flex-wrap:wrap; overflow:visible; } .filter-control-group { flex:1 1 auto; flex-wrap:wrap; min-width:0; } .filter-row-summary { flex-basis:100%; min-width:0; } .filter-actions { margin-left:auto; } }
+        @media (max-width:700px) { .directory-main { padding-top:calc(64px + 12px + 220px); } .quick-access-panel { top:76px; left:12px; width:calc(100% - 24px); padding:10px; } .quick-access-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; min-width:0; } .quick-access-heading { grid-column:1 / -1; height:auto; min-height:28px; } .filter-control-group { display:grid; grid-column:1 / -1; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; gap:8px; } .filter-popover { min-width:0; } .filter-trigger { width:100%; justify-content:space-between; min-height:44px; padding:0 10px; } .filter-row-summary { grid-column:1 / -1; display:flex; min-width:0; } .filter-summary-copy { width:100%; justify-content:space-between; } .filter-actions { grid-column:1 / -1; width:100%; justify-content:space-between; margin-left:0; } .filter-popover-menu { position:fixed; top:calc(64px + 220px); left:12px; right:12px; width:auto; min-width:0; max-width:none; max-height:min(58vh,360px); } }
+        .directory-main { padding:104px clamp(18px,4vw,48px) 56px; }
+        .directory-experience { width:min(1360px,100%); margin:0 auto; }
+        .directory-masthead { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:26px 32px; align-items:end; padding:clamp(28px,5vw,58px); border:1px solid var(--line); border-radius:24px; background:linear-gradient(135deg,color-mix(in srgb,var(--surface-elevated) 98%,transparent),color-mix(in srgb,var(--accent) 5%,var(--surface))); box-shadow:0 24px 70px color-mix(in srgb,var(--ink) 7%,transparent); }
+        .directory-masthead-copy { max-width:760px; }
+        .directory-eyebrow { margin:0 0 10px; color:var(--accent); font-size:9px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
+        .directory-masthead h1 { margin:0; color:var(--ink); font-family:var(--font-display); font-size:clamp(2.9rem,7vw,6.8rem); font-weight:400; line-height:.9; letter-spacing:-.08em; }
+        .directory-lede { max-width:620px; margin:20px 0 0; color:var(--muted); font-size:14px; line-height:1.65; }
+        .directory-masthead-stat { display:grid; justify-items:end; align-content:end; gap:4px; min-width:150px; padding-bottom:4px; }
+        .directory-masthead-stat strong { color:var(--ink); font-size:clamp(2rem,4vw,3.6rem); font-weight:500; letter-spacing:-.08em; }
+        .directory-masthead-stat span { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+        .directory-search-panel { grid-column:1 / -1; }
+        .directory-search-panel label { display:block; margin-bottom:8px; color:var(--muted); font-size:10px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+        .directory-search-field { display:flex; align-items:center; gap:10px; min-height:58px; padding:0 14px; border:1px solid var(--line); border-radius:13px; color:var(--accent); background:var(--surface); box-shadow:0 10px 28px color-mix(in srgb,var(--ink) 5%,transparent); }
+        .directory-search-field:focus-within { border-color:color-mix(in srgb,var(--accent) 60%,var(--line)); box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent); }
+        .directory-search-field input { min-width:0; flex:1; padding:0; border:0; outline:0; color:var(--ink); background:transparent; font-size:15px; }
+        .directory-search-field input::placeholder { color:var(--muted); }
+        .directory-search-field kbd { padding:3px 7px; border:1px solid var(--line); border-radius:5px; color:var(--muted); background:var(--surface-soft); font-size:10px; }
+        .directory-search-clear { display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:8px; color:var(--muted); background:transparent; cursor:pointer; }
+        .directory-search-clear:hover { color:var(--ink); background:var(--surface-soft); }
+        .directory-layout { display:grid; grid-template-columns:minmax(230px,278px) minmax(0,1fr); gap:32px; align-items:start; margin-top:32px; }
+        .directory-filter-rail { position:sticky; top:92px; min-width:0; }
+        .directory-rail-intro { margin:0 0 14px; padding:0 4px; }
+        .directory-rail-intro h2 { margin:0; color:var(--ink); font-family:var(--font-display); font-size:26px; font-weight:400; letter-spacing:-.06em; }
+        .directory-rail-intro p:last-child { margin:9px 0 0; color:var(--muted); font-size:11px; line-height:1.5; }
+        .directory-filter-panel { position:relative; padding:18px; border:1px solid var(--line); border-radius:18px; background:var(--surface-elevated); box-shadow:0 18px 42px color-mix(in srgb,var(--ink) 6%,transparent); }
+        .directory-filter-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-bottom:15px; border-bottom:1px solid var(--line); }
+        .directory-filter-panel-head h2 { margin:0; color:var(--ink); font-size:18px; font-weight:800; letter-spacing:-.03em; }
+        .directory-filter-count { padding:4px 7px; border-radius:999px; color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,transparent); font-size:9px; font-weight:900; white-space:nowrap; }
+        .directory-filter-list { display:grid; gap:9px; margin-top:16px; }
+        .directory-filter-control { position:relative; min-width:0; }
+        .directory-filter-trigger { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:58px; padding:9px 11px; border:1px solid var(--line); border-radius:11px; color:var(--ink); background:var(--surface); text-align:left; cursor:pointer; }
+        .directory-filter-trigger:hover, .directory-filter-control.is-open .directory-filter-trigger { border-color:color-mix(in srgb,var(--accent) 52%,var(--line)); background:var(--surface-soft); }
+        .directory-filter-trigger > span { display:grid; gap:4px; min-width:0; }
+        .directory-filter-trigger small { color:var(--muted); font-size:9px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+        .directory-filter-trigger strong { overflow:hidden; color:var(--ink); font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+        .directory-filter-trigger svg { flex:0 0 auto; color:var(--accent); }
+        .directory-filter-menu { position:absolute; top:calc(100% + 7px); left:0; right:0; z-index:100; display:grid; gap:3px; max-height:340px; overflow:auto; padding:7px; border:1px solid var(--line); border-radius:12px; background:var(--surface-elevated); box-shadow:0 20px 45px color-mix(in srgb,var(--ink) 18%,transparent); }
+        .directory-filter-menu button { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:38px; padding:0 9px; border:0; border-radius:7px; color:var(--muted); background:transparent; font-size:11px; font-weight:700; text-align:left; cursor:pointer; }
+        .directory-filter-menu button:hover, .directory-filter-menu button.is-selected { color:var(--ink); background:color-mix(in srgb,var(--accent) 10%,var(--surface-soft)); }
+        .directory-filter-menu button small { color:var(--muted); font-size:9px; }
+        .directory-filter-summary { display:flex; align-items:baseline; gap:7px; margin:18px 0; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+        .directory-filter-summary strong { color:var(--ink); font-size:23px; letter-spacing:-.06em; }
+        .directory-filter-summary span { color:var(--muted); font-size:10px; line-height:1.35; }
+        .directory-filter-actions { display:flex; gap:7px; }
+        .directory-reset-button, .directory-recent-button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:40px; padding:0 9px; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--surface); font-size:10px; font-weight:900; cursor:pointer; }
+        .directory-reset-button { flex:1; }
+        .directory-recent-button { flex:0 0 auto; }
+        .directory-reset-button:hover:not(:disabled), .directory-recent-button:hover { color:var(--ink); border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); background:var(--surface-soft); }
+        .directory-reset-button:disabled { cursor:default; opacity:.45; }
+        .directory-recent-menu { position:absolute; right:18px; bottom:68px; left:18px; z-index:101; display:grid; gap:3px; padding:7px; border:1px solid var(--line); border-radius:12px; background:var(--surface-elevated); box-shadow:0 20px 45px color-mix(in srgb,var(--ink) 18%,transparent); }
+        .directory-recent-menu a { display:flex; align-items:center; justify-content:space-between; min-height:38px; padding:0 9px; border-radius:7px; color:var(--ink); font-size:10px; font-weight:700; text-decoration:none; }
+        .directory-recent-menu a:hover { background:var(--surface-soft); }
+        .directory-recent-menu p { margin:8px; color:var(--muted); font-size:10px; }
+        .directory-results { min-width:0; }
+        .directory-results-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding-bottom:16px; border-bottom:1px solid var(--line); }
+        .directory-results-head h2 { margin:0; color:var(--ink); font-family:var(--font-display); font-size:clamp(2rem,4vw,3.5rem); font-weight:400; line-height:.95; letter-spacing:-.07em; }
+        .directory-results-head p:last-child { margin:9px 0 0; color:var(--muted); font-size:11px; }
+        .directory-results-actions { display:flex; align-items:center; gap:12px; }
+        .directory-result-count { color:var(--muted); font-size:10px; font-weight:900; white-space:nowrap; }
+        .directory-view-toggle { display:flex; gap:3px; padding:3px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+        .directory-view-toggle button { display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:0 9px; border:0; border-radius:7px; color:var(--muted); background:transparent; font-size:10px; font-weight:900; cursor:pointer; }
+        .directory-view-toggle button.is-active { color:var(--on-accent); background:var(--accent); }
+        .directory-active-filters { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 18px; }
+        .directory-filter-chip { display:inline-flex; align-items:center; gap:7px; min-height:30px; padding:0 8px 0 11px; border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line)); border-radius:999px; color:var(--ink); background:color-mix(in srgb,var(--accent) 7%,var(--surface)); font-size:10px; font-weight:800; }
+        .directory-filter-chip button { display:grid; place-items:center; width:23px; height:23px; padding:0; border:0; border-radius:50%; color:var(--muted); background:transparent; cursor:pointer; }
+        .directory-filter-chip button:hover { color:var(--ink); background:var(--surface-soft); }
+        .directory-card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+        .directory-card-grid.is-list { grid-template-columns:1fr; }
+        .directory-resource-card { min-width:0; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:var(--surface-elevated); box-shadow:0 14px 34px color-mix(in srgb,var(--ink) 5%,transparent); transition:transform .18s var(--ease),box-shadow .18s var(--ease),border-color .18s var(--ease); }
+        .directory-resource-card:hover { transform:translateY(-3px); border-color:color-mix(in srgb,var(--card-accent) 38%,var(--line)); box-shadow:0 22px 48px color-mix(in srgb,var(--ink) 11%,transparent); }
+        .directory-preview-frame { position:relative; aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:var(--surface-soft); }
+        .directory-preview-link { position:absolute; inset:0; display:block; color:inherit; text-decoration:none; }
+        .directory-preview-link img { display:block; width:100%; height:100%; object-fit:cover; transition:transform .35s var(--ease); }
+        .directory-resource-card:hover .directory-preview-link img { transform:scale(1.025); }
+        .directory-preview-toolbar { position:absolute; right:10px; bottom:10px; left:10px; display:flex; align-items:center; justify-content:space-between; gap:8px; pointer-events:none; }
+        .directory-preview-toolbar > span { padding:5px 7px; border:1px solid color-mix(in srgb,#fff 30%,transparent); border-radius:5px; color:#fff; background:rgba(8,12,18,.62); font-size:8px; font-weight:900; letter-spacing:.11em; }
+        .directory-copy-button { display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 9px; border:1px solid rgba(255,255,255,.28); border-radius:7px; color:#fff; background:rgba(8,12,18,.72); font-size:9px; font-weight:900; cursor:pointer; pointer-events:auto; }
+        .directory-copy-button:hover, .directory-copy-button.is-copied { background:var(--accent); }
+        .directory-preview-skeleton { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; gap:7px; padding:22px; background:linear-gradient(135deg,var(--surface-soft),var(--surface)); }
+        .directory-preview-skeleton span { display:block; width:42%; height:7px; border-radius:99px; background:color-mix(in srgb,var(--muted) 20%,transparent); }
+        .directory-preview-skeleton span:nth-child(2) { width:28%; }
+        .directory-preview-skeleton span:nth-child(3) { width:58%; }
+        .directory-preview-error { position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:8px; color:var(--muted); background:linear-gradient(135deg,var(--surface-soft),var(--surface)); text-align:center; }
+        .directory-preview-error span { display:grid; place-items:center; width:54px; height:54px; border-radius:14px; color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,var(--surface)); font-size:16px; font-weight:900; }
+        .directory-preview-error small { font-size:10px; }
+        .directory-card-body { padding:17px 18px 16px; }
+        .directory-card-meta { display:flex; align-items:center; flex-wrap:wrap; gap:7px; min-width:0; }
+        .directory-card-category { color:var(--category-accent); font-size:9px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+        .directory-new-badge { padding:3px 6px; border-radius:4px; color:var(--on-accent); background:var(--accent); font-size:8px; font-weight:900; text-transform:uppercase; }
+        .directory-card-url { overflow:hidden; max-width:42%; margin-left:auto; color:var(--muted); font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
+        .directory-card-body h3 { margin:11px 0 7px; font-size:19px; line-height:1.05; letter-spacing:-.04em; }
+        .directory-card-body h3 a { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--ink); text-decoration:none; }
+        .directory-card-body h3 svg { flex:0 0 auto; color:var(--card-accent); }
+        .directory-card-body h3 a:hover { color:var(--card-accent); }
+        .directory-card-body p { display:-webkit-box; min-height:43px; margin:0; overflow:hidden; color:var(--muted); font-size:11px; line-height:1.55; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+        .directory-card-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:13px; }
+        .directory-card-tags span { padding:4px 6px; border:1px solid var(--line); border-radius:4px; color:var(--muted); background:var(--surface-soft); font-size:8px; font-weight:800; }
+        .directory-card-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:17px; padding-top:13px; border-top:1px solid var(--line); }
+        .directory-visit-action { display:inline-flex; align-items:center; gap:7px; color:var(--card-accent); font-size:10px; font-weight:900; text-decoration:none; }
+        .directory-visit-action:hover { color:var(--ink); }
+        .directory-card-index { color:var(--muted); font-size:8px; font-weight:900; letter-spacing:.08em; }
+        .directory-recent-strip { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-top:34px; padding:20px 22px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+        .directory-recent-strip strong { color:var(--ink); font-size:15px; }
+        .directory-recent-links { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:7px; }
+        .directory-recent-links a { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:0 10px; border:1px solid var(--line); border-radius:7px; color:var(--muted); background:var(--surface-soft); font-size:10px; font-weight:800; text-decoration:none; }
+        .directory-recent-links a:hover { color:var(--accent); border-color:color-mix(in srgb,var(--accent) 38%,var(--line)); }
+        .directory-recent-empty { margin:0; color:var(--muted); font-size:11px; }
+        .directory-suggestion { margin-top:16px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+        .directory-suggestion-trigger { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:74px; padding:0 20px; border:0; color:var(--ink); background:transparent; text-align:left; cursor:pointer; }
+        .directory-suggestion-trigger > span { display:flex; align-items:center; gap:12px; }
+        .directory-suggestion-icon { display:grid; place-items:center; width:36px; height:36px; border-radius:10px; color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,transparent); }
+        .directory-suggestion-trigger strong, .directory-suggestion-trigger small { display:block; }
+        .directory-suggestion-trigger strong { font-size:13px; }
+        .directory-suggestion-trigger small { margin-top:4px; color:var(--muted); font-size:10px; }
+        .directory-suggestion-form { display:grid; gap:13px; padding:0 20px 20px; }
+        .directory-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+        .directory-form-grid label, .directory-suggestion-form > label { display:grid; gap:7px; color:var(--muted); font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+        .directory-suggestion-form input, .directory-suggestion-form textarea { width:100%; min-height:42px; padding:0 11px; border:1px solid var(--line); border-radius:8px; outline:0; color:var(--ink); background:var(--surface-elevated); font-size:12px; font-weight:500; letter-spacing:normal; text-transform:none; }
+        .directory-suggestion-form textarea { min-height:82px; padding-top:10px; resize:vertical; }
+        .directory-suggestion-form input:focus, .directory-suggestion-form textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent); }
+        .directory-form-footer { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+        .directory-form-footer p { margin:0; color:var(--muted); font-size:10px; }
+        .directory-primary-button, .directory-secondary-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:0 13px; border:1px solid transparent; border-radius:8px; color:var(--on-accent); background:var(--accent); font-size:10px; font-weight:900; cursor:pointer; }
+        .directory-primary-button:hover, .directory-secondary-button:hover { background:var(--ink); }
+        .directory-primary-button:disabled { cursor:default; opacity:.42; }
+        .directory-success { display:flex; align-items:center; gap:10px; min-height:52px; padding:0 13px; border-radius:9px; color:var(--accent); background:color-mix(in srgb,var(--accent) 9%,var(--surface)); font-size:11px; font-weight:800; }
+        .directory-footer { display:flex; justify-content:space-between; gap:12px; margin-top:18px; padding:0 4px; color:var(--muted); font-size:9px; }
+        .directory-empty { display:grid; justify-items:center; gap:8px; padding:72px 24px; border:1px dashed var(--line); border-radius:16px; text-align:center; }
+        .directory-empty-mark { display:grid; place-items:center; width:44px; height:44px; border-radius:12px; color:var(--accent); background:color-mix(in srgb,var(--accent) 10%,transparent); }
+        .directory-empty .directory-eyebrow { margin:8px 0 0; }
+        .directory-empty h3 { margin:0; color:var(--ink); font-size:20px; }
+        .directory-empty > p:not(.directory-eyebrow) { max-width:360px; margin:0 0 8px; color:var(--muted); font-size:11px; line-height:1.5; }
+        @media (max-width:1100px) { .directory-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .directory-card-url { max-width:36%; } }
+        @media (max-width:900px) { .directory-main { padding:92px 18px 44px; } .directory-layout { display:block; margin-top:22px; } .directory-filter-rail { position:static; margin-bottom:26px; } .directory-rail-intro { display:flex; align-items:end; justify-content:space-between; gap:16px; } .directory-rail-intro p:last-child { max-width:300px; margin:0; text-align:right; } .directory-filter-panel { padding:15px; } .directory-filter-list { grid-template-columns:repeat(3,minmax(0,1fr)); } .directory-filter-menu { position:fixed; top:94px; right:18px; left:18px; max-height:min(58vh,420px); } }
+        @media (max-width:640px) { .directory-main { padding:84px 12px 34px; } .directory-masthead { grid-template-columns:1fr; gap:20px; padding:24px 18px; border-radius:18px; } .directory-masthead h1 { font-size:clamp(2.8rem,15vw,4.7rem); } .directory-lede { margin-top:15px; font-size:12px; } .directory-masthead-stat { justify-items:start; min-width:0; } .directory-masthead-stat strong { font-size:32px; } .directory-search-field { min-height:54px; } .directory-search-field kbd { display:none; } .directory-filter-rail { margin-bottom:18px; } .directory-rail-intro { display:block; } .directory-rail-intro p:last-child { margin-top:7px; text-align:left; } .directory-filter-list { grid-template-columns:1fr; gap:7px; } .directory-filter-trigger { min-height:54px; } .directory-filter-menu { top:84px; right:12px; left:12px; } .directory-results-head { align-items:flex-start; flex-direction:column; gap:13px; } .directory-results-actions { justify-content:space-between; width:100%; } .directory-card-grid, .directory-card-grid.is-list { grid-template-columns:1fr; gap:14px; } .directory-preview-frame { aspect-ratio:16/10; } .directory-card-body { padding:15px; } .directory-card-body h3 { font-size:18px; } .directory-card-url { max-width:48%; } .directory-recent-strip { align-items:flex-start; flex-direction:column; gap:12px; padding:16px; } .directory-recent-links { justify-content:flex-start; } .directory-suggestion-trigger { min-height:68px; padding:0 14px; } .directory-suggestion-form { padding:0 14px 14px; } .directory-form-grid { grid-template-columns:1fr; } .directory-form-footer { align-items:stretch; flex-direction:column; } .directory-primary-button { width:100%; } .directory-footer { align-items:flex-start; flex-direction:column; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; } }
       `}</style>
 
@@ -538,48 +681,25 @@ export default function App() {
             <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
             <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
           </nav>
+          <button type="button" className="mobile-menu-toggle" aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" onClick={() => setMobileMenuOpen(open => !open)}><Icon name={mobileMenuOpen ? "close" : "menu"} size={18} /></button>
           <div className="header-actions">
             <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
             <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
           </div>
+          {mobileMenuOpen && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
+            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={15} /> Directory</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={15} /> Inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={15} /> Libraries</button>
+            <a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={15} /> GitHub</a>
+          </nav>}
         </div>
       </header>
 
       <main className={`app-main ${isDirectory ? "directory-main" : "vengeance-main"}`}>
         {!isDirectory && <VengeanceLanding onNavigate={navigateTo} />}
 
-        {isDirectory && <>
-        <FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} categoryLabel={categoryLabel} recent={recent} onVisit={handleVisit} viewMode={viewMode} setViewMode={setViewMode} />
-        <section className="workspace" id="results" aria-label="Resource directory">
-          <div className="results-area">
-            {activeFilterCount > 0 && <div className="active-filters" aria-label="Active filters">
-              {query && <span className="active-filter">“{query}” <button type="button" onClick={() => setQuery("")} aria-label="Remove search filter"><Icon name="close" size={11} /></button></span>}
-              {activeCategory !== "all" && <span className="active-filter">{categoryLabel} <button type="button" onClick={() => setActiveCategory("all")} aria-label="Remove category filter"><Icon name="close" size={11} /></button></span>}
-              {stackFilter !== "all" && <span className="active-filter">{stackFilter} <button type="button" onClick={() => setStackFilter("all")} aria-label="Remove technology filter"><Icon name="close" size={11} /></button></span>}
-              {sortBy !== "featured" && <span className="active-filter">{SORT_OPTIONS.find(option => option.id === sortBy)?.label} <button type="button" onClick={() => setSortBy("featured")} aria-label="Remove sort filter"><Icon name="close" size={11} /></button></span>}
-            </div>}
-
-
-            {filteredResources.length === 0 ? <EmptyState onClear={clearFilters} /> : <div className={`resource-grid ${viewMode === "list" ? "list-view" : ""}`}>{filteredResources.map(resource => <ResourceCard key={resource.id} lib={resource} categoryLabel={CATEGORIES.find(item => item.id === CAT_RESOLVE(resource.cat))?.label || resource.cat} stacks={LIB_STACKS[resource.id] || []} accent={CAT_COLOR[CAT_RESOLVE(resource.cat)] || "#0066B3"} isNew={NEW_IDS.has(resource.id)} isCopied={copiedId === resource.id} query={query} onCopy={copyUrl} onVisit={handleVisit} />)}</div>}
-          </div>
-        </section>
-
-        <section className="suggest-section" aria-labelledby="suggest-title">
-          <div className="suggest-head" onClick={() => setSuggestOpen(open => !open)} role="button" tabIndex={0} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") setSuggestOpen(open => !open); }}>
-            <div className="suggest-title"><span className="suggest-icon"><Icon name="spark" size={17} /></span><div><strong id="suggest-title">Suggest a resource</strong><span>Send a resource link for review.</span></div></div><Icon name={suggestOpen ? "close" : "plus"} size={16} />
-          </div>
-          {suggestOpen && <div className="suggest-form">
-            {suggested ? <div className="empty-state" style={{ minHeight: 150 }}><div className="empty-symbol"><Icon name="check" size={22} /></div><h3>Opening your email app.</h3><p>Thanks for helping improve the directory.</p></div> : <>
-              <div className="suggest-form-grid"><div className="field"><label htmlFor="suggest-name">Resource name</label><input id="suggest-name" value={suggestion.name} onChange={event => setSuggestion({ ...suggestion, name: event.target.value })} placeholder="e.g. Acme UI" /></div><div className="field"><label htmlFor="suggest-url">URL</label><input id="suggest-url" value={suggestion.url} onChange={event => setSuggestion({ ...suggestion, url: event.target.value })} placeholder="acme-ui.com" /></div></div>
-              <div className="field"><label htmlFor="suggest-note">Why is this resource useful?</label><textarea id="suggest-note" value={suggestion.note} onChange={event => setSuggestion({ ...suggestion, note: event.target.value })} placeholder="What makes this resource useful or distinctive?" /></div>
-              <div className="suggest-form-footer"><p>Opens an email with your resource details pre-filled.</p><button type="button" className="button button-primary" disabled={!suggestion.name.trim() || !suggestion.url.trim()} onClick={sendSuggestion}>Submit resource <Icon name="arrowRight" size={14} /></button></div>
-            </>}
-          </div>}
-        </section>
-
-        <footer className="app-footer"><span>Reviewed · Updated {VERIFIED_DATE}</span><span>{filteredResources.length} of {LIBS.length} resources displayed</span></footer>
-        </>}
+        {isDirectory && <DirectoryView categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} categoryLabel={categoryLabel} recent={recent} onVisit={handleVisit} viewMode={viewMode} setViewMode={setViewMode} query={query} setQuery={setQuery} searchRef={searchRef} filteredResources={filteredResources} libStacks={LIB_STACKS} newIds={NEW_IDS} categoryResolver={CAT_RESOLVE} categoryColors={CAT_COLOR} copiedId={copiedId} onCopy={copyUrl} setSuggestOpen={setSuggestOpen} suggestOpen={suggestOpen} suggested={suggested} suggestion={suggestion} setSuggestion={setSuggestion} sendSuggestion={sendSuggestion} verifiedDate={VERIFIED_DATE} />}
       </main>
 
     </div>
