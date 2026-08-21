@@ -43,3 +43,8 @@ The landing marquee was changed from square 1:1 tiles to explicit `16/10` deskto
 ## Search placement adjustment
 
 The oversized directory masthead card was removed. The browsing page now begins with a compact search strip, followed immediately by the filter controls and catalog results. On mobile, the search strip is full-width above the stacked filter controls; on desktop, it spans the workspace above the filter rail and results grid. The landing route was not changed by this adjustment.
+
+
+## Design Garage rebrand validation
+
+The Design Garage name now appears in the shared brand lockup, landing status and kicker, dynamic document titles, accessibility labels, and browser/social metadata. On mobile, the longer name wraps in the browsing header but remains readable and does not overlap the menu, theme, or suggestion controls. The landing marquee and its two-page route separation remain intact.
