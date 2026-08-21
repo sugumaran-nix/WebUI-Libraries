@@ -57,10 +57,10 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
               />
             )}
             {(previewState === "loading" || previewState === "retrying") && <div className="preview-skeleton" aria-label={`${lib.name} preview loading`}><span className="preview-skeleton-line" /><span className="preview-skeleton-line short" /></div>}
-            {previewState === "error" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>Preview unavailable · card opens site</small></div>}
+            {previewState === "error" && <div className="preview-placeholder"><span className="preview-initials">{initials}</span><small>Preview unavailable. Open the website to view it.</small></div>}
           </a>
           <div className="resource-preview-tools">
-            <button type="button" className={`icon-button ${isCopied ? "is-copied" : ""}`} onClick={(event) => onCopy(lib, event)} aria-label={isCopied ? "URL copied" : `Copy ${lib.name} URL`} title={isCopied ? "Copied" : "Copy URL"}>
+            <button type="button" className={`icon-button ${isCopied ? "is-copied" : ""}`} onClick={(event) => onCopy(lib, event)} aria-label={isCopied ? "Website address copied" : `Copy the website address for ${lib.name}`} title={isCopied ? "Copied" : "Copy website address"}>
               <Icon name={isCopied ? "check" : "copy"} size={14} />
             </button>
           </div>

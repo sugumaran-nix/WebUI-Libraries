@@ -132,20 +132,20 @@ function VengeanceLanding({ onNavigate }) {
     <section ref={sectionRef} className="vengeance-landing" aria-labelledby="vengeance-title">
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
-        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource desk</span>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
+        <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource directory</span>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
       <div className="vengeance-content">
-        <div className="vengeance-kicker">UI / FOLIO · CURATED INTERFACE INTELLIGENCE</div>
-        <h1 id="vengeance-title">UI / FOLIO</h1>
+        <div className="vengeance-kicker">WEB DESIGN AND DEVELOPMENT RESOURCES</div>
+        <h1 id="vengeance-title">UI Resource Library</h1>
         <div className="vengeance-intro">
-          <div className="vengeance-subtitle"><span>FIND BETTER</span><span>BUILD FASTER</span></div>
-          <div className="vengeance-copy"><p>A focused index of libraries, design systems, inspiration galleries, and frontend tools for people who care about the details.</p><p>Explore {LIBS.length} hand-picked resources, compare real previews, filter by topic or stack, and move from a spark of inspiration to a shipped interface.</p></div>
+          <div className="vengeance-subtitle"><span>FIND THE RIGHT TOOLS</span><span>BUILD BETTER PRODUCTS</span></div>
+          <div className="vengeance-copy"><p>Browse a practical collection of UI libraries, design systems, inspiration galleries, and frontend tools.</p><p>Explore {LIBS.length} resources, preview each website, filter by category or technology, and choose the right tool for your next project.</p></div>
         </div>
-        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse the directory <Icon name="arrowRight" size={15} /></button>
+        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse all resources <Icon name="arrowRight" size={15} /></button>
       </div>
-      <p className="vengeance-footer">A living reference desk for digital makers: fewer tabs, better signals, and a more considered way to discover what belongs in your next product.</p>
+      <p className="vengeance-footer">A practical directory for finding reliable UI resources, design references, and development tools.</p>
     </section>
   );
 }
@@ -199,14 +199,14 @@ export default function App() {
 
   useEffect(() => {
     if (!isDirectory) {
-      document.title = "UI / FOLIO — Curated Interface Intelligence";
+      document.title = "UI Resource Library — Web Design and Development Resources";
       return;
     }
     const titleParts = [];
     if (activeCategory !== "all") titleParts.push(CATEGORIES.find(item => item.id === activeCategory)?.label || activeCategory);
     if (stackFilter !== "all") titleParts.push(stackFilter);
     if (query) titleParts.push(`“${query}”`);
-    document.title = titleParts.length ? `${titleParts.join(" · ")} — UI / FOLIO` : "Directory — UI / FOLIO";
+    document.title = titleParts.length ? `${titleParts.join(" · ")} — UI Resource Library` : "Resource Directory — UI Resource Library";
   }, [isDirectory, activeCategory, query, stackFilter]);
 
   useEffect(() => {
@@ -254,7 +254,7 @@ export default function App() {
     });
   }, [activeCategory, debouncedQuery, sortBy, stackFilter]);
 
-  const categoryLabel = CATEGORIES.find(item => item.id === activeCategory)?.label || "All resources";
+  const categoryLabel = CATEGORIES.find(item => item.id === activeCategory)?.label || "All categories";
   const activeFilterCount = (activeCategory !== "all" ? 1 : 0) + (query ? 1 : 0) + (stackFilter !== "all" ? 1 : 0) + (sortBy !== "featured" ? 1 : 0);
   const newResources = useMemo(() => LIBS.filter(resource => NEW_IDS.has(resource.id)).slice(0, 6), []);
   const trendResources = useMemo(() => LIBS.filter(resource => NEW_IDS.has(resource.id) && ["inspiration", "design-tools", "dev-tools"].includes(resource.cat)).slice(0, 3), []);
@@ -278,7 +278,7 @@ export default function App() {
     if (!suggestion.name.trim() || !suggestion.url.trim()) return;
     const cleanUrl = suggestion.url.trim().startsWith("http") ? suggestion.url.trim() : `https://${suggestion.url.trim()}`;
     const subject = encodeURIComponent(`Resource suggestion: ${suggestion.name.trim()}`);
-    const body = encodeURIComponent(`Name: ${suggestion.name.trim()}\nURL: ${cleanUrl}\n${suggestion.note.trim() ? `\nWhy it belongs: ${suggestion.note.trim()}` : ""}`);
+    const body = encodeURIComponent(`Name: ${suggestion.name.trim()}\nURL: ${cleanUrl}\n${suggestion.note.trim() ? `\nWhy should we include it: ${suggestion.note.trim()}` : ""}`);
     window.open(`https://github.com/sugumaran-nix/WebUI-Libraries/issues/new?title=${subject}&body=${body}`, "_blank");
     setSuggested(true);
     setSuggestion({ name: "", url: "", note: "" });
@@ -334,7 +334,7 @@ export default function App() {
         .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
         .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:1; height:min(48vh,420px); overflow:hidden; opacity:.42; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
         .vengeance-marquee-track { display:flex; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
-        .vengeance-tile { width:clamp(220px,24vw,360px); aspect-ratio:16/10; flex:0 0 auto; overflow:hidden; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
+        .vengeance-tile { width:clamp(280px,34vw,520px); aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
         .vengeance-tile img { display:block; width:100%; height:100%; object-fit:cover; }
         @keyframes vengeance-marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
         @media (prefers-reduced-motion: reduce) { .vengeance-marquee-track { animation:none; } .app-shell, .app-shell * { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; } .button:hover, .icon-button:hover, .theme-switch:hover { transform:none; } }
@@ -349,7 +349,7 @@ export default function App() {
         .vengeance-cta:hover { transform:translateY(-2px); background:var(--landing-fg); }
         .vengeance-footer { position:absolute; right:clamp(22px,5vw,72px); bottom:22px; left:clamp(22px,5vw,72px); max-width:620px; margin:0 auto; color:color-mix(in srgb,var(--landing-fg) 48%,transparent); font-size:9px; line-height:1.65; text-align:center; }
         @media (max-width:820px) { .vengeance-topline { align-items:flex-start; flex-direction:column; gap:10px; } .vengeance-toplinks { gap:12px; } .vengeance-content { padding-top:150px; } .vengeance-intro { grid-template-columns:1fr; gap:22px; padding-left:0; } .vengeance-subtitle { flex-direction:row; gap:10px; font-size:21px; } .vengeance-copy { grid-template-columns:1fr; gap:12px; } .vengeance-footer { position:relative; right:auto; bottom:auto; left:auto; padding:0 22px 24px; } }
-        @media (max-width:560px) { .vengeance-landing { min-height:calc(100vh - 64px); } .vengeance-content { min-height:calc(100vh - 64px); padding-top:142px; } .vengeance-content h1 { font-size:clamp(4.5rem,22vw,8rem); } .vengeance-marquee { height:36vh; } .vengeance-tile { width:clamp(220px,72vw,290px); aspect-ratio:16/10; } .vengeance-topline { top:16px; font-size:8px; } .vengeance-kicker { font-size:8px; } }
+        @media (max-width:560px) { .vengeance-landing { min-height:calc(100vh - 64px); } .vengeance-content { min-height:calc(100vh - 64px); padding-top:142px; } .vengeance-content h1 { font-size:clamp(4.5rem,22vw,8rem); } .vengeance-marquee { height:36vh; } .vengeance-tile { width:calc(100vw - 32px); max-width:520px; aspect-ratio:16/9; } .vengeance-topline { top:16px; font-size:8px; } .vengeance-kicker { font-size:8px; } }
         .welcome-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:24px; min-height:390px; padding:clamp(26px,5vw,62px); overflow:hidden; border-radius:32px; color:#FFF; background:linear-gradient(125deg,#0B3D91 0%,#0066B3 48%,#5CA8E6 100%); box-shadow:0 30px 80px rgba(0,43,84,.28); }
         .welcome-copy { align-self:center; max-width:680px; }
         .eyebrow { color:var(--lime); font-size:10px; font-weight:900; letter-spacing:.17em; text-transform:uppercase; }
@@ -519,7 +519,7 @@ export default function App() {
         @media (max-width:1060px) { .header-nav { display:none; } .directory-main { padding-top:calc(64px + 16px + 60px); } .quick-access-panel { top:80px; left:18px; width:calc(100% - 36px); } .results-area { width:100%; } }
         @media (max-width:820px) { .header-inner, .app-main { padding-left:18px; padding-right:18px; } .header-inner { min-height:64px; } .brand-lockup { min-width:auto; } .brand-caption { display:none; } .header-actions { margin-left:auto; } .theme-switch-label { display:none; } .welcome-grid { grid-template-columns:1fr; min-height:auto; padding:28px 22px 18px; } .hero-orbit { min-height:185px; } .hero-orbit-card.one { left:3%; } .hero-orbit-card.two { right:4%; } .metric-grid { grid-template-columns:repeat(2,1fr); } .spotlight-grid { grid-template-columns:1fr; } .resource-grid, .resource-grid.list-view { grid-template-columns:1fr; gap:16px; } }
         @media (max-width:700px) { .view-toggle { display:none; } .resource-grid, .resource-grid.list-view { grid-template-columns:1fr; } }
-        @media (max-width:560px) { .app-main { padding-top:16px; } .header-nav button, .github-link { min-height:44px; min-width:44px; } .resource-card p { font-size:12px; line-height:1.55; } .resource-card-copy { padding:14px 16px 16px; } .vengeance-main { padding-top:64px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; overflow-x:auto; overflow-y:visible; scrollbar-width:none; } .quick-access-panel::-webkit-scrollbar { display:none; } .quick-access-row { width:max-content; min-width:100%; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .github-link span { display:none; } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
+        @media (max-width:560px) { .app-main { padding-top:16px; } .header-nav button, .github-link { min-height:44px; min-width:44px; } .resource-card p { font-size:12px; line-height:1.55; } .resource-card-copy { padding:14px 16px 16px; } .vengeance-main { padding-top:64px; } .directory-main { padding-top:calc(64px + 12px + 60px); } .welcome-title { font-size:clamp(3.15rem,16vw,5rem); } .hero-search { margin-top:22px; } .hero-search-kbd { display:none; } .hero-search .button { min-width:38px; padding:0; } .metric-grid { gap:8px; margin-bottom:28px; } .metric-card { padding:12px; } .metric-card strong { font-size:24px; } .section-header { align-items:flex-start; flex-direction:column; gap:5px; } .spotlight-card { min-height:140px; } .landing-topics { padding:18px; } .landing-topic-grid { grid-template-columns:1fr; } .quick-access-panel { top:76px; left:18px; overflow-x:auto; overflow-y:visible; scrollbar-width:none; } .quick-access-panel::-webkit-scrollbar { display:none; } .quick-access-row { width:max-content; min-width:100%; } .quick-access-heading .quick-access-status { display:none; } .filter-row-summary { min-width:40px; } .filter-summary-rule { display:none; } .filter-summary-copy small { display:none; } .filter-actions .quick-access-status { display:none; } .filter-trigger { padding:0 7px; } .filter-popover-menu { position:fixed; top:132px; left:18px; max-width:calc(100vw - 36px); } .github-link span { display:none; } .brand-name { font-size:10px; letter-spacing:.09em; } .framework-menu { width:230px; } .recent-menu { width:270px; } .resource-grid { grid-template-columns:1fr; } .results-header { align-items:flex-start; flex-direction:column; } .results-actions { width:100%; justify-content:space-between; } .suggest-form-grid { grid-template-columns:1fr; } .app-footer { align-items:flex-start; flex-direction:column; } }
         @media (min-width:821px) { .resource-grid:not(.list-view) { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); } }
         @media (max-width:700px) { .resource-grid, .resource-grid.list-view { gap:12px; } .resource-card { border-radius:14px; } .resource-preview { aspect-ratio:16/10; } .resource-card-copy { padding:12px; } .resource-card h3 { font-size:16px; line-height:1.12; } .resource-card p { min-height:0; font-size:11px; line-height:1.5; } .resource-preview-tools .icon-button { width:40px; height:40px; } .filter-trigger { min-height:40px; } }
         @media (max-width:560px) { .quick-access-panel { left:12px; width:calc(100% - 24px); padding:8px; } .quick-access-row { gap:8px; } .filter-control-group { gap:6px; } .filter-popover-menu { max-height:min(60vh,340px); } .filter-option-button, .quick-access-chip { min-height:40px; } .active-filter button { min-width:32px; min-height:32px; } }
@@ -528,19 +528,19 @@ export default function App() {
 
       <header className={`site-header ${isDirectory ? "directory-header" : ""}`}>
         <div className="header-inner">
-          <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to UI / FOLIO landing page">
+          <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to the UI Resource Library home page">
             <span className="brand-symbol"><Icon name="library" size={17} /></span>
-            <span><span className="brand-name">UI / FOLIO</span><span className="brand-caption">Curated interface intelligence</span></span>
+            <span><span className="brand-name">UI Resource Library</span><span className="brand-caption">Web design and development resources</span></span>
           </button>
-          <nav className="header-nav" aria-label="Primary navigation">
-            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Discover</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
+          <nav className="header-nav" aria-label="Main navigation">
+            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Resource directory</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Design inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> UI libraries</button>
           </nav>
           <div className="header-actions">
-            <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open sugumaran-nix on GitHub" title="Open GitHub profile"><Icon name="github" size={17} /></a>
+            <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
-            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
+            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest a resource</button>
           </div>
         </div>
       </header>
@@ -550,12 +550,12 @@ export default function App() {
 
         {isDirectory && <>
         <FilterPanel categories={CATEGORIES} counts={counts} activeCategory={activeCategory} setActiveCategory={setActiveCategory} stacks={STACK_FILTERS} stackFilter={stackFilter} setStackFilter={setStackFilter} sortBy={sortBy} setSortBy={setSortBy} sortOptions={SORT_OPTIONS} clearFilters={clearFilters} hasActiveFilters={activeFilterCount > 0} activeFilterCount={activeFilterCount} resultCount={filteredResources.length} categoryLabel={categoryLabel} recent={recent} onVisit={handleVisit} viewMode={viewMode} setViewMode={setViewMode} />
-        <section className="workspace" id="results" aria-label="Resource discovery workspace">
+        <section className="workspace" id="results" aria-label="Resource directory">
           <div className="results-area">
             {activeFilterCount > 0 && <div className="active-filters" aria-label="Active filters">
               {query && <span className="active-filter">“{query}” <button type="button" onClick={() => setQuery("")} aria-label="Remove search filter"><Icon name="close" size={11} /></button></span>}
               {activeCategory !== "all" && <span className="active-filter">{categoryLabel} <button type="button" onClick={() => setActiveCategory("all")} aria-label="Remove category filter"><Icon name="close" size={11} /></button></span>}
-              {stackFilter !== "all" && <span className="active-filter">{stackFilter} <button type="button" onClick={() => setStackFilter("all")} aria-label="Remove framework filter"><Icon name="close" size={11} /></button></span>}
+              {stackFilter !== "all" && <span className="active-filter">{stackFilter} <button type="button" onClick={() => setStackFilter("all")} aria-label="Remove technology filter"><Icon name="close" size={11} /></button></span>}
               {sortBy !== "featured" && <span className="active-filter">{SORT_OPTIONS.find(option => option.id === sortBy)?.label} <button type="button" onClick={() => setSortBy("featured")} aria-label="Remove sort filter"><Icon name="close" size={11} /></button></span>}
             </div>}
 
@@ -566,18 +566,18 @@ export default function App() {
 
         <section className="suggest-section" aria-labelledby="suggest-title">
           <div className="suggest-head" onClick={() => setSuggestOpen(open => !open)} role="button" tabIndex={0} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") setSuggestOpen(open => !open); }}>
-            <div className="suggest-title"><span className="suggest-icon"><Icon name="spark" size={17} /></span><div><strong id="suggest-title">Know something that belongs here?</strong><span>Send a link. I review and add the best resources.</span></div></div><Icon name={suggestOpen ? "close" : "plus"} size={16} />
+            <div className="suggest-title"><span className="suggest-icon"><Icon name="spark" size={17} /></span><div><strong id="suggest-title">Suggest a resource</strong><span>Send a resource link for review.</span></div></div><Icon name={suggestOpen ? "close" : "plus"} size={16} />
           </div>
           {suggestOpen && <div className="suggest-form">
-            {suggested ? <div className="empty-state" style={{ minHeight: 150 }}><div className="empty-symbol"><Icon name="check" size={22} /></div><h3>Opening your email client.</h3><p>Thanks for helping keep the index sharp.</p></div> : <>
+            {suggested ? <div className="empty-state" style={{ minHeight: 150 }}><div className="empty-symbol"><Icon name="check" size={22} /></div><h3>Opening your email app.</h3><p>Thanks for helping improve the directory.</p></div> : <>
               <div className="suggest-form-grid"><div className="field"><label htmlFor="suggest-name">Resource name</label><input id="suggest-name" value={suggestion.name} onChange={event => setSuggestion({ ...suggestion, name: event.target.value })} placeholder="e.g. Acme UI" /></div><div className="field"><label htmlFor="suggest-url">URL</label><input id="suggest-url" value={suggestion.url} onChange={event => setSuggestion({ ...suggestion, url: event.target.value })} placeholder="acme-ui.com" /></div></div>
-              <div className="field"><label htmlFor="suggest-note">Why it belongs</label><textarea id="suggest-note" value={suggestion.note} onChange={event => setSuggestion({ ...suggestion, note: event.target.value })} placeholder="What makes this resource useful or distinctive?" /></div>
-              <div className="suggest-form-footer"><p>Opens an email with the details pre-filled.</p><button type="button" className="button button-primary" disabled={!suggestion.name.trim() || !suggestion.url.trim()} onClick={sendSuggestion}>Send suggestion <Icon name="arrowRight" size={14} /></button></div>
+              <div className="field"><label htmlFor="suggest-note">Why should we include it?</label><textarea id="suggest-note" value={suggestion.note} onChange={event => setSuggestion({ ...suggestion, note: event.target.value })} placeholder="What makes this resource useful or distinctive?" /></div>
+              <div className="suggest-form-footer"><p>Opens an email with your resource details pre-filled.</p><button type="button" className="button button-primary" disabled={!suggestion.name.trim() || !suggestion.url.trim()} onClick={sendSuggestion}>Submit resource <Icon name="arrowRight" size={14} /></button></div>
             </>}
           </div>}
         </section>
 
-        <footer className="app-footer"><span>Hand-picked · Verified {VERIFIED_DATE}</span><span>{filteredResources.length} of {LIBS.length} resources shown</span></footer>
+        <footer className="app-footer"><span>Reviewed · Updated {VERIFIED_DATE}</span><span>{filteredResources.length} of {LIBS.length} resources displayed</span></footer>
         </>}
       </main>
 
