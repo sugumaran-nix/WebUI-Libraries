@@ -92,14 +92,14 @@ function ThemeToggle({ theme, onToggle }) {
 function VengeanceLanding({ onNavigate }) {
   const sectionRef = useRef(null);
   const marqueeImages = [
-    { name: "shadcn/ui", url: "https://ui.shadcn.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://ui.shadcn.com" },
-    { name: "Godly", url: "https://godly.design", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://godly.design" },
-    { name: "Refero", url: "https://refero.design", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://refero.design" },
-    { name: "Mobbin", url: "https://mobbin.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://mobbin.com" },
-    { name: "SaaSFrame", url: "https://www.saasframe.io", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.saasframe.io" },
-    { name: "Linear", url: "https://linear.app", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://linear.app" },
-    { name: "Tailwind CSS", url: "https://tailwindcss.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://tailwindcss.com" },
-    { name: "Awwwards", url: "https://www.awwwards.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.awwwards.com" },
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://ui.shadcn.com",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://godly.design",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://refero.design",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://mobbin.com",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.saasframe.io",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://linear.app",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://tailwindcss.com",
+    "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.awwwards.com",
   ];
   const marqueeTiles = [...marqueeImages, ...marqueeImages];
 
@@ -134,19 +134,19 @@ function VengeanceLanding({ onNavigate }) {
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
         <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource desk</span>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
-      <div className="vengeance-marquee"><div className="vengeance-marquee-track">{marqueeTiles.map((tile, index) => <a className="vengeance-tile" key={`${tile.url}-${index}`} href={tile.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${tile.name} website`}><img src={tile.image} alt={`${tile.name} website preview`} loading="lazy" /></a>)}</div></div>
+      <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
       <div className="vengeance-content">
         <div className="vengeance-kicker">UI / FOLIO · CURATED INTERFACE INTELLIGENCE</div>
-        <h1 id="vengeance-title">UI Resource Library</h1>
+        <h1 id="vengeance-title">UI / FOLIO</h1>
         <div className="vengeance-intro">
           <div className="vengeance-subtitle"><span>FIND BETTER</span><span>BUILD FASTER</span></div>
-          <div className="vengeance-copy"><p>Browse a focused collection of UI libraries, design systems, inspiration galleries, and frontend tools.</p><p>Explore {LIBS.length} resources, preview each website, filter by topic or stack, and move from a spark of inspiration to a shipped interface.</p></div>
+          <div className="vengeance-copy"><p>A focused index of libraries, design systems, inspiration galleries, and frontend tools for people who care about the details.</p><p>Explore {LIBS.length} hand-picked resources, compare real previews, filter by topic or stack, and move from a spark of inspiration to a shipped interface.</p></div>
         </div>
         <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse the directory <Icon name="arrowRight" size={15} /></button>
       </div>
-      <p className="vengeance-footer">A practical directory for finding reliable UI resources, design references, and development tools.</p>
+      <p className="vengeance-footer">A living reference desk for digital makers: fewer tabs, better signals, and a more considered way to discover what belongs in your next product.</p>
     </section>
   );
 }
@@ -338,14 +338,13 @@ export default function App() {
         .vengeance-topline a:hover, .vengeance-toplinks button:hover, .vengeance-toplinks a:hover { color:var(--landing-fg); }
         .vengeance-toplinks { display:flex; align-items:center; gap:18px; }
         .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
-        .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:2; height:min(48vh,420px); overflow:hidden; opacity:.42; pointer-events:none; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
-        .vengeance-marquee-track { display:flex; align-items:flex-start; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
-        .vengeance-tile { display:block; width:clamp(280px,34vw,520px); height:auto; align-self:flex-start; aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; pointer-events:auto; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
+        .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:1; height:min(48vh,420px); overflow:hidden; opacity:.42; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
+        .vengeance-marquee-track { display:flex; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
+        .vengeance-tile { width:clamp(130px,15vw,200px); aspect-ratio:1; flex:0 0 auto; overflow:hidden; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
         .vengeance-tile img { display:block; width:100%; height:100%; object-fit:cover; }
         @keyframes vengeance-marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
         @media (prefers-reduced-motion: reduce) { .vengeance-marquee-track { animation:none; } .app-shell, .app-shell * { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; } .button:hover, .icon-button:hover, .theme-switch:hover { transform:none; } }
-        .vengeance-content { position:relative; z-index:3; display:flex; pointer-events:none; flex-direction:column; justify-content:center; width:min(1280px,100%); min-height:calc(100vh - 72px); margin:0 auto; padding:clamp(100px,14vh,160px) clamp(22px,6vw,92px) 130px; }
-        .vengeance-content > * { pointer-events:auto; }
+        .vengeance-content { position:relative; z-index:3; display:flex; flex-direction:column; justify-content:center; width:min(1280px,100%); min-height:calc(100vh - 72px); margin:0 auto; padding:clamp(100px,14vh,160px) clamp(22px,6vw,92px) 130px; }
         .vengeance-kicker { align-self:flex-start; margin-bottom:18px; color:var(--landing-cool); font-size:10px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
         .vengeance-content h1 { margin:0; font-family:Georgia,'Times New Roman',serif; font-size:clamp(5rem,17vw,14rem); font-weight:400; line-height:.78; letter-spacing:-.1em; color:var(--landing-fg); }
         .vengeance-intro { display:grid; grid-template-columns:minmax(170px,.35fr) minmax(0,1fr); gap:clamp(28px,7vw,105px); max-width:820px; margin-top:clamp(58px,9vh,100px); padding-left:clamp(0px,8vw,125px); }
@@ -356,7 +355,7 @@ export default function App() {
         .vengeance-cta:hover { transform:translateY(-2px); background:var(--landing-fg); }
         .vengeance-footer { position:absolute; right:clamp(22px,5vw,72px); bottom:22px; left:clamp(22px,5vw,72px); max-width:620px; margin:0 auto; color:color-mix(in srgb,var(--landing-fg) 48%,transparent); font-size:9px; line-height:1.65; text-align:center; }
         @media (max-width:820px) { .vengeance-topline { align-items:flex-start; flex-direction:column; gap:10px; } .vengeance-toplinks { gap:12px; } .vengeance-content { padding-top:150px; } .vengeance-intro { grid-template-columns:1fr; gap:22px; padding-left:0; } .vengeance-subtitle { flex-direction:row; gap:10px; font-size:21px; } .vengeance-copy { grid-template-columns:1fr; gap:12px; } .vengeance-footer { position:relative; right:auto; bottom:auto; left:auto; padding:0 22px 24px; } }
-        @media (max-width:560px) { .vengeance-landing { min-height:calc(100vh - 64px); } .vengeance-content { min-height:calc(100vh - 64px); padding-top:142px; } .vengeance-content h1 { font-size:clamp(4.5rem,22vw,8rem); } .vengeance-marquee { height:36vh; } .vengeance-tile { width:calc(100vw - 32px); max-width:520px; aspect-ratio:16/9; } .vengeance-topline { top:16px; font-size:8px; } .vengeance-kicker { font-size:8px; } }
+        @media (max-width:560px) { .vengeance-landing { min-height:calc(100vh - 64px); } .vengeance-content { min-height:calc(100vh - 64px); padding-top:142px; } .vengeance-content h1 { font-size:clamp(4.5rem,22vw,8rem); } .vengeance-marquee { height:33vh; } .vengeance-tile { width:118px; } .vengeance-topline { top:16px; font-size:8px; } .vengeance-kicker { font-size:8px; } }
         .welcome-grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:24px; min-height:390px; padding:clamp(26px,5vw,62px); overflow:hidden; border-radius:32px; color:#FFF; background:linear-gradient(125deg,#0B3D91 0%,#0066B3 48%,#5CA8E6 100%); box-shadow:0 30px 80px rgba(0,43,84,.28); }
         .welcome-copy { align-self:center; max-width:680px; }
         .eyebrow { color:var(--lime); font-size:10px; font-weight:900; letter-spacing:.17em; text-transform:uppercase; }
@@ -681,13 +680,13 @@ export default function App() {
             <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
             <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
           </nav>
-          <button type="button" className="mobile-menu-toggle" aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" onClick={() => setMobileMenuOpen(open => !open)}><Icon name={mobileMenuOpen ? "close" : "menu"} size={18} /></button>
+          {isDirectory && <button type="button" className="mobile-menu-toggle" aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" onClick={() => setMobileMenuOpen(open => !open)}><Icon name={mobileMenuOpen ? "close" : "menu"} size={18} /></button>}
           <div className="header-actions">
             <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
             <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
           </div>
-          {mobileMenuOpen && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
+          {isDirectory && mobileMenuOpen && <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
             <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={15} /> Directory</button>
             <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={15} /> Inspiration</button>
             <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={15} /> Libraries</button>

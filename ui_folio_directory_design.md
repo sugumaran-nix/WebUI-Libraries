@@ -28,3 +28,8 @@ The directory uses white and warm-gray surfaces, graphite text, a single BMW-ins
 ## State and accessibility rules
 
 Search updates results immediately and preserves the query in the URL. Filter state is reflected in live result feedback and removable chips. Menus close on selection and Escape, retain focus-visible outlines, and use actual buttons or links. Preview failures explain the failure and provide a direct Visit website action. Empty results provide a clear reset path.
+
+
+## Final separation check
+
+At 375 px, the landing route shows the original UI / FOLIO marquee, UI / FOLIO wordmark, FIND BETTER / BUILD FASTER message, supporting copy, and Browse the directory CTA. The `/directory` route shows a distinct resource-directory masthead, search input, filter rail, and catalog results. The mobile menu trigger is rendered only on the browsing route, so it does not alter the landing page’s original header appearance.
