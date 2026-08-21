@@ -91,14 +91,14 @@ function ThemeToggle({ theme, onToggle }) {
 function VengeanceLanding({ onNavigate }) {
   const sectionRef = useRef(null);
   const marqueeImages = [
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://ui.shadcn.com",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://godly.design",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://refero.design",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://mobbin.com",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.saasframe.io",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://linear.app",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://tailwindcss.com",
-    "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.awwwards.com",
+    { name: "shadcn/ui", url: "https://ui.shadcn.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://ui.shadcn.com" },
+    { name: "Godly", url: "https://godly.design", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://godly.design" },
+    { name: "Refero", url: "https://refero.design", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://refero.design" },
+    { name: "Mobbin", url: "https://mobbin.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://mobbin.com" },
+    { name: "SaaSFrame", url: "https://www.saasframe.io", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.saasframe.io" },
+    { name: "Linear", url: "https://linear.app", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://linear.app" },
+    { name: "Tailwind CSS", url: "https://tailwindcss.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://tailwindcss.com" },
+    { name: "Awwwards", url: "https://www.awwwards.com", image: "https://image.thum.io/get/width/900/crop/560/noanimate/https://www.awwwards.com" },
   ];
   const marqueeTiles = [...marqueeImages, ...marqueeImages];
 
@@ -135,7 +135,7 @@ function VengeanceLanding({ onNavigate }) {
         <span className="landing-status"><Icon name="compass" size={12} /> Open-source resource directory</span>
         <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
-      <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
+      <div className="vengeance-marquee"><div className="vengeance-marquee-track">{marqueeTiles.map((tile, index) => <a className="vengeance-tile" key={`${tile.url}-${index}`} href={tile.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${tile.name} website`}><img src={tile.image} alt={`${tile.name} website preview`} loading="lazy" /></a>)}</div></div>
       <div className="vengeance-content">
         <div className="vengeance-kicker">WEB DESIGN AND DEVELOPMENT RESOURCES</div>
         <h1 id="vengeance-title">UI Resource Library</h1>
@@ -332,13 +332,14 @@ export default function App() {
         .vengeance-topline a:hover, .vengeance-toplinks button:hover, .vengeance-toplinks a:hover { color:var(--landing-fg); }
         .vengeance-toplinks { display:flex; align-items:center; gap:18px; }
         .vengeance-toplinks button { padding:0; border:0; background:transparent; font-size:inherit; font-weight:inherit; letter-spacing:inherit; text-transform:inherit; cursor:pointer; }
-        .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:1; height:min(48vh,420px); overflow:hidden; opacity:.42; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
+        .vengeance-marquee { position:absolute; top:0; left:0; right:0; z-index:2; height:min(48vh,420px); overflow:hidden; opacity:.42; pointer-events:none; mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.88) 48%,transparent 100%); }
         .vengeance-marquee-track { display:flex; gap:16px; width:max-content; height:100%; padding:34px 0 28px; animation:vengeance-marquee 34s linear infinite; }
-        .vengeance-tile { width:clamp(280px,34vw,520px); aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
+        .vengeance-tile { width:clamp(280px,34vw,520px); aspect-ratio:16/9; flex:0 0 auto; overflow:hidden; pointer-events:auto; border:1px solid color-mix(in srgb,var(--landing-fg) 18%,transparent); border-radius:10px; background:color-mix(in srgb,var(--landing-fg) 8%,var(--landing-bg)); box-shadow:0 18px 38px color-mix(in srgb,var(--landing-fg) 16%,transparent); filter:saturate(.82) contrast(1.04); }
         .vengeance-tile img { display:block; width:100%; height:100%; object-fit:cover; }
         @keyframes vengeance-marquee { from { transform:translateX(0); } to { transform:translateX(calc(-50% - 8px)); } }
         @media (prefers-reduced-motion: reduce) { .vengeance-marquee-track { animation:none; } .app-shell, .app-shell * { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; } .button:hover, .icon-button:hover, .theme-switch:hover { transform:none; } }
-        .vengeance-content { position:relative; z-index:3; display:flex; flex-direction:column; justify-content:center; width:min(1280px,100%); min-height:calc(100vh - 72px); margin:0 auto; padding:clamp(100px,14vh,160px) clamp(22px,6vw,92px) 130px; }
+        .vengeance-content { position:relative; z-index:3; display:flex; pointer-events:none; flex-direction:column; justify-content:center; width:min(1280px,100%); min-height:calc(100vh - 72px); margin:0 auto; padding:clamp(100px,14vh,160px) clamp(22px,6vw,92px) 130px; }
+        .vengeance-content > * { pointer-events:auto; }
         .vengeance-kicker { align-self:flex-start; margin-bottom:18px; color:var(--landing-cool); font-size:10px; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
         .vengeance-content h1 { margin:0; font-family:Georgia,'Times New Roman',serif; font-size:clamp(5rem,17vw,14rem); font-weight:400; line-height:.78; letter-spacing:-.1em; color:var(--landing-fg); }
         .vengeance-intro { display:grid; grid-template-columns:minmax(170px,.35fr) minmax(0,1fr); gap:clamp(28px,7vw,105px); max-width:820px; margin-top:clamp(58px,9vh,100px); padding-left:clamp(0px,8vw,125px); }
