@@ -39,7 +39,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
   };
 
   return (
-    <article className="directory-resource-card" style={{ "--card-accent": accent || "#0057B8" }}>
+    <article className="directory-resource-card" style={{ "--card-accent": accent || "#004FA8" }}>
       <div className="directory-preview-frame" aria-busy={previewState === "loading" || previewState === "retrying"}>
         <a className="directory-preview-link" href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)} aria-label={`Open ${lib.name} website`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} width="1200" height="760" loading="lazy" decoding="async" onLoad={handlePreviewLoad} onError={handlePreviewError} />}
@@ -49,7 +49,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
         <div className="directory-preview-toolbar"><span>{previewState === "loaded" ? "LIVE PREVIEW" : previewState === "error" ? "PREVIEW UNAVAILABLE" : "LOADING PREVIEW"}</span><button type="button" className={`directory-copy-button ${isCopied ? "is-copied" : ""}`} onClick={event => onCopy(lib, event)} aria-label={isCopied ? "Website address copied" : `Copy the website address for ${lib.name}`}><Icon name={isCopied ? "check" : "copy"} size={14} /><span>{isCopied ? "Copied" : "Copy address"}</span></button></div>
       </div>
       <div className="directory-card-body">
-        <div className="directory-card-meta"><span className="directory-card-category" style={{ "--category-accent": accent || "#0057B8" }}>{categoryLabel}</span>{isNew && <span className="directory-new-badge">New</span>}<span className="directory-card-url">{lib.url}</span></div>
+        <div className="directory-card-meta"><span className="directory-card-category" style={{ "--category-accent": accent || "#004FA8" }}>{categoryLabel}</span>{isNew && <span className="directory-new-badge">New</span>}<span className="directory-card-url">{lib.url}</span></div>
         <h3><a href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></a></h3>
         <p><Highlight text={lib.desc} query={query} /></p>
         {stacks.length > 0 && <div className="directory-card-tags" aria-label={`${lib.name} technologies`}>{stacks.slice(0, 3).map(stack => <span key={stack}>{stack}</span>)}</div>}
