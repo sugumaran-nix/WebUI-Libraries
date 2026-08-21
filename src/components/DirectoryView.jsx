@@ -75,6 +75,13 @@ export default function DirectoryView({
         </div>
       </section>
 
+      <nav className="directory-gallery-nav" aria-label="Browse resource collections">
+        <p className="directory-eyebrow">BROWSE BY FORMAT</p>
+        <div className="directory-gallery-nav-list">
+          {[{ id: "all", label: "All resources", icon: "grid" }, { id: "inspiration", label: "Design references", icon: "spark" }, { id: "collections", label: "Resource collections", icon: "library" }, { id: "dev-tools", label: "Developer tools", icon: "code" }].map(item => <button type="button" key={item.id} className={activeCategory === item.id ? "is-active" : ""} aria-pressed={activeCategory === item.id} onClick={() => setActiveCategory(item.id)}><Icon name={item.icon} size={14} /><span>{item.label}</span><Icon name="arrow" size={12} /></button>)}
+        </div>
+      </nav>
+
       <div className="directory-layout">
         <aside className="directory-filter-rail" aria-label="Resource filters">
           <div className="directory-rail-intro"><p className="directory-eyebrow">REFINE</p><h2>Choose your criteria.</h2><p>Use the visible resource details to narrow the collection.</p></div>
@@ -100,7 +107,7 @@ export default function DirectoryView({
       </section>
 
       <section className="directory-suggestion" aria-labelledby="suggest-title">
-        <button type="button" className="directory-suggestion-trigger" onClick={() => setSuggestOpen(open => !open)} aria-expanded={suggestOpen} aria-controls="suggest-resource-form"><span><span className="directory-suggestion-icon"><Icon name="spark" size={17} /></span><span><strong id="suggest-title">Know a strong resource?</strong><small>Send it for review and help improve the directory.</small></span></span><Icon name={suggestOpen ? "close" : "plus"} size={17} /></button>
+        <button type="button" id="suggest-resource-trigger" className="directory-suggestion-trigger" onClick={() => setSuggestOpen(open => !open)} aria-expanded={suggestOpen} aria-controls="suggest-resource-form"><span><span className="directory-suggestion-icon"><Icon name="spark" size={17} /></span><span><strong id="suggest-title">Know a strong resource?</strong><small>Send it for review and help improve the directory.</small></span></span><Icon name={suggestOpen ? "close" : "plus"} size={17} /></button>
         {suggestOpen && <div className="directory-suggestion-form" id="suggest-resource-form">
           {suggested ? <div className="directory-success" role="status"><Icon name="check" size={18} /><span>Your suggestion is ready to review in GitHub.</span></div> : <>
             <div className="directory-form-grid"><label>Resource name<input value={suggestion.name} onChange={event => setSuggestion({ ...suggestion, name: event.target.value })} placeholder="e.g. Acme UI" /></label><label>Website URL<input value={suggestion.url} onChange={event => setSuggestion({ ...suggestion, url: event.target.value })} placeholder="acme-ui.com" /></label></div>
