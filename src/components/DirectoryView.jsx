@@ -89,7 +89,7 @@ export default function DirectoryView({
             </div>
           </div>
           <ActiveFilters query={query} activeCategory={activeCategory} categoryLabel={categoryLabel} stackFilter={stackFilter} sortBy={sortBy} sortOptions={sortOptions} setQuery={setQuery} setActiveCategory={setActiveCategory} setStackFilter={setStackFilter} setSortBy={setSortBy} />
-          {filteredResources.length === 0 ? <EmptyDirectory onClear={clearFilters} /> : <div className={`directory-card-grid ${viewMode === "list" ? "is-list" : ""}`}>{filteredResources.map(resource => <ResourceCard key={resource.id} lib={resource} categoryLabel={categories.find(item => item.id === categoryResolver(resource.cat))?.label || resource.cat} stacks={libStacks[resource.id] || []} accent={categoryColors[categoryResolver(resource.cat)] || "#1C69D4"} isNew={newIds.has(resource.id)} isCopied={copiedId === resource.id} query={query} onCopy={onCopy} onVisit={onVisit} />)}</div>}
+          {filteredResources.length === 0 ? <EmptyDirectory onClear={clearFilters} /> : <div className={`directory-card-grid ${viewMode === "list" ? "is-list" : ""}`}>{filteredResources.map(resource => <ResourceCard key={resource.id} lib={resource} categoryLabel={categories.find(item => item.id === categoryResolver(resource.cat))?.label || resource.cat} stacks={libStacks[resource.id] || []} accent={categoryColors[categoryResolver(resource.cat)] || "#0057B8"} isNew={newIds.has(resource.id)} isCopied={copiedId === resource.id} query={query} onCopy={onCopy} onVisit={onVisit} />)}</div>}
         </main>
       </div>
 
