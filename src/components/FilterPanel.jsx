@@ -1,62 +1,40 @@
 import { useState } from "react";
 import Icon from "./Icon";
 
-export default function FilterPanel({ categories, counts, activeCategory, setActiveCategory, stacks, stackFilter, setStackFilter, sortBy, setSortBy, sortOptions, clearFilters, hasActiveFilters, activeFilterCount, resultCount, categoryLabel, recent, onVisit, viewMode, setViewMode }) {
+function FilterMenu({ label, value, open, onToggle, children, menuLabel }) {
+  return (
+    <div className={`directory-filter-control ${open ? "is-open" : ""}`}>
+      <button type="button" className="directory-filter-trigger" onClick={onToggle} aria-expanded={open} aria-haspopup="listbox"><span><small>{label}</small><strong>{value}</strong></span><Icon name={open ? "close" : "chevron"} size={13} /></button>
+      {open && <div className="directory-filter-menu" role="listbox" aria-label={menuLabel}>{children}</div>}
+    </div>
+  );
+}
+
+export default function FilterPanel({ categories, counts, activeCategory, setActiveCategory, stacks, stackFilter, setStackFilter, sortBy, setSortBy, sortOptions, clearFilters, hasActiveFilters, activeFilterCount, resultCount, categoryLabel, recent, onVisit }) {
   const [openMenu, setOpenMenu] = useState(null);
-  const totalCount = Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0);
-  const activeCategoryName = categoryLabel === "All categories" ? "All categories" : categoryLabel;
+  const totalCount = counts.all || Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0);
   const toggleMenu = menu => setOpenMenu(current => current === menu ? null : menu);
   const closeMenu = () => setOpenMenu(null);
-  const triggerIcon = menu => <Icon name={openMenu === menu ? "close" : "chevron"} size={12} />;
+  const selectedSort = sortOptions.find(option => option.id === sortBy)?.label || "Featured";
+  const selectedTechnology = stackFilter === "all" ? "All technologies" : stackFilter;
 
   return (
-    <section className="quick-access-panel" aria-labelledby="quick-access-title">
-      <div className="quick-access-row">
-        <div className="quick-access-heading">
-          <h2 id="quick-access-title">Explore the collection</h2>
-        </div>
-
-        <div className="filter-control-group">
-          <div className={`filter-popover ${openMenu === "topic" ? "is-open" : ""}`}>
-            <button type="button" className="filter-trigger" onClick={() => toggleMenu("topic")} aria-expanded={openMenu === "topic"} aria-haspopup="listbox"><span>Category</span>{triggerIcon("topic")}</button>
-            {openMenu === "topic" && <div className="filter-popover-menu" role="listbox" aria-label="Filter by category">
-              {categories.map(category => <button type="button" role="option" aria-selected={activeCategory === category.id} className={`filter-option-button ${activeCategory === category.id ? "selected" : ""}`} key={category.id} onClick={() => { setActiveCategory(category.id); closeMenu(); }}>{category.label}<span>{category.id === "all" ? totalCount : counts[category.id] || 0}</span></button>)}
-            </div>}
-          </div>
-
-          <div className={`filter-popover ${openMenu === "framework" ? "is-open" : ""}`}>
-            <button type="button" className="filter-trigger" onClick={() => toggleMenu("framework")} aria-expanded={openMenu === "framework"} aria-haspopup="listbox"><span>Technology</span>{triggerIcon("framework")}</button>
-            {openMenu === "framework" && <div className="filter-popover-menu framework-menu" role="listbox" aria-label="Filter by technology">
-              {stacks.map(stack => <button type="button" role="option" aria-selected={stackFilter === stack} key={stack} className={`quick-access-chip ${stackFilter === stack ? "selected" : ""}`} onClick={() => { setStackFilter(stack); closeMenu(); }}>{stack === "all" ? "All technologies" : stack}</button>)}
-            </div>}
-          </div>
-
-          <div className={`filter-popover ${openMenu === "sort" ? "is-open" : ""}`}>
-            <button type="button" className="filter-trigger" onClick={() => toggleMenu("sort")} aria-expanded={openMenu === "sort"} aria-haspopup="listbox"><span>Sort by</span>{triggerIcon("sort")}</button>
-            {openMenu === "sort" && <div className="filter-popover-menu sort-menu" role="listbox" aria-label="Sort resources">
-              {sortOptions.map(option => <button type="button" role="option" aria-selected={sortBy === option.id} className={`filter-option-button ${sortBy === option.id ? "selected" : ""}`} key={option.id} onClick={() => { setSortBy(option.id); closeMenu(); }}>{option.label}</button>)}
-            </div>}
-          </div>
-
-          <div className={`filter-popover recent-popover ${openMenu === "recent" ? "is-open" : ""}`}>
-            <button type="button" className="filter-trigger recent-trigger" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"} aria-haspopup="dialog"><Icon name="history" size={14} /><span>Viewed recently</span></button>
-            {openMenu === "recent" && <div className="filter-popover-menu recent-menu" role="dialog" aria-label="Resources viewed recently">
-              <div className="recent-menu-heading"><strong>Viewed recently</strong><span>{recent.length ? `${recent.length} visited` : "No recent visits"}</span></div>
-              {recent.length ? recent.map(resource => <a className="recent-popover-card" key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => { onVisit(resource); closeMenu(); }}><span className="recent-popover-orbit">{resource.name.slice(0, 1)}</span><span><strong>{resource.name}</strong><small>{resource.url}</small></span><Icon name="arrow" size={11} /></a>) : <p className="recent-empty">Visit a resource and it will appear here.</p>}
-            </div>}
-          </div>
-        </div>
-
-        <div className="filter-row-summary" aria-live="polite">
-          <span className="filter-summary-rule" aria-hidden="true" />
-          <span className="filter-summary-copy"><strong>{activeCategoryName}</strong><small>{resultCount} resources {hasActiveFilters ? `· ${activeFilterCount} filter${activeFilterCount === 1 ? "" : "s"} applied` : "· showing all resources"}</small></span>
-        </div>
-
-        <div className="filter-actions">
-          <div className="view-toggle" aria-label="Change resource layout"><button type="button" className={viewMode === "list" ? "active" : ""} aria-label="List view" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")}><Icon name="list" size={14} /></button><button type="button" className={viewMode === "grid" ? "active" : ""} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}><Icon name="grid" size={14} /></button></div>
-          <button type="button" className="quick-access-clear" onClick={() => { clearFilters(); closeMenu(); }} disabled={!hasActiveFilters}><Icon name="trash" size={13} /><span>Reset filters</span></button>
-        </div>
+    <div className="directory-filter-panel">
+      <div className="directory-filter-panel-head"><div><p className="directory-eyebrow">FILTERS</p><h2>Refine results</h2></div><span className="directory-filter-count">{activeFilterCount} active</span></div>
+      <div className="directory-filter-list">
+        <FilterMenu label="Category" value={activeCategory === "all" ? "All categories" : categoryLabel} open={openMenu === "category"} onToggle={() => toggleMenu("category")} menuLabel="Filter by category">
+          {categories.map(category => <button type="button" role="option" aria-selected={activeCategory === category.id} className={activeCategory === category.id ? "is-selected" : ""} key={category.id} onClick={() => { setActiveCategory(category.id); closeMenu(); }}><span>{category.label}</span><small>{category.id === "all" ? totalCount : counts[category.id] || 0}</small></button>)}
+        </FilterMenu>
+        <FilterMenu label="Technology" value={selectedTechnology} open={openMenu === "technology"} onToggle={() => toggleMenu("technology")} menuLabel="Filter by technology">
+          {stacks.map(stack => <button type="button" role="option" aria-selected={stackFilter === stack} className={stackFilter === stack ? "is-selected" : ""} key={stack} onClick={() => { setStackFilter(stack); closeMenu(); }}><span>{stack === "all" ? "All technologies" : stack}</span></button>)}
+        </FilterMenu>
+        <FilterMenu label="Order" value={selectedSort} open={openMenu === "sort"} onToggle={() => toggleMenu("sort")} menuLabel="Sort resources">
+          {sortOptions.map(option => <button type="button" role="option" aria-selected={sortBy === option.id} className={sortBy === option.id ? "is-selected" : ""} key={option.id} onClick={() => { setSortBy(option.id); closeMenu(); }}><span>{option.label}</span></button>)}
+        </FilterMenu>
       </div>
-    </section>
+      <div className="directory-filter-summary" aria-live="polite"><strong>{resultCount}</strong><span>resources match your current view.</span></div>
+      <div className="directory-filter-actions"><button type="button" className="directory-reset-button" onClick={() => { clearFilters(); closeMenu(); }} disabled={!hasActiveFilters}><Icon name="close" size={13} /> Reset filters</button><button type="button" className="directory-recent-button" onClick={() => toggleMenu("recent")} aria-expanded={openMenu === "recent"}><Icon name="history" size={13} /> Recent</button></div>
+      {openMenu === "recent" && <div className="directory-recent-menu" role="dialog" aria-label="Recently visited resources">{recent.length ? recent.map(resource => <a key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => { onVisit(resource); closeMenu(); }}><span>{resource.name}</span><Icon name="arrow" size={11} /></a>) : <p>No recently visited resources.</p>}</div>}
+    </div>
   );
 }
