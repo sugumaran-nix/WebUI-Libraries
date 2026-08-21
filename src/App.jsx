@@ -133,7 +133,7 @@ function VengeanceLanding({ onNavigate }) {
       <div className="vengeance-glow" aria-hidden="true" />
       <div className="vengeance-topline">
         <span className="landing-status"><Icon name="compass" size={12} /> Open-source design resource directory</span>
-        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Browse resources</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Design references</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
+        <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
       <div className="vengeance-marquee"><div className="vengeance-marquee-track">{marqueeTiles.map((tile, index) => <a className="vengeance-tile" key={`${tile.url}-${index}`} href={tile.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${tile.name} website`}><img src={tile.image} alt={`${tile.name} website preview`} loading="lazy" /></a>)}</div></div>
       <div className="vengeance-content">
@@ -143,7 +143,7 @@ function VengeanceLanding({ onNavigate }) {
           <div className="vengeance-subtitle"><span>RESEARCH WITH PRECISION</span><span>BUILD WITH CONFIDENCE</span></div>
           <div className="vengeance-copy"><p>A practical reference for design systems, interface patterns, and frontend tools.</p><p>Compare {LIBS.length} live resources, filter by category or technology, and select the right tools for your next project.</p></div>
         </div>
-        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Open the resource directory <Icon name="arrowRight" size={15} /></button>
+        <button type="button" className="vengeance-cta" onClick={() => onNavigate("/directory")}>Browse the directory <Icon name="arrowRight" size={15} /></button>
       </div>
       <p className="vengeance-footer">A clear reference for selecting reliable UI resources, design references, and development tools.</p>
     </section>
@@ -531,17 +531,17 @@ export default function App() {
         <div className="header-inner">
           <button type="button" className="brand-lockup" onClick={() => navigateTo("/")} aria-label="Go to the UI Resource Library home page">
             <span className="brand-symbol"><Icon name="library" size={17} /></span>
-            <span><span className="brand-name">UI Resource Library</span><span className="brand-caption">Web design and development resources</span></span>
+            <span><span className="brand-name">UI / FOLIO</span><span className="brand-caption">Web design and development resources</span></span>
           </button>
           <nav className="header-nav" aria-label="Main navigation">
-            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Resource directory</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Design references</button>
-            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> UI libraries</button>
+            <button type="button" aria-current={isDirectory ? "page" : undefined} onClick={() => navigateTo("/directory")}><Icon name="compass" size={13} /> Discover</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "inspiration" ? "page" : undefined} onClick={() => { setActiveCategory("inspiration"); navigateTo("/directory"); }}><Icon name="spark" size={13} /> Inspiration</button>
+            <button type="button" aria-current={isDirectory && activeCategory === "react" ? "page" : undefined} onClick={() => { setActiveCategory("react"); navigateTo("/directory"); }}><Icon name="library" size={13} /> Libraries</button>
           </nav>
           <div className="header-actions">
             <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
-            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest a resource</button>
+            <button type="button" className="button button-primary" onClick={() => setSuggestOpen(true)}><Icon name="send" size={13} /> Suggest</button>
           </div>
         </div>
       </header>
