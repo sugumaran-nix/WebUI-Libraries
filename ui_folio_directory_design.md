@@ -33,3 +33,8 @@ Search updates results immediately and preserves the query in the URL. Filter st
 ## Final separation check
 
 At 375 px, the landing route shows the original UI / FOLIO marquee, UI / FOLIO wordmark, FIND BETTER / BUILD FASTER message, supporting copy, and Browse the directory CTA. The `/directory` route shows a distinct resource-directory masthead, search input, filter rail, and catalog results. The mobile menu trigger is rendered only on the browsing route, so it does not alter the landing page’s original header appearance.
+
+
+## Marquee and density correction
+
+The landing marquee was changed from square 1:1 tiles to explicit `16/10` desktop preview frames. The track now aligns items at the start and uses auto height so flexbox cannot stretch the tiles vertically. On phones, each tile uses a wide `clamp(210px,72vw,280px)` width; on larger screens it scales between 190 px and 320 px. The landing headline and content hierarchy remain unchanged. Directory spacing, card gaps, masthead padding, and search height were reduced to make the browsing experience more compact without shrinking touch targets.
