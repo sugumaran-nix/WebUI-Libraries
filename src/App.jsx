@@ -677,8 +677,9 @@ export default function App() {
         .brand-lockup:hover .brand-symbol { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--neo-shadow-color); }
         .header-nav button, .github-link, .theme-switch, .mobile-menu-toggle { border:2px solid transparent; border-radius:0; }
         .header-nav button:hover, .header-nav button[aria-current="page"], .github-link:hover, .mobile-menu-toggle:hover { border-color:var(--ink); color:var(--accent-ink); background:var(--accent-fill); box-shadow:3px 3px 0 var(--neo-shadow-color); }
-        .theme-switch { border-color:var(--ink); background:var(--surface); box-shadow:3px 3px 0 var(--neo-shadow-color); }
-        .theme-switch:hover { color:var(--accent-ink); background:var(--accent-fill); box-shadow:1px 1px 0 var(--neo-shadow-color); transform:translate(2px,2px); }
+        .theme-switch { border-color:var(--ink); background:var(--surface); box-shadow:3px 3px 0 var(--neo-shadow-color); transition:none; }
+        .theme-switch:hover { color:var(--ink); background:var(--surface); box-shadow:3px 3px 0 var(--neo-shadow-color); transform:none; }
+        .theme-switch:active { color:var(--ink); background:var(--surface); box-shadow:1px 1px 0 var(--neo-shadow-color); transform:translate(2px,2px); }
         .theme-switch-icon { color:currentColor; background:transparent; }
         .button, .button-primary, .button-secondary, .button-ghost, .directory-primary-button, .directory-secondary-button, .directory-reset-button, .directory-recent-button, .directory-copy-button { border:2px solid var(--ink); border-radius:0; box-shadow:4px 4px 0 var(--neo-shadow-color); }
         .button:hover, .directory-primary-button:hover, .directory-secondary-button:hover, .directory-reset-button:hover:not(:disabled), .directory-recent-button:hover, .directory-copy-button:hover { transform:translate(2px,2px); box-shadow:2px 2px 0 var(--neo-shadow-color); }
