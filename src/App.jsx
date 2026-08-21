@@ -755,7 +755,9 @@ export default function App() {
         .directory-card-body { display:flex; flex:1; flex-direction:column; }
         .directory-card-actions { margin-top:auto; }
         .directory-preview-toolbar > span, .directory-copy-button { border-width:2px; border-radius:8px; box-shadow:3px 3px 0 rgba(0,0,0,.85); }
-        .directory-preview-toolbar > span { background:rgba(8,12,18,.82); }
+        .directory-preview-toolbar > span { min-height:24px; padding:4px 6px; background:rgba(8,12,18,.82); font-size:7px; }
+        .directory-copy-button { min-height:32px; padding:0 7px; gap:5px; font-size:8px; }
+        .directory-copy-button svg { width:13px; height:13px; }
         .directory-copy-button:active { box-shadow:none; transform:translate(3px,3px); }
         .directory-filter-menu button:hover, .directory-filter-menu button.is-selected, .directory-recent-menu a:hover { box-shadow:2px 2px 0 var(--neo-shadow-color); }
         .directory-suggestion-trigger:hover { background:var(--surface-soft); }
