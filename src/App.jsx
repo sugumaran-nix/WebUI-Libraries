@@ -623,12 +623,12 @@ export default function App() {
         .directory-preview-error small { font-size:10px; }
         .directory-card-body { padding:14px 15px 13px; }
         .directory-card-meta { display:flex; align-items:center; flex-wrap:wrap; gap:7px; min-width:0; }
-        .directory-card-category { color:var(--category-accent); font-size:9px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; } .theme-dark .directory-card-category { color:color-mix(in srgb,var(--category-accent) 42%,#FFFFFF); }
+        .directory-card-category { color:var(--category-accent); font-size:9px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; } .theme-dark .directory-card-category { color:var(--category-accent-dark, color-mix(in srgb,var(--category-accent) 42%,#FFFFFF)); }
         .directory-new-badge { padding:3px 6px; border-radius:4px; color:var(--accent-ink); background:var(--accent-fill); font-size:8px; font-weight:900; text-transform:uppercase; }
         .directory-card-url { overflow:hidden; max-width:42%; margin-left:auto; color:var(--muted); font-size:9px; text-overflow:ellipsis; white-space:nowrap; }
         .directory-card-body h3 { margin:9px 0 6px; font-size:18px; line-height:1.05; letter-spacing:-.04em; }
         .directory-card-body h3 a { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--ink); text-decoration:none; }
-        .directory-card-body h3 svg { flex:0 0 auto; color:var(--card-accent); } .theme-dark .directory-card-body h3 svg, .theme-dark .directory-card-body h3 a:hover, .theme-dark .directory-visit-action { color:color-mix(in srgb,var(--card-accent) 42%,#FFFFFF); }
+        .directory-card-body h3 svg { flex:0 0 auto; color:var(--card-accent); } .theme-dark .directory-card-body h3 svg, .theme-dark .directory-card-body h3 a:hover, .theme-dark .directory-visit-action { color:var(--card-accent-dark, color-mix(in srgb,var(--card-accent) 42%,#FFFFFF)); }
         .directory-card-body h3 a:hover { color:var(--card-accent); }
         .directory-card-body p { display:-webkit-box; min-height:43px; margin:0; overflow:hidden; color:var(--muted); font-size:11px; line-height:1.55; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
         .directory-card-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
