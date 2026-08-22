@@ -1,0 +1,129 @@
+name: Design Garage CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-garage-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22.x
+  BUNDLE_RAW_BUDGET: 320000
+  BUNDLE_GZIP_BUDGET: 85000
+
+jobs:
+  quality:
+    name: Build, bundle, browser, and accessibility checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Check formatting and repository diff
+        run: git diff --check
+
+      - name: Check production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Analyze bundle size
+        run: npm run ci:bundle
+        env:
+          BUNDLE_RAW_BUDGET: ${{ env.BUNDLE_RAW_BUDGET }}
+          BUNDLE_GZIP_BUDGET: ${{ env.BUNDLE_GZIP_BUDGET }}
+
+      - name: Upload build and bundle reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-garage-build-${{ github.sha }}
+          path: |
+            dist/
+            bundle-report.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Install Chromium for browser checks
+        run: npx playwright install --with-deps chromium
+
+      - name: Start production preview
+        run: npm run preview -- --host 127.0.0.1 --port 4317 > /tmp/design-garage-preview.log 2>&1 &
+
+      - name: Wait for production preview
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4317/directory > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/design-garage-preview.log
+          exit 1
+
+      - name: Run browser behavior checks
+        run: npm run ci:browser
+        env:
+          PREVIEW_URL: http://127.0.0.1:4317
+
+      - name: Run WCAG accessibility checks
+        run: npm run ci:a11y
+        env:
+          PREVIEW_URL: http://127.0.0.1:4317
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-garage-a11y-${{ github.sha }}
+          path: a11y-report.json
+          if-no-files-found: error
+          retention-days: 14
+
+  deployment-check:
+    name: Deployment readiness gate
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download verified production artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: design-garage-build-${{ github.sha }}
+
+      - name: Validate deployment files
+        run: |
+          test -s dist/index.html || (echo "Missing production dist/index.html" && exit 1)
+          test -s vercel.json || (echo "Missing vercel.json" && exit 1)
+          grep -q '"destination": "/index.html"' vercel.json || (echo "Missing SPA fallback" && exit 1)
+          echo "Deployment artifact and /directory SPA fallback are ready."
+
+      - name: Publish summary
+        run: |
+          {
+            echo "## Design Garage deployment gate"
+            echo ""
+            echo "- Build, bundle, browser, and accessibility checks passed."
+            echo "- Production dependency audit passed."
+            echo "- Vercel SPA fallback for /directory is present."
+            echo "- This workflow intentionally does not deploy with credentials; connect the repository to Vercel or add a protected deployment job when deployment secrets are configured."
+          } >> "$GITHUB_STEP_SUMMARY"
