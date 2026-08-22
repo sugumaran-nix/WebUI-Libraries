@@ -1,0 +1,53 @@
+name: Suggest a resource
+description: Propose a useful interface resource or frontend tool for Design Garage.
+title: "resource: "
+labels: ["resource-suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thank you for helping improve the directory. Please check whether the resource is already listed before submitting."
+  - type: input
+    id: name
+    attributes:
+      label: Resource name
+      placeholder: Example UI Library
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Canonical website URL
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Why is it useful?
+      description: Describe the practical value in one or two factual sentences.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Best-fit category
+      options:
+        - Animated UI
+        - React
+        - Tailwind
+        - CSS and HTML
+        - Design tools
+        - Developer tools
+        - Design references
+        - Icons
+        - Templates
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I confirmed that this resource is live, publicly accessible, and not already listed.
+          required: true

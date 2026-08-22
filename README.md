@@ -30,7 +30,7 @@ Design Garage turns a scattered resource search into one focused browsing sessio
 
 | Search | Evaluate | Return |
 |---|---|---|
-| Live search across names, descriptions, and technologies. | Filter by category, technology, order, Grid, or List. | Copy links, revisit recent resources, switch themes, and suggest the next find. |
+| Live search across names, descriptions, technologies, and resource IDs such as `resource 001`. | Filter by category, technology, order, Grid, or List. | Copy links, revisit recent resources, switch themes, and suggest the next find. |
 
 ### Two surfaces
 
@@ -85,9 +85,9 @@ PREVIEW_URL=http://127.0.0.1:4317 npm run ci:a11y
 
 ## Contributing
 
-Useful resources, corrections, clearer copy, accessibility fixes, and focused visual improvements are welcome. Preserve the landing marquee, verify light and dark themes, and keep pull requests small enough to review.
+Useful resources, corrections, clearer copy, accessibility fixes, and focused visual improvements are welcome. Preserve the landing marquee, verify light and dark themes, and keep pull requests small enough to review. Read the [contribution guide](CONTRIBUTING.md) before submitting a resource, issue, or pull request.
 
-For a quick catalog contribution, use the **Suggest** flow inside the live directory.
+For a quick catalog contribution, use the **Suggest** flow inside the live directory. The repository also includes structured templates for [resource suggestions](.github/ISSUE_TEMPLATE/resource-suggestion.yml) and [bug reports](.github/ISSUE_TEMPLATE/bug-report.yml).
 
 ## License
 
