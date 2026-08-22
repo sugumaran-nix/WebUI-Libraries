@@ -740,6 +740,7 @@ export default function App() {
         .header-inner { min-height:68px; }
         .header-actions { margin-left:auto; }
         .header-nav button, .github-link, .theme-switch { min-height:40px; }
+        .github-link { width:44px; min-width:44px; height:44px; justify-content:center; }
         .header-nav button:focus-visible, .github-link:focus-visible, .theme-switch:focus-visible, .button:focus-visible, .directory-primary-button:focus-visible, .directory-secondary-button:focus-visible, .directory-reset-button:focus-visible, .directory-recent-button:focus-visible, .directory-copy-button:focus-visible, .directory-suggestion-trigger:focus-visible, .directory-view-toggle button:focus-visible, .directory-filter-trigger:focus-visible, .directory-filter-menu button:focus-visible, .directory-recent-menu a:focus-visible, .directory-search-clear:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
         .vengeance-kicker, .directory-eyebrow { display:inline-flex; align-items:center; width:max-content; min-height:22px; margin-bottom:12px; padding:3px 8px; border:2px solid var(--ink); border-radius:5px; color:var(--accent-ink); background:var(--accent-fill); box-shadow:3px 3px 0 var(--neo-shadow-color); }
         .vengeance-kicker { color:var(--accent-ink); }
