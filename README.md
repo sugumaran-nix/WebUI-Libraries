@@ -187,6 +187,24 @@ npm run build
 
 The included `vercel.json` rewrites `/directory` and its nested paths to `index.html`, preventing a direct refresh from becoming a server-side 404.
 
+## Continuous integration
+
+Every push and pull request runs the [Design Garage CI workflow](.github/workflows/ci.yml). The pipeline installs from the lockfile, builds the production bundle, checks production dependency vulnerabilities, enforces the bundle budget, starts the production preview, exercises both routes and themes, runs browser behavior checks, and runs Axe against the mobile and desktop states.
+
+A successful run uploads the built `dist` directory, bundle report, and accessibility report as workflow artifacts. The final deployment-readiness job verifies that the tested artifact and `/directory` SPA fallback are present. The workflow intentionally stops at a verified deployment gate; connect the repository to Vercel or add protected deployment credentials before enabling automatic production deployment.
+
+Run the same local checks with:
+
+```bash
+npm run build
+npm run ci:bundle
+npm run preview -- --host 127.0.0.1 --port 4317
+
+# In another terminal:
+PREVIEW_URL=http://127.0.0.1:4317 npm run ci:browser
+PREVIEW_URL=http://127.0.0.1:4317 npm run ci:a11y
+```
+
 ## Contributing
 
 Good resources, useful corrections, clearer copy, accessibility fixes, and thoughtful visual improvements are welcome. Please keep changes focused, preserve the landing marquee unless the scope explicitly changes, and verify both light and dark themes before submitting.
