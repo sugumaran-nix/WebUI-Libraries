@@ -245,12 +245,14 @@ export default function App() {
 
   const filteredResources = useMemo(() => {
     const needle = debouncedQuery.toLowerCase().trim();
+    const resourceIdMatch = needle.match(/^resource(?:\s*#)?\s*0*(\d+)$/);
     const matches = LIBS.filter(resource => {
       const resolvedCategory = CAT_RESOLVE(resource.cat);
       const stacks = LIB_STACKS[resource.id] || [];
       const categoryMatch = activeCategory === "all" || activeCategory === resource.cat || activeCategory === resolvedCategory;
       const stackMatch = stackFilter === "all" || stacks.includes(stackFilter);
-      const searchMatch = !needle || resource.name.toLowerCase().includes(needle) || resource.desc.toLowerCase().includes(needle) || resource.url.toLowerCase().includes(needle) || stacks.some(stack => stack.toLowerCase().includes(needle));
+      const resourceMatch = resourceIdMatch && Number(resource.id) === Number(resourceIdMatch[1]);
+      const searchMatch = !needle || resourceMatch || resource.name.toLowerCase().includes(needle) || resource.desc.toLowerCase().includes(needle) || resource.url.toLowerCase().includes(needle) || stacks.some(stack => stack.toLowerCase().includes(needle));
       return categoryMatch && stackMatch && searchMatch;
     });
     return [...matches].sort((left, right) => {
