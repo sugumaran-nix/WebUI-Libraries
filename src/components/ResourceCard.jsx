@@ -53,7 +53,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
         <div className="directory-card-meta"><span className="directory-card-category" style={{ "--category-accent": cardAccent }}>{categoryLabel}</span>{isNew && <span className="directory-new-badge">New</span>}<span className="directory-card-url">{lib.url}</span></div>
         <h3><a href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></a></h3>
         <p><Highlight text={lib.desc} query={query} /></p>
-        <div className="directory-card-info-row"><div className="directory-card-tags" aria-label={`${lib.name} technologies`}>{stacks.slice(0, 3).map(stack => <span key={stack}>{stack}</span>)}</div><span className="directory-card-index">RESOURCE {String(lib.id).padStart(3, "0")}</span></div>
+        <div className="directory-card-info-row"><div className="directory-card-tags">{stacks.slice(0, 3).map(stack => <span key={stack}>{stack}</span>)}</div><span className="directory-card-index">RESOURCE {String(lib.id).padStart(3, "0")}</span></div>
       </div>
     </article>
   );
