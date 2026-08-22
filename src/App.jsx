@@ -800,7 +800,7 @@ export default function App() {
           <div className="header-actions">
             <a className="github-link" href="https://github.com/sugumaran-nix" target="_blank" rel="noopener noreferrer" aria-label="Open the project on GitHub" title="Open project GitHub profile"><Icon name="github" size={17} /></a>
             <ThemeToggle theme={theme} onToggle={() => setTheme(current => current === "light" ? "dark" : "light")} />
-            <button type="button" className="button button-primary" onClick={handleSuggest} aria-label="Suggest a resource"><Icon name="send" size={13} /> Suggest</button>
+            <button type="button" className="button button-primary" onClick={handleSuggest} aria-label="Suggest a resource"><Icon name="lightbulb" size={13} /> Suggest</button>
           </div>
         </div>
       </header>
