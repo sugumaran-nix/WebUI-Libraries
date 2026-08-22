@@ -54,7 +54,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
         <h3><a href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}><Highlight text={lib.name} query={query} /><Icon name="arrow" size={14} /></a></h3>
         <p><Highlight text={lib.desc} query={query} /></p>
         {stacks.length > 0 && <div className="directory-card-tags" aria-label={`${lib.name} technologies`}>{stacks.slice(0, 3).map(stack => <span key={stack}>{stack}</span>)}</div>}
-        <div className="directory-card-actions"><a className="directory-visit-action" href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)}>Visit website <Icon name="arrowRight" size={14} /></a><span className="directory-card-index">RESOURCE {String(lib.id).padStart(3, "0")}</span></div>
+        <div className="directory-card-actions"><span className="directory-card-index">RESOURCE {String(lib.id).padStart(3, "0")}</span></div>
       </div>
     </article>
   );
