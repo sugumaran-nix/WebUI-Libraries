@@ -1,0 +1,38 @@
+name: Report a bug
+description: Report a reproducible product, responsive-layout, accessibility, or catalog issue.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the issue and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open /directory\n2. Apply ...\n3. Observe ..."
+    validations:
+      required: true
+  - type: input
+    id: route
+    attributes:
+      label: Affected route
+      placeholder: / or /directory
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, device, and viewport
+      placeholder: Chrome 126, Android, 375 × 812
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot, recording, or console error
+      description: Drag and drop evidence here if available.
