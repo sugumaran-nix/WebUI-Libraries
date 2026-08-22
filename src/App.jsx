@@ -256,8 +256,6 @@ export default function App() {
     return [...matches].sort((left, right) => {
       if (sortBy === "az") return left.name.localeCompare(right.name);
       if (sortBy === "za") return right.name.localeCompare(left.name);
-      if (sortBy === "short") return left.name.length - right.name.length || left.name.localeCompare(right.name);
-      if (sortBy === "long") return right.name.length - left.name.length || left.name.localeCompare(right.name);
       if (sortBy === "newest") return (right.added || "").localeCompare(left.added || "") || left.name.localeCompare(right.name);
       if (sortBy === "oldest") return (left.added || "").localeCompare(right.added || "") || left.name.localeCompare(right.name);
       if (sortBy === "popular") return (POPULAR_RANK.get(left.id) ?? 999) - (POPULAR_RANK.get(right.id) ?? 999) || left.name.localeCompare(right.name);
@@ -720,10 +718,14 @@ export default function App() {
         .directory-preview-frame { border-bottom:2px solid var(--ink); border-radius:8px; }
         .directory-search-field, .directory-filter-trigger, .directory-filter-menu, .directory-recent-menu, .directory-filter-chip, .directory-view-toggle, .directory-suggestion-form input, .directory-suggestion-form textarea, .field input, .field textarea, .hero-search, .filter-trigger, .filter-popover-menu, .filter-option-button, .quick-access-chip, .filter-pill { border:2px solid var(--ink); border-radius:8px; box-shadow:3px 3px 0 var(--neo-shadow-color); }
         .directory-search-field:focus-within, .directory-suggestion-form input:focus, .directory-suggestion-form textarea:focus, .field input:focus-visible, .field textarea:focus-visible, .directory-search-field input:focus-visible { border-color:var(--ink); box-shadow:3px 3px 0 var(--neo-shadow-color), 0 0 0 3px var(--focus); }
-        .directory-filter-trigger:hover, .directory-filter-control.is-open .directory-filter-trigger, .filter-trigger:hover, .filter-popover.is-open .filter-trigger { border-color:var(--ink); background:var(--accent-fill); color:var(--accent-ink); box-shadow:3px 3px 0 var(--neo-shadow-color); }
-        .directory-filter-menu button:hover, .directory-filter-menu button.is-selected, .filter-option-button:hover, .filter-option-button.is-selected, .quick-access-chip:hover, .quick-access-chip.selected, .filter-pill:hover, .filter-pill.selected { border-color:var(--ink); color:var(--accent-ink); background:var(--accent-fill); }
+        .directory-filter-trigger:hover, .directory-filter-control.is-open .directory-filter-trigger, .filter-trigger:hover, .filter-popover.is-open .filter-trigger { border-color:var(--ink); background:var(--accent-fill); color:#050505; box-shadow:3px 3px 0 var(--neo-shadow-color); }
+        .directory-filter-trigger:hover *, .directory-filter-control.is-open .directory-filter-trigger *, .filter-trigger:hover *, .filter-popover.is-open .filter-trigger * { color:#050505; }
+        .directory-filter-menu button:hover, .directory-filter-menu button.is-selected, .filter-option-button:hover, .filter-option-button.is-selected, .quick-access-chip:hover, .quick-access-chip.selected, .filter-pill:hover, .filter-pill.selected { border-color:var(--ink); color:#050505; background:var(--accent-fill); }
+        .directory-filter-menu button:hover *, .directory-filter-menu button.is-selected *, .filter-option-button:hover *, .filter-option-button.is-selected *, .quick-access-chip:hover *, .quick-access-chip.selected *, .filter-pill:hover *, .filter-pill.selected * { color:#050505; }
+        .directory-view-toggle button.is-active *, .directory-copy-button:hover *, .directory-copy-button.is-copied *, .directory-primary-button *, .button-primary *, .vengeance-kicker *, .directory-eyebrow * { color:#050505; }
         .directory-card-tags span, .directory-new-badge, .directory-filter-chip, .directory-filter-count, .hero-search-kbd { border:2px solid var(--ink); border-radius:8px; }
-        .directory-card-tags span { color:var(--ink); background:var(--surface-soft); }
+        .directory-card-tags span { color:#050505; background:var(--surface-soft); }
+        .directory-filter-actions { margin-top:16px; padding-top:14px; border-top:2px solid var(--line); }
         .directory-view-toggle button.is-active, .view-toggle button.active { border:2px solid var(--ink); color:var(--accent-ink); background:var(--accent-fill); box-shadow:2px 2px 0 var(--neo-shadow-color); }
         .directory-copy-button:hover, .directory-copy-button.is-copied { color:var(--accent-ink); border-color:var(--ink); background:var(--accent-fill); }
         .directory-suggestion-icon, .suggest-icon, .empty-symbol { border:2px solid var(--ink); border-radius:8px; color:var(--accent-ink); background:var(--accent-fill); box-shadow:3px 3px 0 var(--neo-shadow-color); }

@@ -34,8 +34,6 @@ export const SORT_OPTIONS = [
   { id:"oldest", label:"Oldest first" },
   { id:"az", label:"Name: A to Z" },
   { id:"za", label:"Name: Z to A" },
-  { id:"short", label:"Shortest name first" },
-  { id:"long", label:"Longest name first" },
 ];
 
 // Category accents are intentionally strong enough for small labels in both themes.
