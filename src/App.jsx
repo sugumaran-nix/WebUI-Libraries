@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Icon from "./components/Icon";
 import ResourceCard from "./components/ResourceCard";
 import DirectoryView from "./components/DirectoryView";
+import { useMotionScene } from "./motion/useMotionScene";
 import {
   CATEGORIES,
   CAT_COLOR,
@@ -136,8 +137,8 @@ function VengeanceLanding({ onNavigate }) {
         <span className="landing-status"><Icon name="compass" size={12} /> Open-source design garage</span>
         <div className="vengeance-toplinks"><button type="button" onClick={() => onNavigate("/directory")}><Icon name="library" size={12} /> Directory</button><button type="button" onClick={() => { onNavigate("/directory"); }}><Icon name="compass" size={12} /> Inspiration</button><a href="https://github.com/sugumaran-nix/WebUI-Libraries" target="_blank" rel="noopener noreferrer"><Icon name="github" size={12} /> GitHub</a></div>
       </div>
-      <div className="vengeance-marquee" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
-      <div className="vengeance-content">
+      <div className="vengeance-marquee" data-motion="reveal" aria-hidden="true"><div className="vengeance-marquee-track">{marqueeTiles.map((image, index) => <div className="vengeance-tile" key={`${image}-${index}`}><img src={image} alt="" loading="lazy" /></div>)}</div></div>
+      <div className="vengeance-content" data-motion="reveal">
         <div className="vengeance-kicker">DESIGN GARAGE · CURATED INTERFACE RESOURCES</div>
         <h1 id="vengeance-title">DESIGN GARAGE</h1>
         <div className="vengeance-intro">
@@ -168,6 +169,7 @@ export default function App() {
   const [suggestion, setSuggestion] = useState({ name: "", url: "", note: "" });
   const searchRef = useRef(null);
   const isDirectory = route === "/directory";
+  useMotionScene(isDirectory ? "directory" : "landing");
 
   useEffect(() => {
     const handlePopstate = () => setRoute(getRoute());

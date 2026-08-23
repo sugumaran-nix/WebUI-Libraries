@@ -63,7 +63,7 @@ export default function DirectoryView({
   verifiedDate,
 }) {
   return (
-    <div className="directory-experience">
+    <div className="directory-experience" data-motion="reveal">
       <h1 className="directory-sr-only">Design Garage resource directory</h1>
       <section className="directory-search-strip" aria-labelledby="directory-search-label">
         <div className="directory-search-strip-copy"><p className="directory-eyebrow">SEARCH</p><label id="directory-search-label" htmlFor="directory-search">Find by name, description, or technology.</label></div>
@@ -82,7 +82,7 @@ export default function DirectoryView({
         </aside>
 
         <section className="directory-results" id="results" aria-labelledby="directory-results-heading">
-          <div className="directory-results-head">
+          <div className="directory-results-head" data-motion="reveal">
             <div><p className="directory-eyebrow">CATALOG VIEW</p><h2 id="directory-results-heading">{activeCategory === "all" ? "All resources" : categoryLabel}</h2><p>{hasActiveFilters ? "Showing resources ready to review with your criteria." : "Curated resources ready to review."}</p></div>
             <div className="directory-results-actions">
               <span className="directory-result-count">{resultCount} / {categories.find(category => category.id === "all")?.label === "All categories" ? "" : ""}{Object.values(counts).reduce((sum, value) => Math.max(sum, value), 0)}</span>
@@ -94,12 +94,12 @@ export default function DirectoryView({
         </section>
       </div>
 
-      <section className="directory-recent-strip" aria-label="Recently visited resources">
+      <section className="directory-recent-strip" data-motion="reveal" aria-label="Recently visited resources">
         <div className="directory-recent-head"><p className="directory-eyebrow">RECENTLY VISITED</p><strong>Return to recent picks</strong></div>
         {recent.length ? <div className="directory-recent-links">{recent.slice(0, 4).map(resource => <a key={resource.id} href={`https://${resource.url}`} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(resource)}>{resource.name}<Icon name="arrow" size={12} /></a>)}</div> : <p className="directory-recent-empty">Visited resources will appear here for quick return.</p>}
       </section>
 
-      <section className="directory-suggestion" aria-labelledby="suggest-title">
+      <section className="directory-suggestion" data-motion="reveal" aria-labelledby="suggest-title">
         <button type="button" id="suggest-resource-trigger" className="directory-suggestion-trigger" onClick={() => setSuggestOpen(open => !open)} aria-expanded={suggestOpen} aria-controls="suggest-resource-form"><span><span className="directory-suggestion-icon"><Icon name="lightbulb" size={17} /></span><span><strong id="suggest-title">Know a strong resource?</strong><small>Send it for review and help improve the directory.</small></span></span><Icon name={suggestOpen ? "close" : "plus"} size={17} /></button>
         {suggestOpen && <div className="directory-suggestion-form" id="suggest-resource-form">
           {suggested ? <div className="directory-success" role="status"><Icon name="check" size={18} /><span>Your suggestion is ready to review in GitHub.</span></div> : <>

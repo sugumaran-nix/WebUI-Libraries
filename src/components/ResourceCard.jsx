@@ -40,7 +40,7 @@ export default function ResourceCard({ lib, categoryLabel, accent, isNew, isCopi
   };
 
   return (
-    <article className="directory-resource-card" style={{ "--card-accent": cardAccent }}>
+    <article className="directory-resource-card" data-motion="reveal" style={{ "--card-accent": cardAccent }}>
       <div className="directory-preview-frame" aria-busy={previewState === "loading" || previewState === "retrying"}>
         <a className="directory-preview-link" href={resourceHref} target="_blank" rel="noopener noreferrer" onClick={() => onVisit(lib)} aria-label={`Open ${lib.name} website`}>
           {previewState !== "error" && <img src={previewUrl} alt={`${lib.name} website preview`} width="1200" height="760" loading="lazy" decoding="async" onLoad={handlePreviewLoad} onError={handlePreviewError} />}
