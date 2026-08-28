@@ -10,3 +10,5 @@
 - [x] Re-verify the public landing marquee, Directory interactions, themes, filters, resource-ID search, and responsive behavior after fixes.
 - [x] Resolve the README MIT-license mismatch by adding and linking the actual license file.
 - [x] Add a private security-disclosure path and link it from the README.
+- [x] Restore visible resource cards in the Directory browsing view and preserve card rendering through search, filtering, theme, and responsive states.
+- [x] Diagnose and fix the blocking blank-page regression without altering the protected landing marquee.
