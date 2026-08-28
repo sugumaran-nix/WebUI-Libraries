@@ -63,13 +63,16 @@ export function useMotionScene(scene = "directory") {
       if (disposed) return;
       const revealTargets = document.querySelectorAll("[data-motion='reveal']");
       revealTargets.forEach((element, index) => {
-        element.style.opacity = "0";
-        element.style.transform = "translate3d(0, 18px, 0)";
+        // Content must remain visible before optional motion starts. This keeps
+        // embedded browsers, slow devices, and missing IO implementations safe.
+        element.style.opacity = "1";
+        element.style.transform = "none";
+        if (typeof IntersectionObserver !== "function") return;
         const observer = new IntersectionObserver(entries => {
           if (!entries.some(entry => entry.isIntersecting)) return;
           observer.unobserve(element);
           const animation = play(element, [
-            { opacity: 0, transform: "translate3d(0, 18px, 0)" },
+            { opacity: 1, transform: "translate3d(0, 10px, 0)" },
             { opacity: 1, transform: "translate3d(0, 0, 0)" },
           ], { duration: motionTokens.duration, delay: Math.min(index * motionTokens.stagger, 280), easing: motionTokens.easing });
           if (animation) animations.push(animation);
