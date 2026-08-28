@@ -90,8 +90,10 @@ Useful resources, corrections, clearer copy, accessibility fixes, and focused vi
 For a quick catalog contribution, use the **Suggest** flow inside the live directory. The repository also includes structured templates for [resource suggestions](.github/ISSUE_TEMPLATE/resource-suggestion.yml) and [bug reports](.github/ISSUE_TEMPLATE/bug-report.yml).
 
 ## License
+MIT — see the [LICENSE](LICENSE) file.
 
-MIT
+## Security
+Please report suspected vulnerabilities privately according to the [security policy](SECURITY.md).
 
 ---
 
